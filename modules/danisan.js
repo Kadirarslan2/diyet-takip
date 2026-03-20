@@ -121,27 +121,49 @@ export function kayitFormunuBaslat() {
                     notlar: document.getElementById('d-notlar').value || "-"
                 }]).select();
                 
-                if (error) { alert("Veritabanı Hatası: " + error.message); throw error; }
+                if (error) throw error;
                 
                 frmDanisan.reset(); 
                 if (typeof window.uretProtokol === "function") window.uretProtokol(); 
-                if (typeof window.switchFormTab === "function") window.switchFormTab('bilgiler'); 
-                if (typeof window.switchPage === "function") window.switchPage('page-danisan-listesi'); 
+                
+                // Kayıt başarılıysa şık Toast bildirimi göster
+                if (typeof window.showToast === 'function') {
+                    window.showToast('Danışan başarıyla kaydedildi!', 'success');
+                }
+                
+                // Formu kapatıp listeye dön
+                const secList = document.getElementById('page-danisan-listesi');
+                const secKayit = document.getElementById('page-yeni-kayit');
+                if(secList && secKayit) {
+                    secKayit.classList.remove('block'); secKayit.classList.add('hidden');
+                    secList.classList.remove('hidden'); secList.classList.add('block');
+                }
                 
                 danisanlariGetir(); 
-                alert("Danışan tüm detaylarıyla başarıyla eklendi!"); 
                 
-            } catch(err) { console.error(err); } finally { btn.innerText = "Danışanı Sisteme Kaydet"; btn.disabled = false; }
+            } catch(err) { 
+                console.error(err);
+                if (typeof window.showToast === 'function') {
+                    window.showToast('Kayıt başarısız oldu!', 'error');
+                }
+            } finally { 
+                btn.innerText = "Danışanı Sisteme Kaydet"; 
+                btn.disabled = false; 
+            }
         };
     }
 }
 
-// ================= 3. PROFİLİ AÇMA MOTORU (DOSYAYI AÇ BUTONU İÇİN) =================
+// ================= 3. PROFİLİ AÇMA MOTORU (GARANTİLİ YÖNTEM) =================
 window.profiliAc = function(hastaId) {
-    const d = window.danisanListesi.find(x => x.id === hastaId);
-    if(!d) return;
+    console.log("Profil açılıyor...", hastaId);
     
-    // Hastanın kimliğini global hafızaya alıyoruz ki ölçüm eklerken kime ekleyeceğimizi bilelim
+    const d = window.danisanListesi.find(x => x.id === hastaId);
+    if(!d) {
+        if(typeof window.showToast === 'function') window.showToast('Hasta verisi bulunamadı!', 'error');
+        return;
+    }
+    
     window.aktifHastaId = d.id; 
     window.aktifHastaBoy = d.boy || 0;
     
@@ -156,7 +178,7 @@ window.profiliAc = function(hastaId) {
     document.getElementById('p-tel-ust').innerHTML = `${d.telefon || "-"} <i class="fas fa-check-circle text-teal-500"></i>`;
     document.getElementById('p-protokol').innerText = d.protokol_no || "-";
     
-    // YENİ EKLENEN TIBBİ BİLGİ ALANLARINI DOLDURUYORUZ
+    // YENİ EKLENEN TIBBİ BİLGİ ALANLARI
     document.getElementById('p-alerji').innerText = d.alerjiler || "Yok";
     document.getElementById('p-kronik').innerText = d.kronik_hastaliklar || "Yok";
     document.getElementById('p-su').innerText = d.su_tuketimi ? d.su_tuketimi + " L" : "-";
@@ -170,25 +192,47 @@ window.profiliAc = function(hastaId) {
         document.getElementById('p-yas-etiket').innerText = (d.cinsiyet || "BELİRTİLMEMİŞ").toUpperCase(); 
     }
     
-    // Sayfayı Hasta Profiline Çevir
-    if(typeof window.switchPage === 'function') window.switchPage('page-hasta-profili'); 
+    // === SAYFA GEÇİŞİ İÇİN KESİN GARANTİ (ui.js çökse bile çalışır) ===
+    const pageListesi = document.getElementById('page-danisan-listesi');
+    const pageProfili = document.getElementById('page-hasta-profili');
+    
+    if(pageListesi && pageProfili) {
+        // Bütün sayfaları gizle
+        document.querySelectorAll('.page-section').forEach(el => {
+            el.classList.remove('block');
+            el.classList.add('hidden');
+        });
+        // Sadece profili göster
+        pageProfili.classList.remove('hidden');
+        pageProfili.classList.add('block');
+    }
+    
+    // Detay sekmesine odaklan
     if(typeof window.appSwitchProfileTab === 'function') window.appSwitchProfileTab('detay'); 
     
-    // Alt sekmelerin (Ölçümler, Tahliller, Diyetler) verilerini getir
+    // Alt verileri getir
     if(typeof window.olcumleriGetir === 'function') window.olcumleriGetir(d.id); 
     if(typeof window.diyetleriGetir === 'function') window.diyetleriGetir(d.id); 
     if(typeof window.cariHareketleriGetir === 'function') window.cariHareketleriGetir(d.id); 
     if(typeof window.tahlilleriGetir === 'function') window.tahlilleriGetir(d.id);
 }
 
-// 4. DANIŞAN SİLME
+// 4. DANIŞAN SİLME (Şık bildirim eklendi)
 window.hastaSilCurrent = async function() { 
     if(!window.aktifHastaId) return;
     const onay = confirm("Bu danışanı ve ona ait tüm verileri kalıcı olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz!");
     if(onay) { 
         const { error } = await supabase.from('danisanlar').delete().eq('id', window.aktifHastaId); 
         if(!error) {
-            window.switchPage('page-danisan-listesi'); 
+            if(typeof window.showToast === 'function') window.showToast('Danışan başarıyla silindi', 'success');
+            
+            // Listeye geri dön
+            const secProf = document.getElementById('page-hasta-profili');
+            const secList = document.getElementById('page-danisan-listesi');
+            if(secProf && secList) {
+                secProf.classList.remove('block'); secProf.classList.add('hidden');
+                secList.classList.remove('hidden'); secList.classList.add('block');
+            }
             danisanlariGetir();
         } 
     } 
