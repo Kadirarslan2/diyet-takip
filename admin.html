@@ -22,11 +22,21 @@
         .form-input:focus { border-color: #0f766e; box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1); }
         .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: #475569; margin-bottom: 0.3rem; }
         .menu-btn.active { background-color: #f0fdfa; color: #0f766e; font-weight: 700; border-right: 3px solid #0f766e;}
-        .fc { background: #fff; border-radius: 12px; overflow: hidden; font-family: inherit; font-size: 12px md:font-size: 14px; }
+        
+        /* HATALI OLAN CSS KISMI DÜZELTİLDİ (Standart CSS Media Query Kullanıldı) */
+        .fc { background: #fff; border-radius: 12px; overflow: hidden; font-family: inherit; font-size: 12px; }
         .fc-theme-standard td, .fc-theme-standard th, .fc-theme-standard .fc-scrollgrid { border-color: #f1f5f9; }
-        .fc-header-toolbar { padding: 10px md:padding: 20px; background: #f8fafc; margin-bottom: 0 !important; border-bottom: 1px solid #e2e8f0; flex-direction: column; md:flex-direction: row; gap: 10px; }
-        .fc-toolbar-title { font-weight: 900 !important; font-size: 1rem md:font-size: 1.2rem !important; color: #0f766e; }
-        .fc-button-primary { background-color: #0f766e !important; border: none !important; border-radius: 8px !important; text-transform: capitalize; font-weight: bold !important; padding: 6px 10px md:padding: 8px 16px !important; transition: all 0.2s; }
+        .fc-header-toolbar { padding: 10px; background: #f8fafc; margin-bottom: 0 !important; border-bottom: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 10px; }
+        .fc-toolbar-title { font-weight: 900 !important; font-size: 1rem !important; color: #0f766e; }
+        .fc-button-primary { background-color: #0f766e !important; border: none !important; border-radius: 8px !important; text-transform: capitalize; font-weight: bold !important; padding: 6px 10px !important; transition: all 0.2s; }
+        
+        /* Bilgisayar Ekranı İçin Takvim Ayarları */
+        @media (min-width: 768px) {
+            .fc { font-size: 14px; }
+            .fc-header-toolbar { padding: 20px; flex-direction: row; }
+            .fc-toolbar-title { font-size: 1.2rem !important; }
+            .fc-button-primary { padding: 8px 16px !important; }
+        }
     </style>
 </head>
 
@@ -246,13 +256,12 @@
 
     <div id="toast-container"></div>
     
-    <script src="ui.js?v=9006"></script>
-    <script type="module" src="app.js?v=9006"></script>
+    <script src="ui.js?v=9007"></script>
+    <script type="module" src="app.js?v=9007"></script>
     
     <script>
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => console.log(err)); }); }
         
-        // MOBİL HAMBURGER MENÜ MOTORU
         window.toggleMenu = function() {
             const sb = document.getElementById('app-sidebar');
             const ov = document.getElementById('sidebar-overlay');
@@ -265,7 +274,6 @@
             }
         };
 
-        // Menüden bir şeye tıklanınca telefonda menüyü otomatik kapat
         document.querySelectorAll('.menu-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 if(window.innerWidth < 768) window.toggleMenu();
