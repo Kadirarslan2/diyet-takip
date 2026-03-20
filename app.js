@@ -1,6 +1,6 @@
 import { supabase } from './db.js';
-import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=sonVeKurtarici';
-import { randevulariGetir, randevuFormunuBaslat } from './modules/randevu.js?v=sonVeKurtarici';
+import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=randevuCiz1';
+import { randevulariGetir, randevuFormunuBaslat } from './modules/randevu.js?v=randevuCiz1';
 
 // ================= ÇELİK TOAST BİLDİRİMLERİ =================
 window.showToast = function(mesaj, tip = 'success') {
@@ -35,7 +35,7 @@ window.whatsappMesajAt = function() {
     window.open(`https://wa.me/${tel}?text=${mesaj}`, '_blank');
 }
 
-// ================= SENİN İSTEDİĞİN, ÇALIŞAN, YÜKLEME EKRANLI PDF MOTORU (GERİ GELDİ VE KİLİTLENDİ) =================
+// ================= KİLİTLİ, DOKUNULMAMIŞ KUSURSUZ PDF MOTORU =================
 const pdfOlusturVeIndir = (htmlIcerik, dosyaAdi) => {
     const wrapper = document.createElement('div');
     wrapper.style.position = 'fixed';
@@ -84,7 +84,6 @@ const pdfOlusturVeIndir = (htmlIcerik, dosyaAdi) => {
     }, 800);
 }
 
-// 1. Klinik Raporu Oluşturucu
 window.pdfIndir = async function() {
     if(!window.aktifHastaId) return;
     const d = window.danisanListesi.find(x => x.id === window.aktifHastaId);
@@ -111,12 +110,11 @@ window.pdfIndir = async function() {
     const yas = d.dogum_tarihi ? (new Date().getFullYear() - new Date(d.dogum_tarihi).getFullYear()) : "-";
     const islemTarihi = new Date().toLocaleDateString('tr-TR'); const uzman = d.uzman_ad || "Dyt. Beyza";
 
-    const htmlRapor = `<div style="padding: 30px 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background: white; width: 800px; box-sizing: border-box;"><div style="border-bottom: 3px solid #0f766e; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;"><div><h1 style="color: #0f766e; margin: 0; font-size: 24px; font-weight: 900;">DİYETTAKİBİM KLİNİĞİ</h1><p style="margin: 5px 0 0 0; color: #64748b; font-size: 12px; font-weight: bold; text-transform: uppercase;">Kapsamlı Hasta Analiz Raporu</p></div><div style="text-align: right; color: #64748b; font-size: 11px;"><strong>Tarih:</strong> ${islemTarihi}<br><strong>Uzman:</strong> ${uzman}<br><strong>Protokol:</strong> ${d.protokol_no || '-'}</div></div><h3 style="background-color: #f8fafc; color: #334155; padding: 8px 12px; font-size: 13px; margin-bottom: 10px; border-left: 4px solid #0f766e; font-weight: bold;">Kişisel ve Tıbbi Bilgiler</h3><table style="width: 100%; margin-bottom: 20px; font-size: 11px; border-collapse: collapse;"><tr><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9; width: 50%;"><strong>Ad Soyad:</strong> ${d.ad} ${d.soyad}</td><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9; width: 50%;"><strong>Cinsiyet / Yaş:</strong> ${d.cinsiyet || '-'} / ${yas}</td></tr><tr><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9;"><strong>Kronik Hastalıklar:</strong> <span style="color:#b91c1c">${d.kronik_hastaliklar || '-'}</span></td><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9;"><strong>Alerjiler:</strong> <span style="color:#b91c1c">${d.alerjiler || '-'}</span></td></tr><tr><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9;"><strong>Sürekli İlaçlar:</strong> ${d.surekli_ilaclar || '-'}</td><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9;"><strong>Geçirilen Operasyonlar:</strong> ${d.gecirilen_operasyonlar || '-'}</td></tr></table><h3 style="background-color: #f0fdfa; color: #0f766e; padding: 8px 12px; font-size: 13px; margin-bottom: 10px; border-left: 4px solid #14b8a6; font-weight: bold;">Geçmiş Mezura ve Tartı Ölçümleri</h3><table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; text-align: left;"><thead style="background-color: #f8fafc; color: #475569;"><tr><th style="border: 1px solid #e2e8f0; padding: 6px;">Tarih</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Kilo</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Yağ / Kas (%)</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Bel / Kalça (cm)</th><th style="border: 1px solid #e2e8f0; padding: 6px;">BMI</th></tr></thead><tbody>${olcumHtml}</tbody></table><h3 style="background-color: #fef2f2; color: #b91c1c; padding: 8px 12px; font-size: 13px; margin-bottom: 10px; border-left: 4px solid #b91c1c; font-weight: bold;">Laboratuvar ve Kan Tahlili Sonuçları</h3><table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; text-align: left;"><thead style="background-color: #f8fafc; color: #475569;"><tr><th style="border: 1px solid #e2e8f0; padding: 6px;">Tarih</th><th style="border: 1px solid #e2e8f0; padding: 6px;">B12 / D-Vit</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Demir</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Kolesterol</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Açlık Şekeri</th><th style="border: 1px solid #e2e8f0; padding: 6px;">TSH</th></tr></thead><tbody>${tahlilHtml}</tbody></table><div style="margin-top: 30px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 10px;">Bu rapor DiyetTakibim Sistemi üzerinden oluşturulmuştur.</div></div>`;
+    const htmlRapor = `<div style="padding: 30px 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background: white; width: 800px; box-sizing: border-box;"><div style="border-bottom: 3px solid #0f766e; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;"><div><h1 style="color: #0f766e; margin: 0; font-size: 24px; font-weight: 900;">DİYETTAKİBİM KLİNİĞİ</h1><p style="margin: 5px 0 0 0; color: #64748b; font-size: 12px; font-weight: bold; text-transform: uppercase;">Kapsamlı Hasta Analiz Raporu</p></div><div style="text-align: right; color: #64748b; font-size: 11px;"><strong>Tarih:</strong> ${islemTarihi}<br><strong>Uzman:</strong> ${uzman}<br><strong>Protokol:</strong> ${d.protokol_no || '-'}</div></div><h3 style="background-color: #f8fafc; color: #334155; padding: 8px 12px; font-size: 13px; margin-bottom: 10px; border-left: 4px solid #0f766e; font-weight: bold;">Kişisel ve Tıbbi Bilgiler</h3><table style="width: 100%; margin-bottom: 20px; font-size: 11px; border-collapse: collapse;"><tr><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9; width: 50%;"><strong>Ad Soyad:</strong> ${d.ad} ${d.soyad}</td><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9; width: 50%;"><strong>Cinsiyet / Yaş:</strong> ${d.cinsiyet || '-'} / ${yas}</td></tr><tr><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9;"><strong>Kronik Hastalıklar:</strong> <span style="color:#b91c1c">${d.kronik_hastaliklar || '-'}</span></td><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9;"><strong>Alerjiler:</strong> <span style="color:#b91c1c">${d.alerjiler || '-'}</span></td></tr><tr><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9;"><strong>Sürekli İlaçlar:</strong> ${d.surekli_ilaclar || '-'}</td><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9;"><strong>Geçirilen Operasyonlar:</strong> ${d.gecirilen_operasyonlar || '-'}</td></tr></table><h3 style="background-color: #f0fdfa; color: #0f766e; padding: 8px 12px; font-size: 13px; margin-bottom: 10px; border-left: 4px solid #14b8a6; font-weight: bold;">Geçmiş Mezura ve Tartı Ölçümleri</h3><table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; text-align: left;"><thead style="background-color: #f8fafc; color: #475569;"><tr><th style="border: 1px solid #e2e8f0; padding: 6px;">Tarih</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Kilo</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Yağ / Kas (%)</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Bel / Kalça (cm)</th><th style="border: 1px solid #e2e8f0; padding: 6px;">BMI</th></tr></thead><tbody>${olcumHtml}</tbody></table><h3 style="background-color: #fef2f2; color: #b91c1c; padding: 8px 12px; font-size: 13px; margin-bottom: 10px; border-left: 4px solid #b91c1c; font-weight: bold;">Laboratuvar ve Kan Tahlili Sonuçları</h3><table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; text-align: left;"><thead style="background-color: #f8fafc; color: #475569;"><tr><th style="border: 1px solid #e2e8f0; padding: 6px;">Tarih</th><th style="border: 1px solid #e2e8f0; padding: 6px;">B12 / D-Vit</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Demir</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Kolesterol</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Açlık Şekeri</th><th style="border: 1px solid #e2e8f0; padding: 6px;">TSH</th></tr></thead><tbody>${tahlilHtml}</tbody></table><div style="margin-top: 30px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 10px;">Bu rapor DiyetTakibim Sistemi tarafından oluşturulmuştur.</div></div>`;
 
     pdfOlusturVeIndir(htmlRapor, `${d.ad}_Klinik_Raporu.pdf`);
 }
 
-// 2. Özel Diyet Listesi Oluşturucu
 window.diyetPdfIndir = async function(diyetId) {
     window.showToast('Diyet Listesi PDF Başlatıldı...', 'success');
     const { data: dData } = await supabase.from('diyetler').select('*').eq('id', diyetId).single();
@@ -141,15 +139,50 @@ window.diyetPdfIndir = async function(diyetId) {
     pdfOlusturVeIndir(htmlDiyet, `Diyet_Programi_${d.ad}.pdf`);
 }
 
+// ================= EKSİK OLAN TAKVİM GETİRİCİ MOTOR (SAYI ARTMASI İÇİN) =================
+window.randevulariGetir = async function() { 
+    const { data } = await supabase.from('randevular').select('*').order('timestamp', { ascending: true }); 
+    
+    const stat = document.getElementById("stat-randevular");
+    if(stat) stat.innerText = data ? data.length : 0; 
+    
+    if(window.globalCalendar) { 
+        window.globalCalendar.removeAllEvents(); 
+        if(data) {
+            data.forEach(r => { 
+                let rRenk = "#3b82f6"; 
+                if(r.tip === "Kontrol Seansı") rRenk = "#f97316"; 
+                if(r.durum === "Geldi") rRenk = "#10b981"; 
+                if(r.durum === "İptal Etti") rRenk = "#ef4444"; 
+                
+                const baslangic = new Date(r.timestamp);
+                let bitis;
+                if (!isNaN(baslangic.getTime())) {
+                    bitis = new Date(baslangic.getTime() + 60 * 60 * 1000); 
+                } else {
+                    bitis = new Date();
+                }
+                
+                window.globalCalendar.addEvent({ 
+                    title: `${r.saat} | ${r.hastaad} (${r.durum || 'Bekliyor'})`, 
+                    start: baslangic.toISOString(), 
+                    end: bitis.toISOString(),
+                    allDay: false, 
+                    color: rRenk, 
+                    extendedProps: { dbId: r.id, durum: r.durum || 'Bekliyor' } 
+                }); 
+            }); 
+        }
+    } 
+}
+
 // ================= DANIŞAN SEÇ DOLDURUCUSU =================
 window.randevuSelectDoldur = async function() {
     const sel = document.getElementById('r-hasta');
     if(!sel) return;
     
-    // Veritabanından danışanları çekelim
     const { data } = await supabase.from('danisanlar').select('id, ad, soyad').order('ad', { ascending: true });
     
-    // Sadece ID'yi value olarak atıyoruz, böylece UUID hatası ASLA yaşanmaz.
     if(data) {
         sel.innerHTML = '<option value="">Danışan Seçiniz...</option>';
         data.forEach(d => { 
@@ -158,59 +191,7 @@ window.randevuSelectDoldur = async function() {
     }
 }
 
-// ================= DİYET MOTORLARI =================
-window.diyetleriGetir = async function(hId) {
-    const list = document.getElementById("tablo-diyetler"); 
-    const { data } = await supabase.from('diyetler').select('*').eq('hastaid', hId).order('kayitzamani', { ascending: false });
-    
-    if(list) { 
-        list.innerHTML = ""; 
-        if(data) { 
-            data.forEach(d => { 
-                let ozet = ""; 
-                if(d.sabah) ozet += `<span class="text-amber-600 font-bold">Sabah:</span> ${d.sabah.substring(0, 30)}...<br>`; 
-                if(d.ogle) ozet += `<span class="text-blue-600 font-bold">Öğle:</span> ${d.ogle.substring(0, 30)}...<br>`; 
-                if(d.aksam) ozet += `<span class="text-indigo-600 font-bold">Akşam:</span> ${d.aksam.substring(0, 30)}...`;
-                
-                list.innerHTML += `<div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-between"><div><div class="flex justify-between items-start mb-3 border-b border-gray-100 pb-2"><h4 class="font-black text-slate-800 text-sm">${d.baslik}</h4><div class="flex gap-2"><button onclick="window.diyetPdfIndir('${d.id}')" class="text-teal-600 hover:text-teal-800 bg-teal-50 px-2 py-1 rounded text-xs font-bold shadow-sm border border-teal-100" title="PDF İndir"><i class="fas fa-file-pdf mr-1"></i>PDF</button><button onclick="window.diyetSil('${d.id}')" class="text-red-400 hover:text-red-600 bg-red-50 px-2 py-1 rounded text-xs border border-red-100" title="Sil"><i class="fas fa-trash"></i></button></div></div><div class="text-[11px] text-slate-600 leading-relaxed mb-3">${ozet || '<i>(PDF içindedir)</i>'}</div></div><div class="text-[9px] font-bold text-slate-400 mt-2 border-t border-gray-50 pt-2"><i class="far fa-clock mr-1"></i>${new Date(d.kayitzamani).toLocaleDateString('tr-TR')}</div></div>`; 
-            }); 
-        } 
-    }
-}
-
-window.sablonlariGetir = async function() { 
-    try {
-        const lists = document.querySelectorAll('#sablon-listesi'); 
-        const sels = document.querySelectorAll('#diy-sablon-secici'); 
-        const { data, error } = await supabase.from('sablonlar').select('*'); 
-        if(error) throw error;
-        
-        let sablonlar = data || []; 
-        sablonlar.reverse(); window.sablonListesi = sablonlar; 
-        
-        lists.forEach(list => {
-            list.innerHTML = ""; 
-            if (sablonlar.length === 0) { list.innerHTML = `<div class="col-span-full text-center p-5 text-slate-400 font-bold">Kayıtlı şablon bulunamadı.</div>`;
-            } else {
-                sablonlar.forEach(s => { list.innerHTML += `<div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200"><div class="flex justify-between items-center mb-2"><h4 class="font-bold text-slate-800">${s.baslik}</h4><button onclick="window.sablonSil('${s.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button></div><p class="text-[10px] text-slate-500 font-bold"><i class="fas fa-check text-teal-500 mr-1"></i>Profesyonel şablon</p></div>`; }); 
-            }
-        });
-        
-        sels.forEach(sel => {
-            let opts = '<option value="">Şablon Kullanma, Kendim Yazacağım</option>'; 
-            sablonlar.forEach(s => { opts += `<option value="${s.id}">${s.baslik}</option>`; }); 
-            sel.innerHTML = opts; 
-            sel.onchange = (e) => {
-                const s = window.sablonListesi.find(x => x.id === e.target.value);
-                const setV = (boxId, val) => { const el = document.getElementById(boxId); if(el) el.value = val || ""; };
-                if(s) { setV('diy-baslik', s.baslik); setV('diy-sabah', s.sabah); setV('diy-ara1', s.ara1); setV('diy-ogle', s.ogle); setV('diy-ara2', s.ara2); setV('diy-aksam', s.aksam); setV('diy-ara3', s.ara3); setV('diy-notlar', s.icerik); 
-                } else { setV('diy-baslik',''); setV('diy-sabah',''); setV('diy-ara1',''); setV('diy-ogle',''); setV('diy-ara2',''); setV('diy-aksam',''); setV('diy-ara3',''); setV('diy-notlar',''); }
-            };
-        });
-    } catch(err) { console.error("Şablon Hatası:", err); }
-}
-
-// ================= YENİ VE KUSURSUZ RANDEVU KAYDETME MOTORU (UUID HATASI KÖKTEN ÇÖZÜLDÜ) =================
+// ================= RANDEVU KAYDETME MOTORU =================
 let oldFrmRandevu = document.getElementById('form-yeni-randevu');
 if(oldFrmRandevu) {
     let frmRandevu = oldFrmRandevu.cloneNode(true);
@@ -220,17 +201,11 @@ if(oldFrmRandevu) {
         e.preventDefault();
         
         let secilenId = document.getElementById('r-hasta').value;
-        
-        // Eğer hiçbir şey seçilmemişse uyarı ver
-        if(!secilenId) { 
-            window.showToast('Lütfen bir danışan seçin!', 'error'); 
-            return; 
-        }
+        if(!secilenId) { window.showToast('Lütfen bir danışan seçin!', 'error'); return; }
 
         let gercekHastaId = secilenId;
         let hastaAdText = "Danışan";
 
-        // GÜVENLİK: Eğer seçilen şey UUID formatında değilse (isimse), git listeden kimliğini (ID) bul!
         if (!secilenId.includes('-')) {
             const bulunanHasta = window.danisanListesi.find(x => `${x.ad} ${x.soyad}` === secilenId || x.ad === secilenId);
             if(bulunanHasta) {
@@ -241,7 +216,6 @@ if(oldFrmRandevu) {
                 return;
             }
         } else {
-            // Zaten ID olarak geldiyse adını select menüsünün içindeki yazıdan al
             const sel = document.getElementById('r-hasta');
             if(sel.selectedIndex >= 0) {
                 hastaAdText = sel.options[sel.selectedIndex].text;
@@ -300,11 +274,36 @@ if(frmCariOdeme) { frmCariOdeme.onsubmit = async (e) => { e.preventDefault(); co
 const frmGenelFinans = document.getElementById('form-finans');
 if(frmGenelFinans) { frmGenelFinans.onsubmit = async (e) => { e.preventDefault(); const sel = document.getElementById('f-hasta'); const hId = sel.options[sel.selectedIndex].dataset.dbid; const { error } = await supabase.from('cari_hareketler').insert([{ hastaid: hId, tutar: document.getElementById('f-tutar').value, tur: 'Ödeme', odeme_yontemi: document.getElementById('f-tip').value, islem_tarihi: document.getElementById('f-tarih').value }]); if(!error) { frmGenelFinans.reset(); window.closeModal('modal-finans'); window.showToast('Tahsilat kaydedildi!', 'success'); window.finanslariGetir(); } }; }
 
-// ================= ALT VERİ ÇEKİCİLER =================
+// ================= LİSTE GETİRİCİLER =================
 window.olcumleriGetir = async function(hId) { const tablo = document.getElementById("tablo-olcum-gecmis"); const { data } = await supabase.from('olcumler').select('*').eq('hastaid', hId).order('tarih', { ascending: false }); if(tablo) tablo.innerHTML = ""; if(data && data.length > 0) { const o = data[0]; document.getElementById("dash-kilo").innerText = o.kilo.toFixed(1); document.getElementById("dash-bmi").innerText = o.vki ? o.vki.toFixed(1) : "0.0"; document.getElementById("dash-kas").innerText = o.kas ? o.kas.toFixed(1) : "0.0"; document.getElementById("dash-yag").innerText = o.yag ? o.yag.toFixed(1) : "0.0"; data.forEach((ol) => { tablo.innerHTML += `<tr><td class="p-4">${new Date(ol.tarih).toLocaleDateString('tr-TR')}</td><td class="p-4 text-teal-600 font-black">${ol.kilo}kg / BMI:${ol.vki||'-'}</td><td class="p-4 text-slate-500">Y:%${ol.yag||0} / K:%${ol.kas||0}</td><td class="p-4">${ol.bel||'-'}cm / ${ol.kalca||'-'}cm</td><td class="p-4">${ol.gogus||'-'}cm / ${ol.boyun||'-'}cm</td><td class="p-4 text-right"><button onclick="window.olcumSil('${ol.id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`; }); } else { document.getElementById("dash-kilo").innerText = "0.0"; document.getElementById("dash-bmi").innerText = "0.0"; document.getElementById("dash-kas").innerText = "0.0"; document.getElementById("dash-yag").innerText = "0.0"; } }
 window.tahlilleriGetir = async function(hId) { const tablo = document.getElementById("tablo-tahliller"); const { data } = await supabase.from('tahliller').select('*').eq('hastaid', hId).order('tarih', { ascending: false }); if(tablo) tablo.innerHTML = ""; if(data) { data.forEach(t => { tablo.innerHTML += `<tr><td class="p-4">${new Date(t.tarih).toLocaleDateString('tr-TR')}</td><td class="p-4 text-red-600 font-bold">${t.b12||'-'} / ${t.d_vitamini||'-'}</td><td class="p-4 font-bold">${t.demir||'-'}</td><td class="p-4">${t.kolesterol||'-'}</td><td class="p-4">${t.aclik_sekeri||'-'}</td><td class="p-4">${t.tsh||'-'}</td><td class="p-4 text-right"><button onclick="window.tahlilSil('${t.id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`; }); } }
+window.diyetleriGetir = async function(hId) { const list = document.getElementById("tablo-diyetler"); const { data } = await supabase.from('diyetler').select('*').eq('hastaid', hId).order('kayitzamani', { ascending: false }); if(list) { list.innerHTML = ""; if(data) { data.forEach(d => { let ozet = ""; if(d.sabah) ozet += `<span class="text-amber-600 font-bold">Sabah:</span> ${d.sabah.substring(0, 30)}...<br>`; if(d.ogle) ozet += `<span class="text-blue-600 font-bold">Öğle:</span> ${d.ogle.substring(0, 30)}...<br>`; if(d.aksam) ozet += `<span class="text-indigo-600 font-bold">Akşam:</span> ${d.aksam.substring(0, 30)}...`; list.innerHTML += `<div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-between"><div><div class="flex justify-between items-start mb-3 border-b border-gray-100 pb-2"><h4 class="font-black text-slate-800 text-sm">${d.baslik}</h4><div class="flex gap-2"><button onclick="window.diyetPdfIndir('${d.id}')" class="text-teal-600 hover:text-teal-800 bg-teal-50 px-2 py-1 rounded text-xs font-bold shadow-sm border border-teal-100" title="PDF İndir"><i class="fas fa-file-pdf mr-1"></i>PDF</button><button onclick="window.diyetSil('${d.id}')" class="text-red-400 hover:text-red-600 bg-red-50 px-2 py-1 rounded text-xs border border-red-100" title="Sil"><i class="fas fa-trash"></i></button></div></div><div class="text-[11px] text-slate-600 leading-relaxed mb-3">${ozet || '<i>(PDF içindedir)</i>'}</div></div><div class="text-[9px] font-bold text-slate-400 mt-2 border-t border-gray-50 pt-2"><i class="far fa-clock mr-1"></i>${new Date(d.kayitzamani).toLocaleDateString('tr-TR')}</div></div>`; }); } } }
 window.cariHareketleriGetir = async function(hastaId) { const tablo = document.getElementById("tablo-cari-hareketler"); const { data } = await supabase.from('cari_hareketler').select('*').eq('hastaid', hastaId).order('islem_tarihi', { ascending: false }); if(tablo) tablo.innerHTML = ""; let hizmet = 0; let odeme = 0; if(data) { data.forEach(h => { if(h.tur === 'Hizmet Bedeli') hizmet += h.tutar; else if(h.tur === 'Ödeme') odeme += h.tutar; const tRnk = h.tur === 'Hizmet Bedeli' ? "text-orange-600" : "text-emerald-600"; tablo.innerHTML += `<tr class="border-b border-gray-50"><td class="p-4">${new Date(h.islem_tarihi).toLocaleDateString('tr-TR')}</td><td class="p-4 font-black ${tRnk}">${h.tutar} ₺</td><td class="p-4"><span class="text-xs font-bold uppercase ${tRnk}">${h.tur}</span></td><td class="p-4 text-slate-500">${h.odeme_yontemi||"-"}</td><td class="p-4 text-right"><button onclick="window.cariSil('${h.id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`; }); } document.getElementById("cari-bakiye").innerText = (hizmet - odeme) + " ₺"; document.getElementById("cari-toplam-hizmet").innerText = hizmet + " ₺"; document.getElementById("cari-toplam-odeme").innerText = odeme + " ₺"; }
 window.finanslariGetir = async function() { const tablo = document.getElementById("kasa-tablosu"); const stat = document.getElementById("stat-kasa"); const { data } = await supabase.from('cari_hareketler').select('*, danisanlar(ad, soyad)').eq('tur', 'Ödeme').order('islem_tarihi', { ascending: false }); tablo.innerHTML = ""; let top = 0; if(data) { data.forEach(i => { top += i.tutar; const hAd = i.danisanlar ? (i.danisanlar.ad + " " + i.danisanlar.soyad) : "Bilinmiyor"; tablo.innerHTML += `<tr class="border-b border-gray-100"><td class="p-4">${new Date(i.islem_tarihi).toLocaleDateString('tr-TR')}</td><td class="p-4 font-bold">${hAd}</td><td class="p-4 font-black text-teal-700">${i.tutar} ₺</td><td class="p-4 text-right"><button onclick="window.cariSil('${i.id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`; }); } stat.innerText = top + " ₺"; }
+window.sablonlariGetir = async function() { 
+    try {
+        const lists = document.querySelectorAll('#sablon-listesi'); const sels = document.querySelectorAll('#diy-sablon-secici'); 
+        const { data, error } = await supabase.from('sablonlar').select('*'); 
+        if(error) throw error;
+        let sablonlar = data || []; sablonlar.reverse(); window.sablonListesi = sablonlar; 
+        lists.forEach(list => {
+            list.innerHTML = ""; 
+            if (sablonlar.length === 0) { list.innerHTML = `<div class="col-span-full text-center p-5 text-slate-400 font-bold">Kayıtlı şablon bulunamadı.</div>`;
+            } else { sablonlar.forEach(s => { list.innerHTML += `<div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200"><div class="flex justify-between items-center mb-2"><h4 class="font-bold text-slate-800">${s.baslik}</h4><button onclick="window.sablonSil('${s.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button></div><p class="text-[10px] text-slate-500 font-bold"><i class="fas fa-check text-teal-500 mr-1"></i>Profesyonel şablon</p></div>`; }); }
+        });
+        sels.forEach(sel => {
+            let opts = '<option value="">Şablon Kullanma, Kendim Yazacağım</option>'; 
+            sablonlar.forEach(s => { opts += `<option value="${s.id}">${s.baslik}</option>`; }); 
+            sel.innerHTML = opts; 
+            sel.onchange = (e) => {
+                const s = window.sablonListesi.find(x => x.id === e.target.value);
+                const setV = (boxId, val) => { const el = document.getElementById(boxId); if(el) el.value = val || ""; };
+                if(s) { setV('diy-baslik', s.baslik); setV('diy-sabah', s.sabah); setV('diy-ara1', s.ara1); setV('diy-ogle', s.ogle); setV('diy-ara2', s.ara2); setV('diy-aksam', s.aksam); setV('diy-ara3', s.ara3); setV('diy-notlar', s.icerik); } 
+                else { setV('diy-baslik',''); setV('diy-sabah',''); setV('diy-ara1',''); setV('diy-ogle',''); setV('diy-ara2',''); setV('diy-aksam',''); setV('diy-ara3',''); setV('diy-notlar',''); }
+            };
+        });
+    } catch(err) { console.error("Şablon Hatası:", err); }
+}
 
 // SİLME İŞLEMLERİ
 window.olcumSil = async function(id) { await supabase.from('olcumler').delete().eq('id', id); window.showToast('Ölçüm silindi', 'success'); window.olcumleriGetir(window.aktifHastaId); }
@@ -344,7 +343,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     danisanlariGetir(); 
     kayitFormunuBaslat();
-    window.randevulariGetir(); 
+    
+    // BUNU GERİ GETİRDİM, RANDEVU SAYISI VE TAKVİM BUNUNLA EKLENİR!
+    if(window.randevulariGetir) window.randevulariGetir(); 
+    
     window.finanslariGetir();
     window.randevuSelectDoldur(); 
     
