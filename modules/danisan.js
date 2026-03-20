@@ -46,7 +46,6 @@ export async function danisanlariGetir() {
             }
 
             if (tablo) {
-                // Satırın her yerine tıklanabilme özelliği eklendi (cursor-pointer)
                 tablo.innerHTML += `
                 <tr class="hover:bg-slate-50/80 transition group cursor-pointer" onclick="window.profiliAc('${d.id}')">
                     <td class="p-4">
@@ -68,7 +67,7 @@ export async function danisanlariGetir() {
                         </div>
                     </td>
                     <td class="p-4 text-right">
-                        <button onclick="event.stopPropagation(); window.profiliAc('${d.id}')" class="bg-white border border-gray-200 px-5 py-2.5 rounded-lg text-xs font-bold text-teal-700 hover:bg-teal-700 hover:text-white hover:border-teal-700 shadow-sm transition">
+                        <button onclick="window.profiliAc('${d.id}')" class="bg-white border border-gray-200 px-5 py-2.5 rounded-lg text-xs font-bold text-teal-700 hover:bg-teal-700 hover:text-white hover:border-teal-700 shadow-sm transition">
                             Dosyayı Aç <i class="fas fa-chevron-right ml-1"></i>
                         </button>
                     </td>
@@ -125,8 +124,9 @@ export function kayitFormunuBaslat() {
                 frmDanisan.reset(); 
                 if (typeof window.uretProtokol === "function") window.uretProtokol(); 
                 
-                // ŞIK BİLDİRİM (Alert yok!)
-                window.showToast('Danışan başarıyla eklendi!', 'success'); 
+                if (typeof window.showToast === 'function') {
+                    window.showToast('Danışan başarıyla eklendi!', 'success'); 
+                }
                 
                 const secList = document.getElementById('page-danisan-listesi');
                 const secKayit = document.getElementById('page-yeni-kayit');
@@ -139,7 +139,9 @@ export function kayitFormunuBaslat() {
                 
             } catch(err) { 
                 console.error(err); 
-                window.showToast('Kayıt başarısız oldu!', 'error'); 
+                if (typeof window.showToast === 'function') {
+                    window.showToast('Kayıt başarısız oldu!', 'error');
+                }
             } finally { 
                 btn.innerText = "Danışanı Sisteme Kaydet"; 
                 btn.disabled = false; 
@@ -148,12 +150,11 @@ export function kayitFormunuBaslat() {
     }
 }
 
-// ================= 3. PROFİLİ AÇMA MOTORU (KIRILMAZ VERSİYON) =================
+// ================= 3. PROFİLİ AÇMA MOTORU (ÇÖKME KORUMALI) =================
 window.profiliAc = function(hastaId) {
-    console.log("PROFİL AÇILIYOR ->", hastaId);
     const d = window.danisanListesi.find(x => x.id === hastaId);
     if(!d) {
-        window.showToast('Hasta verisi bulunamadı!', 'error');
+        if(typeof window.showToast === 'function') window.showToast('Hasta verisi bulunamadı!', 'error');
         return;
     }
     
@@ -163,33 +164,41 @@ window.profiliAc = function(hastaId) {
     const ad = d.ad || "İsimsiz"; 
     const soyad = d.soyad || "Danışan";
     
-    document.getElementById('prof-header-isim').innerText = ad + " " + soyad;
-    document.getElementById('profil-harf').innerText = ad.charAt(0).toUpperCase();
-    document.getElementById('p-adsoyad').innerText = ad + " " + soyad;
-    document.getElementById('p-tel').innerText = d.telefon || "-";
-    document.getElementById('p-tel-ust').innerHTML = `${d.telefon || "-"} <i class="fas fa-check-circle text-teal-500"></i>`;
-    document.getElementById('p-protokol').innerText = d.protokol_no || "-";
-    document.getElementById('p-alerji').innerText = d.alerjiler || "Yok";
-    document.getElementById('p-kronik').innerText = d.kronik_hastaliklar || "Yok";
-    document.getElementById('p-su').innerText = d.su_tuketimi ? d.su_tuketimi + " L" : "-";
-    document.getElementById('p-spor').innerText = d.fiziksel_aktivite || "-";
+    // GÜVENLİ VERİ YAZICI (ID bulunamazsa çökmez, es geçer)
+    const yaz = (id, text) => { const el = document.getElementById(id); if(el) el.innerText = text; };
+    const yazHTML = (id, html) => { const el = document.getElementById(id); if(el) el.innerHTML = html; };
+
+    // Verileri Güvenli Şekilde Yazdırıyoruz
+    yaz('prof-header-isim', ad + " " + soyad);
+    yaz('profil-harf', ad.charAt(0).toUpperCase());
+    yaz('p-adsoyad', ad + " " + soyad);
+    yazHTML('p-tel-ust', `${d.telefon || "-"} <i class="fas fa-check-circle text-teal-500"></i>`);
+    yaz('p-protokol', d.protokol_no || "-");
+    yaz('p-alerji', d.alerjiler || "Yok");
+    yaz('p-kronik', d.kronik_hastaliklar || "Yok");
+    yaz('p-su', d.su_tuketimi ? d.su_tuketimi + " L" : "-");
+    yaz('p-spor', d.fiziksel_aktivite || "-");
     
     if(d.dogum_tarihi) { 
         const yas = new Date().getFullYear() - new Date(d.dogum_tarihi).getFullYear(); 
-        document.getElementById('p-yas-etiket').innerText = `${(d.cinsiyet || "BELİRTİLMEMİŞ").toUpperCase()}, ${yas} YAŞ`; 
+        yaz('p-yas-etiket', `${(d.cinsiyet || "BELİRTİLMEMİŞ").toUpperCase()}, ${yas} YAŞ`); 
     } else { 
-        document.getElementById('p-yas-etiket').innerText = (d.cinsiyet || "BELİRTİLMEMİŞ").toUpperCase(); 
+        yaz('p-yas-etiket', (d.cinsiyet || "BELİRTİLMEMİŞ").toUpperCase()); 
     }
     
-    // UI.js'ye ihtiyaç duymadan KESİN olarak sayfayı değiştirir:
+    // SAYFAYI ZORLA DEĞİŞTİR
     document.querySelectorAll('.page-section').forEach(el => {
         el.classList.remove('block'); el.classList.add('hidden');
     });
-    document.getElementById('page-hasta-profili').classList.remove('hidden');
-    document.getElementById('page-hasta-profili').classList.add('block');
     
+    const profilSayfasi = document.getElementById('page-hasta-profili');
+    if(profilSayfasi) {
+        profilSayfasi.classList.remove('hidden');
+        profilSayfasi.classList.add('block');
+    }
+    
+    // Alt Verileri Yükle
     if(typeof window.appSwitchProfileTab === 'function') window.appSwitchProfileTab('detay'); 
-    
     if(typeof window.olcumleriGetir === 'function') window.olcumleriGetir(d.id); 
     if(typeof window.diyetleriGetir === 'function') window.diyetleriGetir(d.id); 
     if(typeof window.cariHareketleriGetir === 'function') window.cariHareketleriGetir(d.id); 
@@ -203,11 +212,14 @@ window.hastaSilCurrent = async function() {
     if(onay) { 
         const { error } = await supabase.from('danisanlar').delete().eq('id', window.aktifHastaId); 
         if(!error) {
-            window.showToast('Danışan başarıyla silindi', 'success');
-            document.getElementById('page-hasta-profili').classList.remove('block');
-            document.getElementById('page-hasta-profili').classList.add('hidden');
-            document.getElementById('page-danisan-listesi').classList.remove('hidden');
-            document.getElementById('page-danisan-listesi').classList.add('block');
+            if(typeof window.showToast === 'function') window.showToast('Danışan başarıyla silindi', 'success');
+            
+            const secProf = document.getElementById('page-hasta-profili');
+            const secList = document.getElementById('page-danisan-listesi');
+            if(secProf && secList) {
+                secProf.classList.remove('block'); secProf.classList.add('hidden');
+                secList.classList.remove('hidden'); secList.classList.add('block');
+            }
             danisanlariGetir();
         } 
     } 
