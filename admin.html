@@ -84,18 +84,14 @@
                             <div><label class="form-label">Adı*</label><input type="text" id="d-ad" required class="form-input" placeholder="Adı"></div>
                             <div><label class="form-label">Soyadı*</label><input type="text" id="d-soyad" required class="form-input" placeholder="Soyadı"></div>
                             <div><label class="form-label">Cep Telefonu</label><input type="tel" id="d-tel" class="form-input" placeholder="05XX XXX XX XX"></div>
-                            
                             <div><label class="form-label">Doğum Tarihi</label><input type="date" id="d-dogum-tarihi" class="form-input"></div>
                             <div><label class="form-label">Cinsiyet</label><select id="d-cinsiyet" class="form-input"><option>Belirtilmemiş</option><option>Kadın</option><option>Erkek</option></select></div>
                             <div><label class="form-label">Kan Grubu</label><select id="d-kan-grubu" class="form-input"><option>Bilinmiyor</option><option>A Rh+</option><option>A Rh-</option><option>B Rh+</option><option>B Rh-</option><option>AB Rh+</option><option>AB Rh-</option><option>0 Rh+</option><option>0 Rh-</option></select></div>
-                            
                             <div><label class="form-label">Meslek</label><input type="text" id="d-meslek" class="form-input" placeholder="Örn: Öğretmen"></div>
                             <div><label class="form-label">Medeni Hal</label><select id="d-medeni-hal" class="form-input"><option>Belirtilmemiş</option><option>Bekar</option><option>Evli</option></select></div>
                             <div><label class="form-label">Referans Kaynağı</label><select id="d-referans" class="form-input"><option>Instagram</option><option>Google</option><option>Tavsiye</option><option>Diğer</option></select></div>
-                            
                             <div class="col-span-1 md:col-span-2"><label class="form-label">Açık Adres (Opsiyonel)</label><input type="text" id="d-adres" class="form-input" placeholder="Ev veya iş adresi..."></div>
                             <div><label class="form-label">Acil Durumda Ulaşılacak Kişi</label><input type="text" id="d-acil-kisi" class="form-input" placeholder="İsim ve Telefon"></div>
-                            
                             <div><label class="form-label">Protokol No</label><div class="flex"><input type="text" id="d-protokol" readonly class="form-input rounded-r-none bg-slate-50 font-bold"><button type="button" onclick="window.uretProtokol()" class="px-4 bg-white border border-gray-300 border-l-0 rounded-r-md text-xs font-semibold text-slate-600">Üret</button></div></div>
                             <div class="col-span-1 md:col-span-2 flex items-center gap-2 mt-4"><input type="checkbox" id="d-kvkk" class="w-4 h-4 text-teal-600"><label class="text-sm font-bold text-slate-600">KVKK ve Aydınlatma Metnini Onayladı</label></div>
                         </div>
@@ -138,20 +134,26 @@
             </div>
             
             <div id="page-danisan-listesi" class="page-section hidden max-w-6xl mx-auto space-y-4">
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex justify-between items-center">
+                <div class="bg-white p-5 rounded-t-xl border border-gray-200 flex justify-between items-center">
                     <div>
                         <h2 class="text-xl font-black text-slate-800">Danışan Portföyü</h2>
-                        <p class="text-xs font-bold text-slate-400 mt-1">Sisteme kayıtlı tüm danışanlarınızı detaylı olarak yönetin.</p>
+                        <p class="text-xs font-bold text-slate-400 mt-1">Aktif ve geçmiş (pasif) danışanlarınızı kolayca yönetin.</p>
                     </div>
                     <button onclick="window.switchPage('page-yeni-kayit')" class="bg-teal-700 text-white px-6 py-3 rounded-lg text-sm font-bold shadow-md hover:bg-teal-800 transition">
-                        <i class="fas fa-user-plus mr-2"></i> Yeni Danışan Ekle
+                        <i class="fas fa-user-plus mr-2"></i> Yeni Danışan
                     </button>
                 </div>
                 
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-white px-5 border-x border-gray-200 flex hide-scroll overflow-x-auto">
+                    <button onclick="window.filtreleDanisan('Aktif')" id="btn-filtre-Aktif" class="px-6 py-3 text-sm font-black text-teal-700 border-b-[3px] border-teal-700 transition whitespace-nowrap"><i class="fas fa-check-circle mr-1"></i> Aktif Danışanlar</button>
+                    <button onclick="window.filtreleDanisan('Pasif')" id="btn-filtre-Pasif" class="px-6 py-3 text-sm font-black text-slate-400 border-b-[3px] border-transparent hover:text-slate-600 transition whitespace-nowrap"><i class="fas fa-history mr-1"></i> Pasif (Eski) Kayıtlar</button>
+                    <button onclick="window.filtreleDanisan('Tümü')" id="btn-filtre-Tümü" class="px-6 py-3 text-sm font-black text-slate-400 border-b-[3px] border-transparent hover:text-slate-600 transition whitespace-nowrap"><i class="fas fa-users mr-1"></i> Tümü</button>
+                </div>
+                
+                <div class="bg-white rounded-b-xl shadow-sm border border-gray-200 overflow-hidden">
                     <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-slate-50 border-b border-gray-200 text-[10px] text-slate-500 uppercase font-black tracking-widest">
+                            <tr class="bg-slate-50 border-y border-gray-200 text-[10px] text-slate-500 uppercase font-black tracking-widest">
                                 <th class="py-4 px-6">Danışan Profili</th>
                                 <th class="py-4 px-6">İletişim & Kayıt</th>
                                 <th class="py-4 px-6">Tıbbi Risk Durumu</th>
@@ -192,8 +194,14 @@
 
                     <div id="ptab-detay" class="p-8 block">
                         <div class="flex justify-between items-start mb-6">
-                            <div><div class="text-sm font-bold text-slate-700 mb-1" id="p-tel-ust">-</div><div class="text-xs font-bold text-teal-600"><i class="fas fa-check-circle mr-1"></i> Dosya Aktif</div></div>
-                            <div class="flex gap-2"><button onclick="window.hastaSilCurrent()" class="border border-red-200 text-red-500 px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-50 transition"><i class="far fa-trash-alt mr-2"></i>Sil</button></div>
+                            <div>
+                                <div class="text-sm font-bold text-slate-700 mb-1" id="p-tel-ust">-</div>
+                                <div class="text-xs font-bold text-teal-600" id="p-durum-rozet"><i class="fas fa-check-circle mr-1"></i> Dosya Aktif</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="window.hastaDurumDegistir()" id="btn-durum-degistir" class="border border-orange-200 text-orange-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-orange-50 transition">Yükleniyor...</button>
+                                <button onclick="window.hastaSilCurrent()" class="border border-red-200 text-red-500 px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-50 transition"><i class="far fa-trash-alt mr-2"></i>Kalıcı Sil</button>
+                            </div>
                         </div>
                         <div class="flex flex-col md:flex-row gap-8">
                             <div class="w-48 h-48 bg-slate-100 flex items-center justify-center text-8xl text-slate-400 rounded-lg shrink-0 border-2 border-dashed border-gray-200"><i class="fas fa-user"></i></div>
@@ -210,10 +218,7 @@
                     </div>
 
                     <div id="ptab-olcumler" class="hidden p-8">
-                        <div class="flex justify-between items-center mb-8">
-                            <h3 class="font-black text-slate-700 uppercase text-xs tracking-widest">Mezura & Tartı Ölçümleri</h3>
-                            <button onclick="window.openModal('modal-olcum')" class="bg-teal-800 text-white px-6 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-teal-900 transition"><i class="fas fa-plus mr-2"></i>Yeni Ölçüm Ekle</button>
-                        </div>
+                        <div class="flex justify-between items-center mb-8"><h3 class="font-black text-slate-700 uppercase text-xs tracking-widest">Mezura & Tartı Ölçümleri</h3><button onclick="window.openModal('modal-olcum')" class="bg-teal-800 text-white px-6 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-teal-900 transition"><i class="fas fa-plus mr-2"></i>Yeni Ölçüm Ekle</button></div>
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                             <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase mb-2">Güncel Kilo</p><h4 class="text-3xl font-black text-slate-700" id="dash-kilo">0.0</h4></div>
                             <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase mb-2">Vücut Kitle Endeksi (BMI)</p><h4 class="text-3xl font-black text-slate-700" id="dash-bmi">0.0</h4></div>
@@ -224,18 +229,12 @@
                     </div>
 
                     <div id="ptab-tahliller" class="hidden p-8">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="font-black text-slate-700 uppercase text-xs tracking-widest">Laboratuvar & Kan Tahlilleri</h3>
-                            <button onclick="window.openModal('modal-tahlil')" class="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-red-100"><i class="fas fa-vial mr-2"></i>Sonuç Ekle</button>
-                        </div>
+                        <div class="flex justify-between items-center mb-6"><h3 class="font-black text-slate-700 uppercase text-xs tracking-widest">Laboratuvar & Kan Tahlilleri</h3><button onclick="window.openModal('modal-tahlil')" class="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-red-100"><i class="fas fa-vial mr-2"></i>Sonuç Ekle</button></div>
                         <div class="border border-gray-200 rounded-xl overflow-hidden"><table class="w-full text-left"><thead class="bg-slate-50 border-b border-gray-200"><tr class="text-[10px] font-bold text-slate-500"><th class="p-4">TARİH</th><th class="p-4 text-red-600">B12 / D-VİT</th><th class="p-4">DEMİR</th><th class="p-4">KOLESTEROL</th><th class="p-4">AÇLIK ŞEKERİ</th><th class="p-4">TSH</th><th class="p-4 text-right">İŞLEM</th></tr></thead><tbody id="tablo-tahliller" class="divide-y divide-gray-100 text-sm font-bold bg-white"></tbody></table></div>
                     </div>
 
                     <div id="ptab-cari" class="hidden p-8">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="font-black text-slate-700 uppercase text-xs tracking-widest">Cari Hareketler</h3>
-                            <div class="flex gap-2"><button onclick="window.openModal('modal-cari-hizmet')" class="bg-white border border-gray-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-50">Hizmet Ekle</button><button onclick="window.openModal('modal-cari-odeme')" class="bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-teal-800">Ödeme Al</button></div>
-                        </div>
+                        <div class="flex justify-between items-center mb-6"><h3 class="font-black text-slate-700 uppercase text-xs tracking-widest">Cari Hareketler</h3><div class="flex gap-2"><button onclick="window.openModal('modal-cari-hizmet')" class="bg-white border border-gray-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-50">Hizmet Ekle</button><button onclick="window.openModal('modal-cari-odeme')" class="bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-teal-800">Ödeme Al</button></div></div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                             <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm"><p class="text-xs font-bold text-slate-400 mb-1">Kalan Bakiye (Alınacak)</p><h4 class="text-3xl font-black text-slate-800" id="cari-bakiye">0 ₺</h4></div>
                             <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm"><p class="text-xs font-bold text-orange-500 mb-1">Toplam Hizmet Tutarı</p><h4 class="text-3xl font-black text-orange-600" id="cari-toplam-hizmet">0 ₺</h4></div>
@@ -264,70 +263,23 @@
         </main>
     </div>
 
-    <div id="modal-olcum" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl relative">
-            <button onclick="window.closeModal('modal-olcum')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button>
-            <h3 class="text-lg font-bold mb-4">Yeni Ölçüm Gir</h3>
-            <form id="form-yeni-olcum" class="space-y-4">
-                <div><label class="form-label">Ölçüm Tarihi</label><input type="date" id="o-tarih" required class="form-input"></div>
-                <div class="grid grid-cols-3 gap-3">
-                    <div><label class="form-label text-teal-600">Kilo(kg)*</label><input type="number" id="o-kilo" step="0.1" required class="form-input border-teal-200 bg-teal-50"></div>
-                    <div><label class="form-label">Yağ(%)</label><input type="number" id="o-yag" step="0.1" class="form-input"></div>
-                    <div><label class="form-label">Kas(%)</label><input type="number" id="o-kas" step="0.1" class="form-input"></div>
-                </div>
-                <hr class="my-2 border-gray-100">
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Mezura Ölçümleri (Opsiyonel)</p>
-                <div class="grid grid-cols-4 gap-3">
-                    <div><label class="form-label">Bel(cm)</label><input type="number" id="o-bel" step="0.1" class="form-input"></div>
-                    <div><label class="form-label">Kalça(cm)</label><input type="number" id="o-kalca" step="0.1" class="form-input"></div>
-                    <div><label class="form-label">Göğüs(cm)</label><input type="number" id="o-gogus" step="0.1" class="form-input"></div>
-                    <div><label class="form-label">Boyun(cm)</label><input type="number" id="o-boyun" step="0.1" class="form-input"></div>
-                </div>
-                <button type="submit" class="w-full bg-teal-700 text-white font-bold py-3 rounded-lg mt-2 shadow-md">Kaydet</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="modal-tahlil" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl relative">
-            <button onclick="window.closeModal('modal-tahlil')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button>
-            <h3 class="text-lg font-bold mb-4 text-red-600"><i class="fas fa-vial mr-2"></i>Laboratuvar Sonuçları Gir</h3>
-            <form id="form-yeni-tahlil" class="space-y-4">
-                <div><label class="form-label">Tahlil Tarihi*</label><input type="date" id="t-tarih" required class="form-input"></div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="form-label">B12 Vitamini</label><input type="number" id="t-b12" step="0.1" class="form-input"></div>
-                    <div><label class="form-label">D Vitamini</label><input type="number" id="t-dvit" step="0.1" class="form-input"></div>
-                    <div><label class="form-label">Demir (Fe)</label><input type="number" id="t-demir" step="0.1" class="form-input"></div>
-                    <div><label class="form-label">Kolesterol (Total)</label><input type="number" id="t-kolesterol" step="0.1" class="form-input"></div>
-                    <div><label class="form-label">Açlık Şekeri (Glukoz)</label><input type="number" id="t-seker" step="0.1" class="form-input"></div>
-                    <div><label class="form-label">TSH (Tiroid)</label><input type="number" id="t-tsh" step="0.1" class="form-input"></div>
-                </div>
-                <button type="submit" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg mt-2 shadow-md hover:bg-red-700 transition">Tahlili Sisteme Ekle</button>
-            </form>
-        </div>
-    </div>
-    
-    <div id="modal-diyet" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl relative"><button onclick="window.closeModal('modal-diyet')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button><h3 class="text-lg font-bold mb-4">Diyet Programı Yaz</h3><form id="form-yeni-diyet" class="space-y-4"><div><label class="form-label text-teal-600">Hazır Şablon Seç (Opsiyonel)</label><select id="diy-sablon-secici" class="form-input"><option value="">Şablon Yok</option></select></div><div><label class="form-label">Başlık</label><input type="text" id="diy-baslik" required class="form-input"></div><div><label class="form-label">İçerik</label><textarea id="diy-icerik" required rows="6" class="form-input"></textarea></div><button type="submit" class="w-full bg-slate-800 text-white font-bold py-3 rounded-lg mt-2">Kaydet</button></form></div></div>
-    
-    <div id="modal-randevu" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl relative"><button onclick="window.closeModal('modal-randevu')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button><h3 class="text-lg font-bold mb-4">Randevu Oluştur</h3><form id="form-yeni-randevu" class="space-y-4"><div><label class="form-label">Danışan Seçin</label><select id="r-hasta" required class="form-input"></select></div><div class="flex gap-3"><div class="w-1/2"><label class="form-label">Tarih</label><input type="date" id="r-tarih" required class="form-input"></div><div class="w-1/2"><label class="form-label">Saat</label><input type="time" id="r-saat" required class="form-input"></div></div><div><label class="form-label">Randevu Tipi</label><select id="r-tip" class="form-input"><option>İlk Görüşme</option><option>Kontrol Seansı</option></select></div><button type="submit" class="w-full bg-teal-700 text-white font-bold py-3 rounded-lg mt-2">Takvime Ekle</button></form></div></div>
-    
+    <div id="modal-olcum" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl relative"><button onclick="window.closeModal('modal-olcum')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button><h3 class="text-lg font-bold mb-4">Yeni Ölçüm Gir</h3><form id="form-yeni-olcum" class="space-y-4"><div><label class="form-label">Ölçüm Tarihi</label><input type="date" id="o-tarih" required class="form-input"></div><div class="grid grid-cols-3 gap-3"><div><label class="form-label text-teal-600">Kilo(kg)*</label><input type="number" id="o-kilo" step="0.1" required class="form-input border-teal-200 bg-teal-50"></div><div><label class="form-label">Yağ(%)</label><input type="number" id="o-yag" step="0.1" class="form-input"></div><div><label class="form-label">Kas(%)</label><input type="number" id="o-kas" step="0.1" class="form-input"></div></div><hr class="my-2 border-gray-100"><p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Mezura Ölçümleri</p><div class="grid grid-cols-4 gap-3"><div><label class="form-label">Bel</label><input type="number" id="o-bel" step="0.1" class="form-input"></div><div><label class="form-label">Kalça</label><input type="number" id="o-kalca" step="0.1" class="form-input"></div><div><label class="form-label">Göğüs</label><input type="number" id="o-gogus" step="0.1" class="form-input"></div><div><label class="form-label">Boyun</label><input type="number" id="o-boyun" step="0.1" class="form-input"></div></div><button type="submit" class="w-full bg-teal-700 text-white font-bold py-3 rounded-lg mt-2 shadow-md">Kaydet</button></form></div></div>
+    <div id="modal-tahlil" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl relative"><button onclick="window.closeModal('modal-tahlil')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button><h3 class="text-lg font-bold mb-4 text-red-600"><i class="fas fa-vial mr-2"></i>Laboratuvar Sonuçları</h3><form id="form-yeni-tahlil" class="space-y-4"><div><label class="form-label">Tarih*</label><input type="date" id="t-tarih" required class="form-input"></div><div class="grid grid-cols-2 gap-4"><div><label class="form-label">B12</label><input type="number" id="t-b12" step="0.1" class="form-input"></div><div><label class="form-label">D Vitamini</label><input type="number" id="t-dvit" step="0.1" class="form-input"></div><div><label class="form-label">Demir (Fe)</label><input type="number" id="t-demir" step="0.1" class="form-input"></div><div><label class="form-label">Kolesterol</label><input type="number" id="t-kolesterol" step="0.1" class="form-input"></div><div><label class="form-label">Açlık Şekeri</label><input type="number" id="t-seker" step="0.1" class="form-input"></div><div><label class="form-label">TSH</label><input type="number" id="t-tsh" step="0.1" class="form-input"></div></div><button type="submit" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg mt-2 shadow-md hover:bg-red-700 transition">Ekle</button></form></div></div>
+    <div id="modal-diyet" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl relative"><button onclick="window.closeModal('modal-diyet')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button><h3 class="text-lg font-bold mb-4">Diyet Programı Yaz</h3><form id="form-yeni-diyet" class="space-y-4"><div><label class="form-label text-teal-600">Şablon Seç (Opsiyonel)</label><select id="diy-sablon-secici" class="form-input"><option value="">Şablon Yok</option></select></div><div><label class="form-label">Başlık</label><input type="text" id="diy-baslik" required class="form-input"></div><div><label class="form-label">İçerik</label><textarea id="diy-icerik" required rows="6" class="form-input"></textarea></div><button type="submit" class="w-full bg-slate-800 text-white font-bold py-3 rounded-lg mt-2">Kaydet</button></form></div></div>
+    <div id="modal-randevu" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl relative"><button onclick="window.closeModal('modal-randevu')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button><h3 class="text-lg font-bold mb-4">Randevu Oluştur</h3><form id="form-yeni-randevu" class="space-y-4"><div><label class="form-label">Danışan Seçin</label><select id="r-hasta" required class="form-input"></select></div><div class="flex gap-3"><div class="w-1/2"><label class="form-label">Tarih</label><input type="date" id="r-tarih" required class="form-input"></div><div class="w-1/2"><label class="form-label">Saat</label><input type="time" id="r-saat" required class="form-input"></div></div><div><label class="form-label">Randevu Tipi</label><select id="r-tip" class="form-input"><option>İlk Görüşme</option><option>Kontrol Seansı</option></select></div><button type="submit" class="w-full bg-teal-700 text-white font-bold py-3 rounded-lg mt-2">Ekle</button></form></div></div>
     <div id="modal-finans" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl relative"><button onclick="window.closeModal('modal-finans')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button><h3 class="text-lg font-bold mb-4">Tahsilat Gir</h3><form id="form-finans" class="space-y-4"><div><label class="form-label">Danışan Seçin</label><select id="f-hasta" required class="form-input"></select></div><div><label class="form-label text-teal-600">Tutar (₺)*</label><input type="number" id="f-tutar" required class="form-input text-center font-bold text-lg"></div><div><label class="form-label">Yöntem</label><select id="f-tip" class="form-input"><option>Nakit</option><option>Kredi Kartı</option></select></div><div><label class="form-label">Tarih</label><input type="date" id="f-tarih" required class="form-input"></div><button type="submit" class="w-full bg-teal-700 text-white font-bold py-3 rounded-lg mt-2">Kaydet</button></form></div></div>
-    
-    <div id="modal-cari-hizmet" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl relative"><button onclick="window.closeModal('modal-cari-hizmet')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button><h3 class="text-lg font-bold mb-4">Hizmet Bedeli Ekle</h3><form id="form-cari-hizmet" class="space-y-4"><div><label class="form-label text-orange-600">Tutar (₺)*</label><input type="number" id="ch-tutar" required class="form-input text-center font-bold text-lg border-orange-200 bg-orange-50"></div><button type="submit" class="w-full bg-slate-800 text-white font-bold py-3 rounded-lg mt-2">Hizmeti Ekle</button></form></div></div>
-    
-    <div id="modal-cari-odeme" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl relative"><button onclick="window.closeModal('modal-cari-odeme')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button><h3 class="text-lg font-bold mb-4">Ödeme Al</h3><form id="form-cari-odeme" class="space-y-4"><div><label class="form-label text-emerald-600">Tutar (₺)*</label><input type="number" id="co-tutar" required class="form-input text-center font-bold text-lg border-emerald-200 bg-emerald-50"></div><div><label class="form-label">Yöntem</label><select id="co-yontem" class="form-input"><option>Nakit</option><option>Kredi Kartı</option></select></div><button type="submit" class="w-full bg-teal-700 text-white font-bold py-3 rounded-lg mt-2">Ödemeyi Onayla</button></form></div></div>
-    
-    <div id="modal-sablon" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl relative"><button onclick="window.closeModal('modal-sablon')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button><h3 class="text-lg font-bold mb-4">Yeni Şablon Ekle</h3><form id="form-yeni-sablon" class="space-y-4"><div><label class="form-label">Şablon Başlığı</label><input type="text" id="s-baslik" required class="form-input"></div><div><label class="form-label">Diyet İçeriği</label><textarea id="s-icerik" required rows="6" class="form-input"></textarea></div><button type="submit" id="btn-sablon-kaydet" class="w-full bg-slate-800 text-white font-bold py-3 rounded-lg mt-2">Şablonu Kaydet</button></form></div></div>
+    <div id="modal-cari-hizmet" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl relative"><button onclick="window.closeModal('modal-cari-hizmet')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button><h3 class="text-lg font-bold mb-4">Hizmet Bedeli Ekle</h3><form id="form-cari-hizmet" class="space-y-4"><div><label class="form-label text-orange-600">Tutar (₺)*</label><input type="number" id="ch-tutar" required class="form-input text-center font-bold text-lg border-orange-200 bg-orange-50"></div><button type="submit" class="w-full bg-slate-800 text-white font-bold py-3 rounded-lg mt-2">Ekle</button></form></div></div>
+    <div id="modal-cari-odeme" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl relative"><button onclick="window.closeModal('modal-cari-odeme')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button><h3 class="text-lg font-bold mb-4">Ödeme Al</h3><form id="form-cari-odeme" class="space-y-4"><div><label class="form-label text-emerald-600">Tutar (₺)*</label><input type="number" id="co-tutar" required class="form-input text-center font-bold text-lg border-emerald-200 bg-emerald-50"></div><div><label class="form-label">Yöntem</label><select id="co-yontem" class="form-input"><option>Nakit</option><option>Kredi Kartı</option></select></div><button type="submit" class="w-full bg-teal-700 text-white font-bold py-3 rounded-lg mt-2">Onayla</button></form></div></div>
+    <div id="modal-sablon" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl relative"><button onclick="window.closeModal('modal-sablon')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button><h3 class="text-lg font-bold mb-4">Yeni Şablon Ekle</h3><form id="form-yeni-sablon" class="space-y-4"><div><label class="form-label">Başlık</label><input type="text" id="s-baslik" required class="form-input"></div><div><label class="form-label">İçerik</label><textarea id="s-icerik" required rows="6" class="form-input"></textarea></div><button type="submit" id="btn-sablon-kaydet" class="w-full bg-slate-800 text-white font-bold py-3 rounded-lg mt-2">Kaydet</button></form></div></div>
 
     <div id="toast-container"></div>
     
-    <script src="ui.js?v=9003"></script>
-    <script type="module" src="app.js?v=9003"></script>
+    <script src="ui.js?v=9004"></script>
+    <script type="module" src="app.js?v=9004"></script>
     
     <script>
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => console.log(err)); }); }
         
-        // Yeni Kayıt Formu Sekme Değiştiricisi
         window.switchFormTab = function(tabName) {
             const tabs = ['bilgiler', 'ek', 'yasam', 'notlar'];
             tabs.forEach(t => {
@@ -345,7 +297,6 @@
             });
         };
 
-        // Hasta Profili İçi Sekme Değiştiricisi
         window.appSwitchProfileTab = function(tabName) {
             const tabs = ['detay', 'olcumler', 'tahliller', 'cari', 'diyetler'];
             tabs.forEach(t => {
@@ -355,13 +306,11 @@
                     if(t === tabName) {
                         btn.classList.add('active', 'text-teal-700', 'border-teal-700');
                         btn.classList.remove('text-slate-500');
-                        content.classList.remove('hidden');
-                        content.classList.add('block');
+                        content.classList.remove('hidden'); content.classList.add('block');
                     } else {
                         btn.classList.remove('active', 'text-teal-700', 'border-teal-700');
                         btn.classList.add('text-slate-500');
-                        content.classList.remove('block');
-                        content.classList.add('hidden');
+                        content.classList.remove('block'); content.classList.add('hidden');
                     }
                 }
             });
