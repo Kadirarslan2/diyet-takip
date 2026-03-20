@@ -1,9 +1,8 @@
 import { supabase } from './db.js';
-// CACHE (ÖNBELLEK) KIRICI IMPORT! Tarayıcı eski dosyayı kullanamayacak:
-import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=kirilmaz1';
+import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=wpyeni';
+import { randevulariGetir, randevuFormunuBaslat } from './modules/randevu.js?v=wpyeni';
 
-// ================= ÇELİK TOAST (KAYAN BİLDİRİM) MOTORU =================
-// Başka hiçbir dosyaya ihtiyaç duymadan yeşil şık bildirimler çıkarır
+// ================= ÇELİK TOAST MOTORU =================
 window.showToast = function(mesaj, tip = 'success') {
     let container = document.getElementById('toast-container');
     if(!container) {
@@ -20,17 +19,8 @@ window.showToast = function(mesaj, tip = 'success') {
     toast.innerHTML = `<i class="fas ${icon} text-xl"></i> <span>${mesaj}</span>`;
     
     container.appendChild(toast);
-    
-    setTimeout(() => { 
-        toast.classList.remove('translate-y-full', 'opacity-0'); 
-        toast.classList.add('translate-y-0', 'opacity-100'); 
-    }, 10);
-    
-    setTimeout(() => { 
-        toast.classList.remove('translate-y-0', 'opacity-100'); 
-        toast.classList.add('translate-y-full', 'opacity-0'); 
-        setTimeout(() => toast.remove(), 300); 
-    }, 3000);
+    setTimeout(() => { toast.classList.remove('translate-y-full', 'opacity-0'); toast.classList.add('translate-y-0', 'opacity-100'); }, 10);
+    setTimeout(() => { toast.classList.remove('translate-y-0', 'opacity-100'); toast.classList.add('translate-y-full', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
 };
 
 window.uretProtokol = function() {
@@ -39,7 +29,53 @@ window.uretProtokol = function() {
     if(el) el.value = "PRT-" + rnd;
 };
 
-// ================= PROFİL ALT SEKMELERİ ÇEKİCİ MOTORLAR =================
+// ================= YENİ WHATSAPP VE PDF MOTORLARI =================
+
+window.whatsappMesajAt = function() {
+    if(!window.aktifHastaId) return;
+    const d = window.danisanListesi.find(x => x.id === window.aktifHastaId);
+    if(!d) return;
+
+    let tel = d.telefon;
+    if(!tel || tel === "-" || tel === "Belirtilmemiş") {
+        window.showToast("Hastanın kayıtlı bir telefonu yok!", "error"); return;
+    }
+
+    // Telefon numarasını Türkiye/WhatsApp formatına çevir
+    tel = tel.replace(/\D/g, ''); // Sadece rakamları bırak
+    if(tel.startsWith("0")) tel = "9" + tel;
+    if(!tel.startsWith("90")) tel = "90" + tel;
+
+    const ad = d.ad || "Danışan";
+    const mesaj = encodeURIComponent(`Merhaba ${ad} Hanım/Bey,\nDiyetTakibim Kliniğinden iletişime geçiyoruz. Sağlıklı günler dileriz! 🍏`);
+    
+    window.open(`https://wa.me/${tel}?text=${mesaj}`, '_blank');
+}
+
+window.pdfIndir = function() {
+    if(!window.aktifHastaId) return;
+    const d = window.danisanListesi.find(x => x.id === window.aktifHastaId);
+    if(!d) return;
+
+    window.showToast('PDF Hazırlanıyor, lütfen bekleyin...', 'success');
+
+    // Sadece hastanın detaylarının yazdığı o güzel kutuyu seçiyoruz
+    const element = document.getElementById('hasta-dosyasi-pdf');
+    
+    const opt = {
+        margin:       10,
+        filename:     `${d.ad}_${d.soyad}_Hasta_Dosyasi.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        window.showToast('PDF başarıyla indirildi!', 'success');
+    });
+}
+
+// ================= PROFİL ALT SEKMELERİ =================
 window.olcumleriGetir = async function(hId) {
     const tablo = document.getElementById("tablo-olcum-gecmis");
     const { data } = await supabase.from('olcumler').select('*').eq('hastaid', hId).order('tarih', { ascending: false });
@@ -50,42 +86,27 @@ window.olcumleriGetir = async function(hId) {
         document.getElementById("dash-bmi").innerText = o.vki ? o.vki.toFixed(1) : "0.0"; 
         document.getElementById("dash-kas").innerText = o.kas ? o.kas.toFixed(1) : "0.0"; 
         document.getElementById("dash-yag").innerText = o.yag ? o.yag.toFixed(1) : "0.0"; 
-        
-        data.forEach((ol) => { 
-            tablo.innerHTML += `<tr><td class="p-4">${new Date(ol.tarih).toLocaleDateString('tr-TR')}</td><td class="p-4 text-teal-600 font-black">${ol.kilo}kg / BMI:${ol.vki||'-'}</td><td class="p-4 text-slate-500">Y:%${ol.yag||0} / K:%${ol.kas||0}</td><td class="p-4">${ol.bel||'-'}cm / ${ol.kalca||'-'}cm</td><td class="p-4">${ol.gogus||'-'}cm / ${ol.boyun||'-'}cm</td><td class="p-4 text-right"><button onclick="window.olcumSil('${ol.id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`; 
-        });
+        data.forEach((ol) => { tablo.innerHTML += `<tr><td class="p-4">${new Date(ol.tarih).toLocaleDateString('tr-TR')}</td><td class="p-4 text-teal-600 font-black">${ol.kilo}kg / BMI:${ol.vki||'-'}</td><td class="p-4 text-slate-500">Y:%${ol.yag||0} / K:%${ol.kas||0}</td><td class="p-4">${ol.bel||'-'}cm / ${ol.kalca||'-'}cm</td><td class="p-4">${ol.gogus||'-'}cm / ${ol.boyun||'-'}cm</td><td class="p-4 text-right"><button onclick="window.olcumSil('${ol.id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`; });
     } else { 
         document.getElementById("dash-kilo").innerText = "0.0"; document.getElementById("dash-bmi").innerText = "0.0"; document.getElementById("dash-kas").innerText = "0.0"; document.getElementById("dash-yag").innerText = "0.0"; 
     }
 }
-
 window.tahlilleriGetir = async function(hId) {
     const tablo = document.getElementById("tablo-tahliller");
     const { data } = await supabase.from('tahliller').select('*').eq('hastaid', hId).order('tarih', { ascending: false });
     if(tablo) tablo.innerHTML = "";
-    if(data) {
-        data.forEach(t => {
-            tablo.innerHTML += `<tr><td class="p-4">${new Date(t.tarih).toLocaleDateString('tr-TR')}</td><td class="p-4 text-red-600 font-bold">${t.b12||'-'} / ${t.d_vitamini||'-'}</td><td class="p-4 font-bold">${t.demir||'-'}</td><td class="p-4">${t.kolesterol||'-'}</td><td class="p-4">${t.aclik_sekeri||'-'}</td><td class="p-4">${t.tsh||'-'}</td><td class="p-4 text-right"><button onclick="window.tahlilSil('${t.id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`;
-        });
-    }
+    if(data) { data.forEach(t => { tablo.innerHTML += `<tr><td class="p-4">${new Date(t.tarih).toLocaleDateString('tr-TR')}</td><td class="p-4 text-red-600 font-bold">${t.b12||'-'} / ${t.d_vitamini||'-'}</td><td class="p-4 font-bold">${t.demir||'-'}</td><td class="p-4">${t.kolesterol||'-'}</td><td class="p-4">${t.aclik_sekeri||'-'}</td><td class="p-4">${t.tsh||'-'}</td><td class="p-4 text-right"><button onclick="window.tahlilSil('${t.id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`; }); }
 }
-
 window.diyetleriGetir = async function(hId) {
     const list = document.getElementById("tablo-diyetler");
     const { data } = await supabase.from('diyetler').select('*').eq('hastaid', hId).order('kayitzamani', { ascending: false });
     if(list) list.innerHTML = "";
-    if(data) {
-        data.forEach(d => { 
-            list.innerHTML += `<div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200"><div class="flex justify-between items-start mb-3 border-b border-gray-100 pb-2"><h4 class="font-bold text-slate-800">${d.baslik}</h4><button onclick="window.diyetSil('${d.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button></div><p class="text-xs text-slate-600 leading-relaxed">${d.icerik.replace(/\n/g, '<br>')}</p></div>`; 
-        });
-    }
+    if(data) { data.forEach(d => { list.innerHTML += `<div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200"><div class="flex justify-between items-start mb-3 border-b border-gray-100 pb-2"><h4 class="font-bold text-slate-800">${d.baslik}</h4><button onclick="window.diyetSil('${d.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button></div><p class="text-xs text-slate-600 leading-relaxed">${d.icerik.replace(/\n/g, '<br>')}</p></div>`; }); }
 }
-
 window.cariHareketleriGetir = async function(hastaId) {
     const tablo = document.getElementById("tablo-cari-hareketler");
     const { data } = await supabase.from('cari_hareketler').select('*').eq('hastaid', hastaId).order('islem_tarihi', { ascending: false });
-    if(tablo) tablo.innerHTML = ""; 
-    let hizmet = 0; let odeme = 0;
+    if(tablo) tablo.innerHTML = ""; let hizmet = 0; let odeme = 0;
     if(data) {
         data.forEach(h => {
             if(h.tur === 'Hizmet Bedeli') hizmet += h.tutar; else if(h.tur === 'Ödeme') odeme += h.tutar;
@@ -98,17 +119,13 @@ window.cariHareketleriGetir = async function(hastaId) {
     const bOdeme = document.getElementById("cari-toplam-odeme"); if(bOdeme) bOdeme.innerText = odeme + " ₺";
 }
 
-// GENEL VERİ ÇEKİCİLER (Dashboard ve Formlar İçin)
 window.sablonlariGetir = async function() { const list = document.getElementById('sablon-listesi'); const sel = document.getElementById('diy-sablon-secici'); const { data } = await supabase.from('sablonlar').select('*').order('kayitzamani', { ascending: false }); window.sablonListesi = data || []; if(list) { list.innerHTML = ""; data.forEach(s => { list.innerHTML += `<div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200"><div class="flex justify-between items-center mb-2"><h4 class="font-bold text-slate-800">${s.baslik}</h4><button onclick="window.sablonSil('${s.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button></div><p class="text-xs text-slate-500 line-clamp-3">${s.icerik}</p></div>`; }); } if(sel) { let opts = '<option value="">Şablon Yok</option>'; data.forEach(s => { opts += `<option value="${s.id}">${s.baslik}</option>`; }); sel.innerHTML = opts; } }
-window.randevulariGetir = async function() { const { data } = await supabase.from('randevular').select('*').order('timestamp', { ascending: true }); document.getElementById("stat-randevular").innerText = data ? data.length : 0; if(window.globalCalendar) { window.globalCalendar.removeAllEvents(); data.forEach(r => { window.globalCalendar.addEvent({ title: `${r.saat} | ${r.hastaad}`, start: r.timestamp + ":00", color: (r.tip === "Kontrol Seansı" ? "#f97316" : "#3b82f6"), extendedProps: { dbId: r.id } }); }); } }
 window.finanslariGetir = async function() { const tablo = document.getElementById("kasa-tablosu"); const stat = document.getElementById("stat-kasa"); const { data } = await supabase.from('cari_hareketler').select('*, danisanlar(ad, soyad)').eq('tur', 'Ödeme').order('islem_tarihi', { ascending: false }); tablo.innerHTML = ""; let top = 0; if(data) { data.forEach(i => { top += i.tutar; const hAd = i.danisanlar ? (i.danisanlar.ad + " " + i.danisanlar.soyad) : "Bilinmiyor"; tablo.innerHTML += `<tr class="border-b border-gray-100"><td class="p-4">${new Date(i.islem_tarihi).toLocaleDateString('tr-TR')}</td><td class="p-4 font-bold">${hAd}</td><td class="p-4 font-black text-teal-700">${i.tutar} ₺</td><td class="p-4 text-right"><button onclick="window.cariSil('${i.id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`; }); } stat.innerText = top + " ₺"; }
 
-// ================= ALT SİLME İŞLEMLERİ (ŞIK BİLDİRİMLİ) =================
 window.olcumSil = async function(id) { await supabase.from('olcumler').delete().eq('id', id); window.showToast('Ölçüm silindi', 'success'); window.olcumleriGetir(window.aktifHastaId); }
 window.tahlilSil = async function(id) { await supabase.from('tahliller').delete().eq('id', id); window.showToast('Tahlil silindi', 'success'); window.tahlilleriGetir(window.aktifHastaId); }
 window.diyetSil = async function(id) { await supabase.from('diyetler').delete().eq('id', id); window.showToast('Diyet silindi', 'success'); window.diyetleriGetir(window.aktifHastaId); }
 window.cariSil = async function(id) { await supabase.from('cari_hareketler').delete().eq('id', id); window.showToast('Kayıt silindi', 'success'); window.cariHareketleriGetir(window.aktifHastaId); window.finanslariGetir(); }
-window.randevuSil = async function(id) { await supabase.from('randevular').delete().eq('id', id); window.showToast('Randevu silindi', 'success'); window.randevulariGetir(); }
 window.sablonSil = async function(id) { await supabase.from('sablonlar').delete().eq('id', id); window.showToast('Şablon silindi', 'success'); window.sablonlariGetir(); }
 
 // ================= SİSTEMİ BAŞLAT =================
@@ -120,7 +137,10 @@ document.addEventListener('DOMContentLoaded', () => {
     danisanlariGetir();
     kayitFormunuBaslat();
     
-    sablonlariGetir();
+    // YENİ RANDEVU MOTORLARI ÇALIŞIYOR
     randevulariGetir();
+    randevuFormunuBaslat();
+    
+    sablonlariGetir();
     finanslariGetir();
 });
