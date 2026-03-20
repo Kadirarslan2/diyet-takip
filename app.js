@@ -51,7 +51,7 @@ window.whatsappMesajAt = function() {
     window.open(`https://wa.me/${tel}?text=${mesaj}`, '_blank');
 }
 
-// YENİ, PROFESYONEL PDF MOTORU (Arayüzü Değil, Özel Tasarımı İndirir)
+// YENİ, PROFESYONEL PDF MOTORU (Boş Sayfa Sorunu Çözüldü!)
 window.pdfIndir = async function() {
     if(!window.aktifHastaId) return;
     const d = window.danisanListesi.find(x => x.id === window.aktifHastaId);
@@ -70,12 +70,10 @@ window.pdfIndir = async function() {
 
     const yas = d.dogum_tarihi ? (new Date().getFullYear() - new Date(d.dogum_tarihi).getFullYear()) : "-";
     const kayit = d.kayittarihi ? new Date(d.kayittarihi).toLocaleDateString('tr-TR') : "-";
-    
     const islemTarihi = new Date().toLocaleDateString('tr-TR') + " " + new Date().toLocaleTimeString('tr-TR');
 
-    // MUAZZAM A4 KLİNİK RAPORU TASARIMI (Gizli olarak oluşturulur)
     const htmlRapor = `
-        <div style="padding: 40px 50px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background: white; width: 800px;">
+        <div style="padding: 40px 50px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background: white; width: 800px; box-sizing: border-box;">
             
             <div style="border-bottom: 3px solid #0f766e; padding-bottom: 15px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
                 <div>
@@ -147,23 +145,24 @@ window.pdfIndir = async function() {
         </div>
     `;
 
-    // Gizli bir element oluşturup içine tasarımı gömüyoruz
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = htmlRapor;
+    // GÖRÜNMEZ YAPIYORUZ AMA EKRANDAN DIŞARI ATMIYORUZ Kİ FOTOĞRAFI ÇEKİLEBİLSİN
     tempDiv.style.position = 'absolute';
-    tempDiv.style.left = '-9999px'; // Ekranda görünmesin diye uzağa atıyoruz
+    tempDiv.style.top = '0';
+    tempDiv.style.left = '0';
+    tempDiv.style.zIndex = '-1000';
+    tempDiv.style.opacity = '0';
     document.body.appendChild(tempDiv);
 
-    // PDF İndirme Ayarları
     const opt = {
-        margin:       0,
+        margin:       10,
         filename:     `${d.ad}_${d.soyad}_Klinik_Raporu.pdf`,
         image:        { type: 'jpeg', quality: 1 },
-        html2canvas:  { scale: 2, useCORS: true },
+        html2canvas:  { scale: 2, useCORS: true, windowWidth: 800 },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    // PDF'i oluştur ve indir, sonra o gizli divi sil
     html2pdf().set(opt).from(tempDiv).save().then(() => {
         window.showToast('Profesyonel Hasta Raporu indirildi!', 'success');
         document.body.removeChild(tempDiv);
@@ -230,12 +229,24 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (typeof window.uretProtokol === "function") window.uretProtokol();
     
+    // Unutulan takvim motorunu GERİ TAKTIK!
+    const calendarEl = document.getElementById('calendar');
+    if(calendarEl) {
+        window.globalCalendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'timeGridWeek', 
+            locale: 'tr', 
+            height: 600,
+            headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
+            slotMinTime: "08:00:00", slotMaxTime: "20:00:00",
+            eventClick: function(info) { window.randevuSil(info.event.extendedProps.dbId); }
+        });
+        window.globalCalendar.render();
+    }
+    
     danisanlariGetir();
     kayitFormunuBaslat();
-    
     randevulariGetir();
     randevuFormunuBaslat();
-    
     sablonlariGetir();
     finanslariGetir();
 });
