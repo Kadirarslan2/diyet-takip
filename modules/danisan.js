@@ -1,8 +1,11 @@
 import { supabase } from '../db.js';
 
+// Global Danışan Hafızası
 window.danisanListesi = [];
+window.aktifHastaId = null;
+window.aktifHastaBoy = null;
 
-// 1. DANIŞANLARI MUHTEŞEM TASARIMLA LİSTELE
+// ================= 1. DANIŞANLARI MUHTEŞEM TASARIMLA LİSTELE =================
 export async function danisanlariGetir() {
     const tablo = document.getElementById("danisan-tablosu"); 
     const rSec = document.getElementById("r-hasta"); 
@@ -79,7 +82,7 @@ export async function danisanlariGetir() {
     if(fSec) fSec.innerHTML = opts;
 }
 
-// 2. HATASIZ DANIŞAN KAYDETME MOTORU
+// ================= 2. HATASIZ DANIŞAN KAYDETME MOTORU =================
 export function kayitFormunuBaslat() {
     const frmDanisan = document.getElementById('form-danisan-kayit');
     if(frmDanisan) {
@@ -118,26 +121,75 @@ export function kayitFormunuBaslat() {
                     notlar: document.getElementById('d-notlar').value || "-"
                 }]).select();
                 
-                if (error) {
-                    alert("Veritabanı Hatası: " + error.message); // Hata varsa ekrana basacak!
-                    throw error;
-                }
+                if (error) { alert("Veritabanı Hatası: " + error.message); throw error; }
                 
-                // Başarılı olursa formu temizle, protokolü yenile ve listeyi çek
                 frmDanisan.reset(); 
                 if (typeof window.uretProtokol === "function") window.uretProtokol(); 
                 if (typeof window.switchFormTab === "function") window.switchFormTab('bilgiler'); 
                 if (typeof window.switchPage === "function") window.switchPage('page-danisan-listesi'); 
                 
-                danisanlariGetir(); // Yeni ekleneni listeye düşür!
-                alert("Danışan başarıyla eklendi!"); 
+                danisanlariGetir(); 
+                alert("Danışan tüm detaylarıyla başarıyla eklendi!"); 
                 
-            } catch(err) { 
-                console.error(err); 
-            } finally { 
-                btn.innerText = "Danışanı Sisteme Kaydet"; 
-                btn.disabled = false; 
-            }
+            } catch(err) { console.error(err); } finally { btn.innerText = "Danışanı Sisteme Kaydet"; btn.disabled = false; }
         };
     }
+}
+
+// ================= 3. PROFİLİ AÇMA MOTORU (DOSYAYI AÇ BUTONU İÇİN) =================
+window.profiliAc = function(hastaId) {
+    const d = window.danisanListesi.find(x => x.id === hastaId);
+    if(!d) return;
+    
+    // Hastanın kimliğini global hafızaya alıyoruz ki ölçüm eklerken kime ekleyeceğimizi bilelim
+    window.aktifHastaId = d.id; 
+    window.aktifHastaBoy = d.boy || 0;
+    
+    const ad = d.ad || "İsimsiz"; 
+    const soyad = d.soyad || "Danışan";
+    
+    // Profil Başlıklarını Dolduruyoruz
+    document.getElementById('prof-header-isim').innerText = ad + " " + soyad;
+    document.getElementById('profil-harf').innerText = ad.charAt(0).toUpperCase();
+    document.getElementById('p-adsoyad').innerText = ad + " " + soyad;
+    document.getElementById('p-tel').innerText = d.telefon || "-";
+    document.getElementById('p-tel-ust').innerHTML = `${d.telefon || "-"} <i class="fas fa-check-circle text-teal-500"></i>`;
+    document.getElementById('p-protokol').innerText = d.protokol_no || "-";
+    
+    // YENİ EKLENEN TIBBİ BİLGİ ALANLARINI DOLDURUYORUZ
+    document.getElementById('p-alerji').innerText = d.alerjiler || "Yok";
+    document.getElementById('p-kronik').innerText = d.kronik_hastaliklar || "Yok";
+    document.getElementById('p-su').innerText = d.su_tuketimi ? d.su_tuketimi + " L" : "-";
+    document.getElementById('p-spor').innerText = d.fiziksel_aktivite || "-";
+    
+    // Yaş Hesaplama
+    if(d.dogum_tarihi) { 
+        const yas = new Date().getFullYear() - new Date(d.dogum_tarihi).getFullYear(); 
+        document.getElementById('p-yas-etiket').innerText = `${(d.cinsiyet || "BELİRTİLMEMİŞ").toUpperCase()}, ${yas} YAŞ`; 
+    } else { 
+        document.getElementById('p-yas-etiket').innerText = (d.cinsiyet || "BELİRTİLMEMİŞ").toUpperCase(); 
+    }
+    
+    // Sayfayı Hasta Profiline Çevir
+    if(typeof window.switchPage === 'function') window.switchPage('page-hasta-profili'); 
+    if(typeof window.appSwitchProfileTab === 'function') window.appSwitchProfileTab('detay'); 
+    
+    // Alt sekmelerin (Ölçümler, Tahliller, Diyetler) verilerini getir
+    if(typeof window.olcumleriGetir === 'function') window.olcumleriGetir(d.id); 
+    if(typeof window.diyetleriGetir === 'function') window.diyetleriGetir(d.id); 
+    if(typeof window.cariHareketleriGetir === 'function') window.cariHareketleriGetir(d.id); 
+    if(typeof window.tahlilleriGetir === 'function') window.tahlilleriGetir(d.id);
+}
+
+// 4. DANIŞAN SİLME
+window.hastaSilCurrent = async function() { 
+    if(!window.aktifHastaId) return;
+    const onay = confirm("Bu danışanı ve ona ait tüm verileri kalıcı olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz!");
+    if(onay) { 
+        const { error } = await supabase.from('danisanlar').delete().eq('id', window.aktifHastaId); 
+        if(!error) {
+            window.switchPage('page-danisan-listesi'); 
+            danisanlariGetir();
+        } 
+    } 
 }
