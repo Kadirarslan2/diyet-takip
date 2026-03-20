@@ -1,6 +1,7 @@
 import { supabase } from './db.js';
-import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=randevuCiz1';
-import { randevulariGetir, randevuFormunuBaslat } from './modules/randevu.js?v=randevuCiz1';
+// CACHE KIRICI GÜNCELLENDİ (YENİ SÜRÜM)
+import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=finalVictory';
+import { randevuFormunuBaslat } from './modules/randevu.js?v=finalVictory';
 
 // ================= ÇELİK TOAST BİLDİRİMLERİ =================
 window.showToast = function(mesaj, tip = 'success') {
@@ -35,51 +36,27 @@ window.whatsappMesajAt = function() {
     window.open(`https://wa.me/${tel}?text=${mesaj}`, '_blank');
 }
 
-// ================= KİLİTLİ, DOKUNULMAMIŞ KUSURSUZ PDF MOTORU =================
+// ================= YÜKLEME EKRANLI, %100 GARANTİLİ PDF MOTORU (DOKUNULMADI) =================
 const pdfOlusturVeIndir = (htmlIcerik, dosyaAdi) => {
     const wrapper = document.createElement('div');
-    wrapper.style.position = 'fixed';
-    wrapper.style.top = '0';
-    wrapper.style.left = '0';
-    wrapper.style.width = '100vw';
-    wrapper.style.height = '100vh';
-    wrapper.style.backgroundColor = '#f8fafc';
-    wrapper.style.zIndex = '999999'; 
-    wrapper.style.display = 'flex';
-    wrapper.style.flexDirection = 'column';
-    wrapper.style.alignItems = 'center';
-    wrapper.style.overflow = 'auto'; 
+    wrapper.style.position = 'fixed'; wrapper.style.top = '0'; wrapper.style.left = '0'; wrapper.style.width = '100vw'; wrapper.style.height = '100vh'; wrapper.style.backgroundColor = '#f8fafc'; wrapper.style.zIndex = '999999'; wrapper.style.display = 'flex'; wrapper.style.flexDirection = 'column'; wrapper.style.alignItems = 'center'; wrapper.style.overflow = 'auto'; 
     
     const loader = document.createElement('div');
     loader.innerHTML = '<h2 style="margin-top: 50px; color: #0f766e; font-family: sans-serif;"><i class="fas fa-spinner fa-spin mr-2"></i> PDF Hazırlanıyor, lütfen bekleyin...</h2>';
     wrapper.appendChild(loader);
 
     const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlIcerik;
-    tempDiv.style.width = '800px';
-    tempDiv.style.backgroundColor = '#ffffff';
-    tempDiv.style.margin = '20px';
-    tempDiv.style.boxShadow = '0 0 15px rgba(0,0,0,0.1)';
+    tempDiv.innerHTML = htmlIcerik; tempDiv.style.width = '800px'; tempDiv.style.backgroundColor = '#ffffff'; tempDiv.style.margin = '20px'; tempDiv.style.boxShadow = '0 0 15px rgba(0,0,0,0.1)';
     wrapper.appendChild(tempDiv);
-    
     document.body.appendChild(wrapper);
 
-    const opt = { 
-        margin: 10, 
-        filename: dosyaAdi, 
-        image: { type: 'jpeg', quality: 1 }, 
-        html2canvas: { scale: 2, useCORS: true }, 
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
-    };
+    const opt = { margin: 10, filename: dosyaAdi, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
     
     setTimeout(() => {
         html2pdf().set(opt).from(tempDiv).save().then(() => {
-            window.showToast('PDF Başarıyla İndirildi!', 'success');
-            wrapper.remove(); 
+            window.showToast('PDF Başarıyla İndirildi!', 'success'); wrapper.remove(); 
         }).catch(err => {
-            console.error("PDF Hatası:", err);
-            window.showToast('PDF oluşturulurken hata meydana geldi.', 'error');
-            wrapper.remove();
+            console.error("PDF Hatası:", err); window.showToast('PDF oluşturulurken hata meydana geldi.', 'error'); wrapper.remove();
         });
     }, 800);
 }
@@ -88,23 +65,16 @@ window.pdfIndir = async function() {
     if(!window.aktifHastaId) return;
     const d = window.danisanListesi.find(x => x.id === window.aktifHastaId);
     if(!d) return;
-
     window.showToast('Profesyonel Klinik Raporu Başlatıldı...', 'success');
 
-    let guncelKilo = "-", guncelVki = "-";
-    let olcumHtml = "";
+    let guncelKilo = "-", guncelVki = "-"; let olcumHtml = "";
     const { data: olcumler } = await supabase.from('olcumler').select('*').eq('hastaid', d.id).order('tarih', { ascending: false });
-    
-    if(olcumler && olcumler.length > 0) { 
-        guncelKilo = olcumler[0].kilo + " kg"; guncelVki = olcumler[0].vki || "-"; 
-        olcumler.forEach(o => { olcumHtml += `<tr><td style="border: 1px solid #e2e8f0; padding: 6px;">${new Date(o.tarih).toLocaleDateString('tr-TR')}</td><td style="border: 1px solid #e2e8f0; padding: 6px; font-weight:bold; color:#0f766e;">${o.kilo} kg</td><td style="border: 1px solid #e2e8f0; padding: 6px;">%${o.yag||0} / %${o.kas||0}</td><td style="border: 1px solid #e2e8f0; padding: 6px;">${o.bel||'-'} / ${o.kalca||'-'}</td><td style="border: 1px solid #e2e8f0; padding: 6px;">${o.vki||'-'}</td></tr>`; });
+    if(olcumler && olcumler.length > 0) { guncelKilo = olcumler[0].kilo + " kg"; guncelVki = olcumler[0].vki || "-"; olcumler.forEach(o => { olcumHtml += `<tr><td style="border: 1px solid #e2e8f0; padding: 6px;">${new Date(o.tarih).toLocaleDateString('tr-TR')}</td><td style="border: 1px solid #e2e8f0; padding: 6px; font-weight:bold; color:#0f766e;">${o.kilo} kg</td><td style="border: 1px solid #e2e8f0; padding: 6px;">%${o.yag||0} / %${o.kas||0}</td><td style="border: 1px solid #e2e8f0; padding: 6px;">${o.bel||'-'} / ${o.kalca||'-'}</td><td style="border: 1px solid #e2e8f0; padding: 6px;">${o.vki||'-'}</td></tr>`; });
     } else { olcumHtml = `<tr><td colspan="5" style="border: 1px solid #e2e8f0; padding: 10px; text-align: center; color: #94a3b8;">Kayıtlı ölçüm bulunmamaktadır.</td></tr>`; }
 
     let tahlilHtml = "";
     const { data: tahliller } = await supabase.from('tahliller').select('*').eq('hastaid', d.id).order('tarih', { ascending: false });
-    
-    if(tahliller && tahliller.length > 0) {
-        tahliller.forEach(t => { tahlilHtml += `<tr><td style="border: 1px solid #e2e8f0; padding: 6px;">${new Date(t.tarih).toLocaleDateString('tr-TR')}</td><td style="border: 1px solid #e2e8f0; padding: 6px; color:#b91c1c; font-weight:bold;">${t.b12||'-'} / ${t.d_vitamini||'-'}</td><td style="border: 1px solid #e2e8f0; padding: 6px;">${t.demir||'-'}</td><td style="border: 1px solid #e2e8f0; padding: 6px;">${t.kolesterol||'-'}</td><td style="border: 1px solid #e2e8f0; padding: 6px;">${t.aclik_sekeri||'-'}</td><td style="border: 1px solid #e2e8f0; padding: 6px;">${t.tsh||'-'}</td></tr>`; });
+    if(tahliller && tahliller.length > 0) { tahliller.forEach(t => { tahlilHtml += `<tr><td style="border: 1px solid #e2e8f0; padding: 6px;">${new Date(t.tarih).toLocaleDateString('tr-TR')}</td><td style="border: 1px solid #e2e8f0; padding: 6px; color:#b91c1c; font-weight:bold;">${t.b12||'-'} / ${t.d_vitamini||'-'}</td><td style="border: 1px solid #e2e8f0; padding: 6px;">${t.demir||'-'}</td><td style="border: 1px solid #e2e8f0; padding: 6px;">${t.kolesterol||'-'}</td><td style="border: 1px solid #e2e8f0; padding: 6px;">${t.aclik_sekeri||'-'}</td><td style="border: 1px solid #e2e8f0; padding: 6px;">${t.tsh||'-'}</td></tr>`; });
     } else { tahlilHtml = `<tr><td colspan="6" style="border: 1px solid #e2e8f0; padding: 10px; text-align: center; color: #94a3b8;">Kayıtlı kan tahlili bulunmamaktadır.</td></tr>`; }
 
     const yas = d.dogum_tarihi ? (new Date().getFullYear() - new Date(d.dogum_tarihi).getFullYear()) : "-";
@@ -139,10 +109,20 @@ window.diyetPdfIndir = async function(diyetId) {
     pdfOlusturVeIndir(htmlDiyet, `Diyet_Programi_${d.ad}.pdf`);
 }
 
-// ================= EKSİK OLAN TAKVİM GETİRİCİ MOTOR (SAYI ARTMASI İÇİN) =================
+// ================= DANIŞAN SEÇ DOLDURUCUSU =================
+window.randevuSelectDoldur = async function() {
+    const sel = document.getElementById('r-hasta');
+    if(!sel) return;
+    const { data } = await supabase.from('danisanlar').select('id, ad, soyad').order('ad', { ascending: true });
+    if(data) {
+        sel.innerHTML = '<option value="">Danışan Seçiniz...</option>';
+        data.forEach(d => { sel.innerHTML += `<option value="${d.id}">${d.ad} ${d.soyad}</option>`; });
+    }
+}
+
+// ================= RANDEVULARI ÇEKME VE TAKVİME YEREL SAATLE (HOURS) BASMA ÇÖZÜMÜ =================
 window.randevulariGetir = async function() { 
-    const { data } = await supabase.from('randevular').select('*').order('timestamp', { ascending: true }); 
-    
+    const { data } = await supabase.from('randevular').select('*').order('tarih', { ascending: true }); 
     const stat = document.getElementById("stat-randevular");
     if(stat) stat.innerText = data ? data.length : 0; 
     
@@ -155,19 +135,15 @@ window.randevulariGetir = async function() {
                 if(r.durum === "Geldi") rRenk = "#10b981"; 
                 if(r.durum === "İptal Etti") rRenk = "#ef4444"; 
                 
-                const baslangic = new Date(r.timestamp);
-                let bitis;
-                if (!isNaN(baslangic.getTime())) {
-                    bitis = new Date(baslangic.getTime() + 60 * 60 * 1000); 
-                } else {
-                    bitis = new Date();
-                }
+                // KESİN ÇÖZÜM: ISOString çevirmesi yapıp saat dilimi kaybetmemek için,
+                // "2026-03-21T14:30:00" formatında tam yerel saat string'i oluşturuyoruz.
+                let safeSaat = r.saat && r.saat.length >= 5 ? r.saat + ":00" : "09:00:00";
+                let safeStart = `${r.tarih}T${safeSaat}`;
                 
                 window.globalCalendar.addEvent({ 
                     title: `${r.saat} | ${r.hastaad} (${r.durum || 'Bekliyor'})`, 
-                    start: baslangic.toISOString(), 
-                    end: bitis.toISOString(),
-                    allDay: false, 
+                    start: safeStart,  // Bitiş (end) vermiyoruz, kendi otomatik 1 saatlik blok açar
+                    allDay: false,     // Saatlik (Haftalık/Günlük) görünüme zorlar
                     color: rRenk, 
                     extendedProps: { dbId: r.id, durum: r.durum || 'Bekliyor' } 
                 }); 
@@ -176,22 +152,7 @@ window.randevulariGetir = async function() {
     } 
 }
 
-// ================= DANIŞAN SEÇ DOLDURUCUSU =================
-window.randevuSelectDoldur = async function() {
-    const sel = document.getElementById('r-hasta');
-    if(!sel) return;
-    
-    const { data } = await supabase.from('danisanlar').select('id, ad, soyad').order('ad', { ascending: true });
-    
-    if(data) {
-        sel.innerHTML = '<option value="">Danışan Seçiniz...</option>';
-        data.forEach(d => { 
-            sel.innerHTML += `<option value="${d.id}">${d.ad} ${d.soyad}</option>`; 
-        });
-    }
-}
-
-// ================= RANDEVU KAYDETME MOTORU =================
+// ================= RANDEVU KAYDETME =================
 let oldFrmRandevu = document.getElementById('form-yeni-randevu');
 if(oldFrmRandevu) {
     let frmRandevu = oldFrmRandevu.cloneNode(true);
@@ -208,18 +169,11 @@ if(oldFrmRandevu) {
 
         if (!secilenId.includes('-')) {
             const bulunanHasta = window.danisanListesi.find(x => `${x.ad} ${x.soyad}` === secilenId || x.ad === secilenId);
-            if(bulunanHasta) {
-                gercekHastaId = bulunanHasta.id;
-                hastaAdText = `${bulunanHasta.ad} ${bulunanHasta.soyad}`;
-            } else {
-                window.showToast('Kayıtlı danışan bulunamadı!', 'error');
-                return;
-            }
+            if(bulunanHasta) { gercekHastaId = bulunanHasta.id; hastaAdText = `${bulunanHasta.ad} ${bulunanHasta.soyad}`; } 
+            else { window.showToast('Kayıtlı danışan bulunamadı!', 'error'); return; }
         } else {
             const sel = document.getElementById('r-hasta');
-            if(sel.selectedIndex >= 0) {
-                hastaAdText = sel.options[sel.selectedIndex].text;
-            }
+            if(sel.selectedIndex >= 0) { hastaAdText = sel.options[sel.selectedIndex].text; }
         }
 
         const tarih = document.getElementById('r-tarih').value;
@@ -231,34 +185,55 @@ if(oldFrmRandevu) {
         catch(err) { timestamp = new Date().toISOString(); }
 
         const { error } = await supabase.from('randevular').insert([{
-            hastaid: gercekHastaId, 
-            hastaad: hastaAdText, 
-            tarih: tarih, 
-            saat: saat, 
-            tip: tip, 
-            durum: 'Bekliyor', 
-            timestamp: timestamp
+            hastaid: gercekHastaId, hastaad: hastaAdText, tarih: tarih, saat: saat, tip: tip, durum: 'Bekliyor', timestamp: timestamp
         }]);
 
         if(!error) { 
-            frmRandevu.reset(); 
-            window.closeModal('modal-randevu'); 
-            window.showToast('Randevu başarıyla eklendi!'); 
+            frmRandevu.reset(); window.closeModal('modal-randevu'); window.showToast('Randevu başarıyla eklendi!'); 
             if(window.randevulariGetir) window.randevulariGetir(); 
-        } else {
-            window.showToast('HATA: ' + error.message, 'error');
-            console.error("Randevu Hatası:", error);
-        }
+        } else { window.showToast('HATA: ' + error.message, 'error'); console.error("Randevu Hatası:", error); }
     };
 }
 
-// ================= DİĞER KAYDETMELER =================
+// ================= DİYET MOTORLARI =================
+window.diyetleriGetir = async function(hId) {
+    const list = document.getElementById("tablo-diyetler"); const { data } = await supabase.from('diyetler').select('*').eq('hastaid', hId).order('kayitzamani', { ascending: false });
+    if(list) { list.innerHTML = ""; if(data) { data.forEach(d => { 
+        let ozet = ""; if(d.sabah) ozet += `<span class="text-amber-600 font-bold">Sabah:</span> ${d.sabah.substring(0, 30)}...<br>`; if(d.ogle) ozet += `<span class="text-blue-600 font-bold">Öğle:</span> ${d.ogle.substring(0, 30)}...<br>`; if(d.aksam) ozet += `<span class="text-indigo-600 font-bold">Akşam:</span> ${d.aksam.substring(0, 30)}...`;
+        list.innerHTML += `<div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-between"><div><div class="flex justify-between items-start mb-3 border-b border-gray-100 pb-2"><h4 class="font-black text-slate-800 text-sm">${d.baslik}</h4><div class="flex gap-2"><button onclick="window.diyetPdfIndir('${d.id}')" class="text-teal-600 hover:text-teal-800 bg-teal-50 px-2 py-1 rounded text-xs font-bold shadow-sm border border-teal-100" title="PDF İndir"><i class="fas fa-file-pdf mr-1"></i>PDF</button><button onclick="window.diyetSil('${d.id}')" class="text-red-400 hover:text-red-600 bg-red-50 px-2 py-1 rounded text-xs border border-red-100" title="Sil"><i class="fas fa-trash"></i></button></div></div><div class="text-[11px] text-slate-600 leading-relaxed mb-3">${ozet || '<i>(PDF içindedir)</i>'}</div></div><div class="text-[9px] font-bold text-slate-400 mt-2 border-t border-gray-50 pt-2"><i class="far fa-clock mr-1"></i>${new Date(d.kayitzamani).toLocaleDateString('tr-TR')}</div></div>`; 
+    }); } }
+}
+
 const frmDiyet = document.getElementById('form-yeni-diyet');
 if(frmDiyet) { frmDiyet.onsubmit = async (e) => { e.preventDefault(); const v = (id) => document.getElementById(id).value; const { error } = await supabase.from('diyetler').insert([{ hastaid: window.aktifHastaId, baslik: v('diy-baslik'), sabah: v('diy-sabah'), ara1: v('diy-ara1'), ogle: v('diy-ogle'), ara2: v('diy-ara2'), aksam: v('diy-aksam'), ara3: v('diy-ara3'), icerik: v('diy-notlar') }]); if(!error) { frmDiyet.reset(); window.closeModal('modal-diyet'); window.showToast('Diyet eklendi!'); window.diyetleriGetir(window.aktifHastaId); } }; }
+
+// ================= ŞABLON MOTORLARI =================
+window.sablonlariGetir = async function() { 
+    try {
+        const lists = document.querySelectorAll('#sablon-listesi'); const sels = document.querySelectorAll('#diy-sablon-secici'); 
+        const { data, error } = await supabase.from('sablonlar').select('*'); 
+        if(error) throw error;
+        let sablonlar = data || []; sablonlar.reverse(); window.sablonListesi = sablonlar; 
+        lists.forEach(list => {
+            list.innerHTML = ""; if (sablonlar.length === 0) { list.innerHTML = `<div class="col-span-full text-center p-5 text-slate-400 font-bold">Kayıtlı şablon bulunamadı.</div>`;
+            } else { sablonlar.forEach(s => { list.innerHTML += `<div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200"><div class="flex justify-between items-center mb-2"><h4 class="font-bold text-slate-800">${s.baslik}</h4><button onclick="window.sablonSil('${s.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button></div><p class="text-[10px] text-slate-500 font-bold"><i class="fas fa-check text-teal-500 mr-1"></i>Profesyonel şablon</p></div>`; }); }
+        });
+        sels.forEach(sel => {
+            let opts = '<option value="">Şablon Kullanma, Kendim Yazacağım</option>'; sablonlar.forEach(s => { opts += `<option value="${s.id}">${s.baslik}</option>`; }); sel.innerHTML = opts; 
+            sel.onchange = (e) => {
+                const s = window.sablonListesi.find(x => x.id === e.target.value);
+                const setV = (boxId, val) => { const el = document.getElementById(boxId); if(el) el.value = val || ""; };
+                if(s) { setV('diy-baslik', s.baslik); setV('diy-sabah', s.sabah); setV('diy-ara1', s.ara1); setV('diy-ogle', s.ogle); setV('diy-ara2', s.ara2); setV('diy-aksam', s.aksam); setV('diy-ara3', s.ara3); setV('diy-notlar', s.icerik); } 
+                else { setV('diy-baslik',''); setV('diy-sabah',''); setV('diy-ara1',''); setV('diy-ogle',''); setV('diy-ara2',''); setV('diy-aksam',''); setV('diy-ara3',''); setV('diy-notlar',''); }
+            };
+        });
+    } catch(err) { console.error("Şablon Hatası:", err); }
+}
 
 const frmSablon = document.getElementById('form-yeni-sablon');
 if(frmSablon) { frmSablon.onsubmit = async (e) => { e.preventDefault(); const v = (id) => document.getElementById(id).value; const { error } = await supabase.from('sablonlar').insert([{ baslik: v('s-baslik'), sabah: v('s-sabah'), ara1: v('s-ara1'), ogle: v('s-ogle'), ara2: v('s-ara2'), aksam: v('s-aksam'), ara3: v('s-ara3'), icerik: v('s-notlar') }]); if(!error) { frmSablon.reset(); window.closeModal('modal-sablon'); window.showToast('Şablon kaydedildi!'); window.sablonlariGetir(); } }; }
 
+// ================= DİĞER KAYDETMELER =================
 const frmOlcum = document.getElementById('form-yeni-olcum');
 if(frmOlcum) { frmOlcum.onsubmit = async (e) => { e.preventDefault(); const kilo = parseFloat(document.getElementById('o-kilo').value) || 0; const boy = window.aktifHastaBoy ? (window.aktifHastaBoy / 100) : 0; const vki = boy > 0 ? (kilo / (boy * boy)).toFixed(2) : 0; const { error } = await supabase.from('olcumler').insert([{ hastaid: window.aktifHastaId, tarih: document.getElementById('o-tarih').value, kilo: kilo, vki: vki, yag: document.getElementById('o-yag').value || 0, kas: document.getElementById('o-kas').value || 0, bel: document.getElementById('o-bel').value || 0, kalca: document.getElementById('o-kalca').value || 0, gogus: document.getElementById('o-gogus').value || 0, boyun: document.getElementById('o-boyun').value || 0 }]); if(!error) { frmOlcum.reset(); window.closeModal('modal-olcum'); window.showToast('Ölçüm kaydedildi!', 'success'); window.olcumleriGetir(window.aktifHastaId); } }; }
 
@@ -274,36 +249,11 @@ if(frmCariOdeme) { frmCariOdeme.onsubmit = async (e) => { e.preventDefault(); co
 const frmGenelFinans = document.getElementById('form-finans');
 if(frmGenelFinans) { frmGenelFinans.onsubmit = async (e) => { e.preventDefault(); const sel = document.getElementById('f-hasta'); const hId = sel.options[sel.selectedIndex].dataset.dbid; const { error } = await supabase.from('cari_hareketler').insert([{ hastaid: hId, tutar: document.getElementById('f-tutar').value, tur: 'Ödeme', odeme_yontemi: document.getElementById('f-tip').value, islem_tarihi: document.getElementById('f-tarih').value }]); if(!error) { frmGenelFinans.reset(); window.closeModal('modal-finans'); window.showToast('Tahsilat kaydedildi!', 'success'); window.finanslariGetir(); } }; }
 
-// ================= LİSTE GETİRİCİLER =================
+// ================= ALT VERİ ÇEKİCİLER =================
 window.olcumleriGetir = async function(hId) { const tablo = document.getElementById("tablo-olcum-gecmis"); const { data } = await supabase.from('olcumler').select('*').eq('hastaid', hId).order('tarih', { ascending: false }); if(tablo) tablo.innerHTML = ""; if(data && data.length > 0) { const o = data[0]; document.getElementById("dash-kilo").innerText = o.kilo.toFixed(1); document.getElementById("dash-bmi").innerText = o.vki ? o.vki.toFixed(1) : "0.0"; document.getElementById("dash-kas").innerText = o.kas ? o.kas.toFixed(1) : "0.0"; document.getElementById("dash-yag").innerText = o.yag ? o.yag.toFixed(1) : "0.0"; data.forEach((ol) => { tablo.innerHTML += `<tr><td class="p-4">${new Date(ol.tarih).toLocaleDateString('tr-TR')}</td><td class="p-4 text-teal-600 font-black">${ol.kilo}kg / BMI:${ol.vki||'-'}</td><td class="p-4 text-slate-500">Y:%${ol.yag||0} / K:%${ol.kas||0}</td><td class="p-4">${ol.bel||'-'}cm / ${ol.kalca||'-'}cm</td><td class="p-4">${ol.gogus||'-'}cm / ${ol.boyun||'-'}cm</td><td class="p-4 text-right"><button onclick="window.olcumSil('${ol.id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`; }); } else { document.getElementById("dash-kilo").innerText = "0.0"; document.getElementById("dash-bmi").innerText = "0.0"; document.getElementById("dash-kas").innerText = "0.0"; document.getElementById("dash-yag").innerText = "0.0"; } }
 window.tahlilleriGetir = async function(hId) { const tablo = document.getElementById("tablo-tahliller"); const { data } = await supabase.from('tahliller').select('*').eq('hastaid', hId).order('tarih', { ascending: false }); if(tablo) tablo.innerHTML = ""; if(data) { data.forEach(t => { tablo.innerHTML += `<tr><td class="p-4">${new Date(t.tarih).toLocaleDateString('tr-TR')}</td><td class="p-4 text-red-600 font-bold">${t.b12||'-'} / ${t.d_vitamini||'-'}</td><td class="p-4 font-bold">${t.demir||'-'}</td><td class="p-4">${t.kolesterol||'-'}</td><td class="p-4">${t.aclik_sekeri||'-'}</td><td class="p-4">${t.tsh||'-'}</td><td class="p-4 text-right"><button onclick="window.tahlilSil('${t.id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`; }); } }
-window.diyetleriGetir = async function(hId) { const list = document.getElementById("tablo-diyetler"); const { data } = await supabase.from('diyetler').select('*').eq('hastaid', hId).order('kayitzamani', { ascending: false }); if(list) { list.innerHTML = ""; if(data) { data.forEach(d => { let ozet = ""; if(d.sabah) ozet += `<span class="text-amber-600 font-bold">Sabah:</span> ${d.sabah.substring(0, 30)}...<br>`; if(d.ogle) ozet += `<span class="text-blue-600 font-bold">Öğle:</span> ${d.ogle.substring(0, 30)}...<br>`; if(d.aksam) ozet += `<span class="text-indigo-600 font-bold">Akşam:</span> ${d.aksam.substring(0, 30)}...`; list.innerHTML += `<div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-between"><div><div class="flex justify-between items-start mb-3 border-b border-gray-100 pb-2"><h4 class="font-black text-slate-800 text-sm">${d.baslik}</h4><div class="flex gap-2"><button onclick="window.diyetPdfIndir('${d.id}')" class="text-teal-600 hover:text-teal-800 bg-teal-50 px-2 py-1 rounded text-xs font-bold shadow-sm border border-teal-100" title="PDF İndir"><i class="fas fa-file-pdf mr-1"></i>PDF</button><button onclick="window.diyetSil('${d.id}')" class="text-red-400 hover:text-red-600 bg-red-50 px-2 py-1 rounded text-xs border border-red-100" title="Sil"><i class="fas fa-trash"></i></button></div></div><div class="text-[11px] text-slate-600 leading-relaxed mb-3">${ozet || '<i>(PDF içindedir)</i>'}</div></div><div class="text-[9px] font-bold text-slate-400 mt-2 border-t border-gray-50 pt-2"><i class="far fa-clock mr-1"></i>${new Date(d.kayitzamani).toLocaleDateString('tr-TR')}</div></div>`; }); } } }
 window.cariHareketleriGetir = async function(hastaId) { const tablo = document.getElementById("tablo-cari-hareketler"); const { data } = await supabase.from('cari_hareketler').select('*').eq('hastaid', hastaId).order('islem_tarihi', { ascending: false }); if(tablo) tablo.innerHTML = ""; let hizmet = 0; let odeme = 0; if(data) { data.forEach(h => { if(h.tur === 'Hizmet Bedeli') hizmet += h.tutar; else if(h.tur === 'Ödeme') odeme += h.tutar; const tRnk = h.tur === 'Hizmet Bedeli' ? "text-orange-600" : "text-emerald-600"; tablo.innerHTML += `<tr class="border-b border-gray-50"><td class="p-4">${new Date(h.islem_tarihi).toLocaleDateString('tr-TR')}</td><td class="p-4 font-black ${tRnk}">${h.tutar} ₺</td><td class="p-4"><span class="text-xs font-bold uppercase ${tRnk}">${h.tur}</span></td><td class="p-4 text-slate-500">${h.odeme_yontemi||"-"}</td><td class="p-4 text-right"><button onclick="window.cariSil('${h.id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`; }); } document.getElementById("cari-bakiye").innerText = (hizmet - odeme) + " ₺"; document.getElementById("cari-toplam-hizmet").innerText = hizmet + " ₺"; document.getElementById("cari-toplam-odeme").innerText = odeme + " ₺"; }
 window.finanslariGetir = async function() { const tablo = document.getElementById("kasa-tablosu"); const stat = document.getElementById("stat-kasa"); const { data } = await supabase.from('cari_hareketler').select('*, danisanlar(ad, soyad)').eq('tur', 'Ödeme').order('islem_tarihi', { ascending: false }); tablo.innerHTML = ""; let top = 0; if(data) { data.forEach(i => { top += i.tutar; const hAd = i.danisanlar ? (i.danisanlar.ad + " " + i.danisanlar.soyad) : "Bilinmiyor"; tablo.innerHTML += `<tr class="border-b border-gray-100"><td class="p-4">${new Date(i.islem_tarihi).toLocaleDateString('tr-TR')}</td><td class="p-4 font-bold">${hAd}</td><td class="p-4 font-black text-teal-700">${i.tutar} ₺</td><td class="p-4 text-right"><button onclick="window.cariSil('${i.id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`; }); } stat.innerText = top + " ₺"; }
-window.sablonlariGetir = async function() { 
-    try {
-        const lists = document.querySelectorAll('#sablon-listesi'); const sels = document.querySelectorAll('#diy-sablon-secici'); 
-        const { data, error } = await supabase.from('sablonlar').select('*'); 
-        if(error) throw error;
-        let sablonlar = data || []; sablonlar.reverse(); window.sablonListesi = sablonlar; 
-        lists.forEach(list => {
-            list.innerHTML = ""; 
-            if (sablonlar.length === 0) { list.innerHTML = `<div class="col-span-full text-center p-5 text-slate-400 font-bold">Kayıtlı şablon bulunamadı.</div>`;
-            } else { sablonlar.forEach(s => { list.innerHTML += `<div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200"><div class="flex justify-between items-center mb-2"><h4 class="font-bold text-slate-800">${s.baslik}</h4><button onclick="window.sablonSil('${s.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button></div><p class="text-[10px] text-slate-500 font-bold"><i class="fas fa-check text-teal-500 mr-1"></i>Profesyonel şablon</p></div>`; }); }
-        });
-        sels.forEach(sel => {
-            let opts = '<option value="">Şablon Kullanma, Kendim Yazacağım</option>'; 
-            sablonlar.forEach(s => { opts += `<option value="${s.id}">${s.baslik}</option>`; }); 
-            sel.innerHTML = opts; 
-            sel.onchange = (e) => {
-                const s = window.sablonListesi.find(x => x.id === e.target.value);
-                const setV = (boxId, val) => { const el = document.getElementById(boxId); if(el) el.value = val || ""; };
-                if(s) { setV('diy-baslik', s.baslik); setV('diy-sabah', s.sabah); setV('diy-ara1', s.ara1); setV('diy-ogle', s.ogle); setV('diy-ara2', s.ara2); setV('diy-aksam', s.aksam); setV('diy-ara3', s.ara3); setV('diy-notlar', s.icerik); } 
-                else { setV('diy-baslik',''); setV('diy-sabah',''); setV('diy-ara1',''); setV('diy-ogle',''); setV('diy-ara2',''); setV('diy-aksam',''); setV('diy-ara3',''); setV('diy-notlar',''); }
-            };
-        });
-    } catch(err) { console.error("Şablon Hatası:", err); }
-}
 
 // SİLME İŞLEMLERİ
 window.olcumSil = async function(id) { await supabase.from('olcumler').delete().eq('id', id); window.showToast('Ölçüm silindi', 'success'); window.olcumleriGetir(window.aktifHastaId); }
@@ -313,7 +263,7 @@ window.cariSil = async function(id) { await supabase.from('cari_hareketler').del
 window.randevuSil = async function(id) { await supabase.from('randevular').delete().eq('id', id); window.showToast('Randevu silindi', 'success'); window.randevulariGetir(); }
 window.sablonSil = async function(id) { await supabase.from('sablonlar').delete().eq('id', id); window.showToast('Şablon silindi', 'success'); window.sablonlariGetir(); }
 
-// RANDEVU MENÜSÜ İŞLEMLERİ
+// ================= RANDEVU İŞLEMLERİ =================
 window.randevuIslem = function(id, durum) { let div = document.getElementById('custom-randevu-modal'); if(div) div.remove(); div = document.createElement('div'); div.id = "custom-randevu-modal"; div.className = "fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"; div.innerHTML = ` <div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl relative transition-all"> <button onclick="document.getElementById('custom-randevu-modal').remove()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-xl"><i class="fas fa-times"></i></button> <h3 class="text-lg font-black mb-2 text-slate-800">Randevu İşlemi</h3> <p class="text-xs font-bold text-slate-500 mb-6 uppercase tracking-wider">Şu anki durum: <span class="text-teal-600">${durum}</span></p> <div class="space-y-3"> <button onclick="window.randevuDurumGuncelle('${id}', 'Geldi')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold py-3 rounded-lg hover:bg-emerald-100 transition"><i class="fas fa-check-circle"></i> Danışan Geldi</button> <button onclick="window.randevuDurumGuncelle('${id}', 'İptal Etti')" class="w-full flex items-center justify-center gap-2 bg-red-50 text-red-600 border border-red-200 font-bold py-3 rounded-lg hover:bg-red-100 transition"><i class="fas fa-times-circle"></i> İptal Etti / Gelmedi</button> <div class="border-t border-gray-100 my-2 pt-2"></div> <button onclick="window.randevuKalicSil('${id}')" class="w-full flex items-center justify-center gap-2 bg-slate-800 text-white font-bold py-3 rounded-lg shadow-md hover:bg-slate-900 transition"><i class="fas fa-trash"></i> Takvimden Tamamen Sil</button> </div> </div> `; document.body.appendChild(div); }
 window.randevuDurumGuncelle = async function(id, yeniDurum) { document.getElementById('custom-randevu-modal').remove(); const { error } = await supabase.from('randevular').update({ durum: yeniDurum }).eq('id', id); if(!error) { window.showToast(`Randevu '${yeniDurum}' olarak işaretlendi!`, 'success'); window.randevulariGetir(); } }
 window.randevuKalicSil = async function(id) { document.getElementById('custom-randevu-modal').remove(); if(confirm("Kalıcı olarak silmek istediğinize emin misiniz?")) { await supabase.from('randevular').delete().eq('id', id); window.showToast('Randevu silindi', 'success'); window.randevulariGetir(); } }
@@ -330,12 +280,13 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("DiyetTakibim Modüler Sistem Devrede!");
     if (typeof window.uretProtokol === "function") window.uretProtokol();
     
+    // ÇÖZÜM: Takvim sınırları sabah 07:00'dan gece 23:00'a kadar genişletildi ki randevular gizlenmesin!
     const calendarEl = document.getElementById('calendar');
     if(calendarEl) {
         window.globalCalendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'timeGridWeek', locale: 'tr', height: 600,
             headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
-            slotMinTime: "08:00:00", slotMaxTime: "20:00:00", allDaySlot: false, 
+            slotMinTime: "07:00:00", slotMaxTime: "23:00:00", allDaySlot: false, 
             eventClick: function(info) { window.randevuIslem(info.event.extendedProps.dbId, info.event.extendedProps.durum); }
         });
         window.globalCalendar.render(); 
@@ -343,10 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     danisanlariGetir(); 
     kayitFormunuBaslat();
-    
-    // BUNU GERİ GETİRDİM, RANDEVU SAYISI VE TAKVİM BUNUNLA EKLENİR!
-    if(window.randevulariGetir) window.randevulariGetir(); 
-    
+    window.randevulariGetir(); 
     window.finanslariGetir();
     window.randevuSelectDoldur(); 
     
