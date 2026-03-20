@@ -29,7 +29,7 @@ window.uretProtokol = function() {
     if(el) el.value = "PRT-" + rnd;
 };
 
-// ================= YENİ WHATSAPP VE PDF MOTORLARI =================
+// ================= YENİ WHATSAPP VE MUHTEŞEM PDF MOTORLARI =================
 
 window.whatsappMesajAt = function() {
     if(!window.aktifHastaId) return;
@@ -41,8 +41,7 @@ window.whatsappMesajAt = function() {
         window.showToast("Hastanın kayıtlı bir telefonu yok!", "error"); return;
     }
 
-    // Telefon numarasını Türkiye/WhatsApp formatına çevir
-    tel = tel.replace(/\D/g, ''); // Sadece rakamları bırak
+    tel = tel.replace(/\D/g, ''); 
     if(tel.startsWith("0")) tel = "9" + tel;
     if(!tel.startsWith("90")) tel = "90" + tel;
 
@@ -52,26 +51,122 @@ window.whatsappMesajAt = function() {
     window.open(`https://wa.me/${tel}?text=${mesaj}`, '_blank');
 }
 
-window.pdfIndir = function() {
+// YENİ, PROFESYONEL PDF MOTORU (Arayüzü Değil, Özel Tasarımı İndirir)
+window.pdfIndir = async function() {
     if(!window.aktifHastaId) return;
     const d = window.danisanListesi.find(x => x.id === window.aktifHastaId);
     if(!d) return;
 
-    window.showToast('PDF Hazırlanıyor, lütfen bekleyin...', 'success');
+    window.showToast('Profesyonel Rapor Hazırlanıyor...', 'success');
 
-    // Sadece hastanın detaylarının yazdığı o güzel kutuyu seçiyoruz
-    const element = document.getElementById('hasta-dosyasi-pdf');
+    // Hastanın en güncel kilosunu veritabanından çekelim
+    let guncelKilo = "Bilinmiyor";
+    let guncelVki = "-";
+    const { data: olcumler } = await supabase.from('olcumler').select('*').eq('hastaid', d.id).order('tarih', { ascending: false });
+    if(olcumler && olcumler.length > 0) {
+        guncelKilo = olcumler[0].kilo + " kg";
+        guncelVki = olcumler[0].vki || "-";
+    }
+
+    const yas = d.dogum_tarihi ? (new Date().getFullYear() - new Date(d.dogum_tarihi).getFullYear()) : "-";
+    const kayit = d.kayittarihi ? new Date(d.kayittarihi).toLocaleDateString('tr-TR') : "-";
     
+    const islemTarihi = new Date().toLocaleDateString('tr-TR') + " " + new Date().toLocaleTimeString('tr-TR');
+
+    // MUAZZAM A4 KLİNİK RAPORU TASARIMI (Gizli olarak oluşturulur)
+    const htmlRapor = `
+        <div style="padding: 40px 50px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background: white; width: 800px;">
+            
+            <div style="border-bottom: 3px solid #0f766e; padding-bottom: 15px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <h1 style="color: #0f766e; margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -0.5px;">DİYETTAKİBİM</h1>
+                    <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;">Kapsamlı Hasta Analiz Raporu</p>
+                </div>
+                <div style="text-align: right; color: #64748b; font-size: 12px;">
+                    <strong>Tarih:</strong> ${islemTarihi}<br>
+                    <strong>Protokol:</strong> ${d.protokol_no || '-'}
+                </div>
+            </div>
+            
+            <h3 style="background-color: #f8fafc; color: #334155; padding: 10px 15px; font-size: 14px; margin-bottom: 15px; border-left: 4px solid #0f766e; font-weight: bold;">Kişisel Bilgiler</h3>
+            <table style="width: 100%; margin-bottom: 30px; font-size: 13px; border-collapse: collapse;">
+                <tr>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; width: 50%;"><strong>Ad Soyad:</strong> ${d.ad} ${d.soyad}</td>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; width: 50%;"><strong>TC / Uyruk:</strong> ${d.kimlik_no || '-'} / ${d.uyruk || '-'}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9;"><strong>Telefon:</strong> ${d.telefon || '-'}</td>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9;"><strong>Cinsiyet / Yaş:</strong> ${d.cinsiyet || '-'} / ${yas}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9;"><strong>Kan Grubu:</strong> ${d.kan_grubu || '-'}</td>
+                    <td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9;"><strong>Meslek:</strong> ${d.meslek || '-'}</td>
+                </tr>
+            </table>
+
+            <h3 style="background-color: #fef2f2; color: #b91c1c; padding: 10px 15px; font-size: 14px; margin-bottom: 15px; border-left: 4px solid #b91c1c; font-weight: bold;">Tıbbi Geçmiş ve Risk Analizi</h3>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 13px;">
+                <tr><td style="border: 1px solid #e2e8f0; padding: 10px; font-weight: bold; width: 35%; background: #f8fafc;">Kronik Hastalıklar</td><td style="border: 1px solid #e2e8f0; padding: 10px;">${d.kronik_hastaliklar || '-'}</td></tr>
+                <tr><td style="border: 1px solid #e2e8f0; padding: 10px; font-weight: bold; background: #f8fafc;">Alerjiler</td><td style="border: 1px solid #e2e8f0; padding: 10px;">${d.alerjiler || '-'}</td></tr>
+                <tr><td style="border: 1px solid #e2e8f0; padding: 10px; font-weight: bold; background: #f8fafc;">Sürekli İlaçlar</td><td style="border: 1px solid #e2e8f0; padding: 10px;">${d.surekli_ilaclar || '-'}</td></tr>
+                <tr><td style="border: 1px solid #e2e8f0; padding: 10px; font-weight: bold; background: #f8fafc;">Geçirilen Operasyonlar</td><td style="border: 1px solid #e2e8f0; padding: 10px;">${d.gecirilen_operasyonlar || '-'}</td></tr>
+            </table>
+
+            <h3 style="background-color: #f0fdfa; color: #0f766e; padding: 10px 15px; font-size: 14px; margin-bottom: 15px; border-left: 4px solid #14b8a6; font-weight: bold;">Fiziksel Durum ve Yaşam Tarzı</h3>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 13px;">
+                <tr>
+                    <td style="border: 1px solid #e2e8f0; padding: 10px; font-weight: bold; width: 25%; background: #f8fafc;">Boy</td><td style="border: 1px solid #e2e8f0; padding: 10px; width: 25%;">${d.boy || '-'} cm</td>
+                    <td style="border: 1px solid #e2e8f0; padding: 10px; font-weight: bold; width: 25%; background: #f8fafc;">Güncel Kilo</td><td style="border: 1px solid #e2e8f0; padding: 10px; width: 25%; color: #0f766e; font-weight: bold;">${guncelKilo}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #e2e8f0; padding: 10px; font-weight: bold; background: #f8fafc;">Hedef Kilo</td><td style="border: 1px solid #e2e8f0; padding: 10px;">${d.hedef_kilo || '-'} kg</td>
+                    <td style="border: 1px solid #e2e8f0; padding: 10px; font-weight: bold; background: #f8fafc;">Güncel BMI</td><td style="border: 1px solid #e2e8f0; padding: 10px;">${guncelVki}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #e2e8f0; padding: 10px; font-weight: bold; background: #f8fafc;">Su Tüketimi</td><td style="border: 1px solid #e2e8f0; padding: 10px;">${d.su_tuketimi || '-'} Litre</td>
+                    <td style="border: 1px solid #e2e8f0; padding: 10px; font-weight: bold; background: #f8fafc;">Fiziksel Aktivite</td><td style="border: 1px solid #e2e8f0; padding: 10px;">${d.fiziksel_aktivite || '-'}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #e2e8f0; padding: 10px; font-weight: bold; background: #f8fafc;">Uyku Düzeni</td><td style="border: 1px solid #e2e8f0; padding: 10px;">${d.uyku_duzeni || '-'}</td>
+                    <td style="border: 1px solid #e2e8f0; padding: 10px; font-weight: bold; background: #f8fafc;">Bağırsak Düzeni</td><td style="border: 1px solid #e2e8f0; padding: 10px;">${d.bagirsak_duzeni || '-'}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #e2e8f0; padding: 10px; font-weight: bold; background: #f8fafc;">Sigara/Alkol</td><td style="border: 1px solid #e2e8f0; padding: 10px;" colspan="3">${d.sigara_alkol || '-'}</td>
+                </tr>
+            </table>
+
+            <h3 style="background-color: #fffbeb; color: #b45309; padding: 10px 15px; font-size: 14px; margin-bottom: 15px; border-left: 4px solid #f59e0b; font-weight: bold;">Uzman Notları</h3>
+            <div style="border: 1px solid #e2e8f0; background: #f8fafc; padding: 15px; font-size: 13px; line-height: 1.6; min-height: 80px; border-radius: 4px;">
+                ${d.notlar || 'Herhangi bir özel not eklenmemiştir.'}
+            </div>
+            
+            <div style="margin-top: 50px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+                Bu rapor profesyonel takip ve bilgilendirme amaçlıdır.<br>
+                <strong>DiyetTakibim Yönetim Sistemi</strong> tarafından oluşturulmuştur.
+            </div>
+        </div>
+    `;
+
+    // Gizli bir element oluşturup içine tasarımı gömüyoruz
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlRapor;
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.left = '-9999px'; // Ekranda görünmesin diye uzağa atıyoruz
+    document.body.appendChild(tempDiv);
+
+    // PDF İndirme Ayarları
     const opt = {
-        margin:       10,
-        filename:     `${d.ad}_${d.soyad}_Hasta_Dosyasi.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
+        margin:       0,
+        filename:     `${d.ad}_${d.soyad}_Klinik_Raporu.pdf`,
+        image:        { type: 'jpeg', quality: 1 },
         html2canvas:  { scale: 2, useCORS: true },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    html2pdf().set(opt).from(element).save().then(() => {
-        window.showToast('PDF başarıyla indirildi!', 'success');
+    // PDF'i oluştur ve indir, sonra o gizli divi sil
+    html2pdf().set(opt).from(tempDiv).save().then(() => {
+        window.showToast('Profesyonel Hasta Raporu indirildi!', 'success');
+        document.body.removeChild(tempDiv);
     });
 }
 
@@ -126,6 +221,7 @@ window.olcumSil = async function(id) { await supabase.from('olcumler').delete().
 window.tahlilSil = async function(id) { await supabase.from('tahliller').delete().eq('id', id); window.showToast('Tahlil silindi', 'success'); window.tahlilleriGetir(window.aktifHastaId); }
 window.diyetSil = async function(id) { await supabase.from('diyetler').delete().eq('id', id); window.showToast('Diyet silindi', 'success'); window.diyetleriGetir(window.aktifHastaId); }
 window.cariSil = async function(id) { await supabase.from('cari_hareketler').delete().eq('id', id); window.showToast('Kayıt silindi', 'success'); window.cariHareketleriGetir(window.aktifHastaId); window.finanslariGetir(); }
+window.randevuSil = async function(id) { await supabase.from('randevular').delete().eq('id', id); window.showToast('Randevu silindi', 'success'); window.randevulariGetir(); }
 window.sablonSil = async function(id) { await supabase.from('sablonlar').delete().eq('id', id); window.showToast('Şablon silindi', 'success'); window.sablonlariGetir(); }
 
 // ================= SİSTEMİ BAŞLAT =================
@@ -137,7 +233,6 @@ document.addEventListener('DOMContentLoaded', () => {
     danisanlariGetir();
     kayitFormunuBaslat();
     
-    // YENİ RANDEVU MOTORLARI ÇALIŞIYOR
     randevulariGetir();
     randevuFormunuBaslat();
     
