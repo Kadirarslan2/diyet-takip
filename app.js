@@ -1,6 +1,6 @@
 import { supabase } from './db.js';
-import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=takvimZirh';
-import { randevuFormunuBaslat } from './modules/randevu.js?v=takvimZirh';
+import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=takvimFinal';
+import { randevuFormunuBaslat } from './modules/randevu.js?v=takvimFinal';
 
 // ================= ÇELİK TOAST BİLDİRİMLERİ =================
 window.showToast = function(mesaj, tip = 'success') {
@@ -35,7 +35,7 @@ window.whatsappMesajAt = function() {
     window.open(`https://wa.me/${tel}?text=${mesaj}`, '_blank');
 }
 
-// ================= YÜKLEME EKRANLI, %100 GARANTİLİ PDF MOTORU (DOKUNULMADI) =================
+// ================= YÜKLEME EKRANLI, %100 GARANTİLİ PDF MOTORU (DOKUNULMADI!) =================
 const pdfOlusturVeIndir = (htmlIcerik, dosyaAdi) => {
     const wrapper = document.createElement('div');
     wrapper.style.position = 'fixed'; wrapper.style.top = '0'; wrapper.style.left = '0'; wrapper.style.width = '100vw'; wrapper.style.height = '100vh'; wrapper.style.backgroundColor = '#f8fafc'; wrapper.style.zIndex = '999999'; wrapper.style.display = 'flex'; wrapper.style.flexDirection = 'column'; wrapper.style.alignItems = 'center'; wrapper.style.overflow = 'auto'; 
@@ -119,10 +119,12 @@ window.randevuSelectDoldur = async function() {
     }
 }
 
-// ================= KESİN ÇÖZÜMÜ OLAN ZIRHLI TAKVİM MOTORU (GÜNLÜK/HAFTALIK ÇÖZÜLDÜ) =================
+// ================= YENİ ZIRHLI TAKVİM MOTORU (ÇÖKMEYE SON) =================
 window.randevulariGetir = async function() { 
     try {
-        const { data } = await supabase.from('randevular').select('*').order('tarih', { ascending: true }); 
+        // Hata vermesin diye "order" kaldırıldı. Sıralamayı JS kendi içinde yapıyor.
+        const { data, error } = await supabase.from('randevular').select('*'); 
+        if (error) throw error;
         
         const stat = document.getElementById("stat-randevular");
         if(stat) stat.innerText = data ? data.length : 0; 
@@ -137,42 +139,41 @@ window.randevulariGetir = async function() {
                         if(r.durum === "Geldi") rRenk = "#10b981"; 
                         if(r.durum === "İptal Etti") rRenk = "#ef4444"; 
                         
-                        let evStart = "";
-                        let evEnd = "";
-
-                        // KESİN ÇÖZÜM: Saat ve Tarih varsa, BİTİŞ saati zorla ekleniyor!
-                        if (r.tarih && r.saat) {
-                            evStart = `${r.tarih}T${r.saat}:00`;
-                            
-                            // Bitiş saatini tam 1 saat sonrasına ayarla ki haftalık/günlükte kutu olarak görünsün
-                            let saatParca = r.saat.split(':');
-                            let bitisSaati = String(parseInt(saatParca[0]) + 1).padStart(2, '0');
-                            evEnd = `${r.tarih}T${bitisSaati}:${saatParca[1]}:00`;
-                        } else if (r.timestamp) {
-                            // Sadece timestamp varsa onu kullan
-                            const dt = new Date(r.timestamp);
-                            evStart = dt.toISOString();
-                            evEnd = new Date(dt.getTime() + 60*60*1000).toISOString(); // 1 saat ekle
+                        // ZIRHLI ZAMAN HESAPLAMA: Saf Date (Tarih) objesi kullanılıyor. 
+                        // String toplama işlemi tamamen yok edildi!
+                        let baslangic;
+                        if(r.tarih && r.saat) {
+                            baslangic = new Date(`${r.tarih}T${r.saat}:00`);
+                        } else if(r.timestamp) {
+                            baslangic = new Date(r.timestamp);
                         } else {
-                            return; // Eğer veri bozuksa atla, sistemi kilitleme!
+                            baslangic = new Date();
+                        }
+
+                        // Eğer DB'den bozuk bir tarih gelirse sistemi kilitlemesini engeller
+                        if(isNaN(baslangic.getTime())) {
+                            baslangic = new Date();
                         }
                         
+                        // Bitiş süresi her zaman başlangıçtan tam matematiksel 1 saat sonrasıdır.
+                        let bitis = new Date(baslangic.getTime() + (60 * 60 * 1000));
+                        
                         window.globalCalendar.addEvent({ 
-                            title: `${r.hastaad} (${r.durum || 'Bekliyor'})`, 
-                            start: evStart,
-                            end: evEnd,
+                            title: `${r.saat || ''} ${r.hastaad} (${r.durum || 'Bekliyor'})`, 
+                            start: baslangic,
+                            end: bitis,
                             allDay: false, 
                             color: rRenk, 
                             extendedProps: { dbId: r.id, durum: r.durum || 'Bekliyor' } 
                         }); 
-                    } catch(eventErr) {
-                        console.warn("Bozuk bir randevu kaydı atlandı: ", r);
+                    } catch (e) {
+                        console.warn("Bozuk randevu satırı atlandı.");
                     }
                 }); 
             }
         } 
     } catch(err) {
-        console.error("Randevuları çekerken hata oluştu:", err);
+        console.error("Randevu Çekme Hatası:", err);
     }
 }
 
@@ -298,7 +299,6 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("DiyetTakibim Modüler Sistem Devrede!");
     if (typeof window.uretProtokol === "function") window.uretProtokol();
     
-    // KESİN ÇÖZÜM: Takvim saat sınırları genişletildi, randevular günlükte/haftalıkta rahatça görünsün
     const calendarEl = document.getElementById('calendar');
     if(calendarEl) {
         window.globalCalendar = new FullCalendar.Calendar(calendarEl, {
