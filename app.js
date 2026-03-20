@@ -1,7 +1,7 @@
 import { supabase } from './db.js';
-// CACHE KIRICI GÜNCELLENDİ
-import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=pdfkesin';
-import { randevulariGetir, randevuFormunuBaslat } from './modules/randevu.js?v=pdfkesin';
+// CACHE KIRICI - Tarayıcıyı yenilemeye zorlamak için versiyonu güncelledik
+import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=sablonFix1';
+import { randevulariGetir, randevuFormunuBaslat } from './modules/randevu.js?v=sablonFix1';
 
 // ================= ÇELİK TOAST (BİLDİRİM) MOTORU =================
 window.showToast = function(mesaj, tip = 'success') {
@@ -30,7 +30,7 @@ window.uretProtokol = function() {
     if(el) el.value = "PRT-" + rnd;
 };
 
-// ================= WHATSAPP MOTORU =================
+// ================= WHATSAPP =================
 window.whatsappMesajAt = function() {
     if(!window.aktifHastaId) return;
     const d = window.danisanListesi.find(x => x.id === window.aktifHastaId);
@@ -52,7 +52,7 @@ window.whatsappMesajAt = function() {
     window.open(`https://wa.me/${tel}?text=${mesaj}`, '_blank');
 }
 
-// ================= 1. KLİNİK RAPORU PDF MOTORU (DİREKT ENJEKSİYON) =================
+// ================= KLİNİK RAPORU PDF MOTORU =================
 window.pdfIndir = async function() {
     if(!window.aktifHastaId) return;
     const d = window.danisanListesi.find(x => x.id === window.aktifHastaId);
@@ -72,7 +72,6 @@ window.pdfIndir = async function() {
     const islemTarihi = new Date().toLocaleDateString('tr-TR') + " " + new Date().toLocaleTimeString('tr-TR');
     const uzman = d.uzman_ad || "Dyt. Beyza";
 
-    // DİKKAT: Artık HTML ekrana basılmıyor, direkt değişkende tutuluyor
     const htmlRapor = `
         <div style="padding: 40px 50px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background: white; width: 800px; box-sizing: border-box;">
             <div style="border-bottom: 3px solid #0f766e; padding-bottom: 15px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
@@ -117,21 +116,27 @@ window.pdfIndir = async function() {
         </div>
     `;
 
-    const opt = {
-        margin: 10, filename: `${d.ad}_${d.soyad}_Klinik_Raporu.pdf`, image: { type: 'jpeg', quality: 1 },
-        html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlRapor;
+    tempDiv.style.position = 'fixed';
+    tempDiv.style.top = '0';
+    tempDiv.style.left = '100vw'; 
+    tempDiv.style.width = '800px';
+    document.body.appendChild(tempDiv);
 
-    // DEĞİŞİKLİK: DOM elementine ihtiyaç duymadan direkt String'i veriyoruz
-    html2pdf().set(opt).from(htmlRapor).save().then(() => {
+    const opt = { margin: 10, filename: `${d.ad}_${d.soyad}_Klinik_Raporu.pdf`, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+
+    html2pdf().set(opt).from(tempDiv).save().then(() => {
         window.showToast('Profesyonel Klinik Raporu başarıyla indirildi!', 'success');
+        document.body.removeChild(tempDiv); 
     }).catch(err => {
         console.error("PDF Hatası:", err);
         window.showToast('PDF oluşturulurken hata meydana geldi.', 'error');
+        document.body.removeChild(tempDiv);
     });
 }
 
-// ================= 2. EFSANEVİ DİYET LİSTESİ PDF MOTORU (DİREKT ENJEKSİYON) =================
+// ================= DİYET LİSTESİ PDF MOTORU =================
 window.diyetPdfIndir = async function(diyetId) {
     window.showToast('Profesyonel Diyet Listesi Hazırlanıyor...', 'success');
     const { data: dData } = await supabase.from('diyetler').select('*').eq('id', diyetId).single();
@@ -163,7 +168,6 @@ window.diyetPdfIndir = async function(diyetId) {
 
     const htmlDiyet = `
         <div style="padding: 40px 50px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white; width: 800px; box-sizing: border-box;">
-
             <div style="text-align: center; border-bottom: 3px solid #0f766e; padding-bottom: 20px; margin-bottom: 20px;">
                 <h1 style="color: #0f766e; margin: 0 0 5px 0; font-size: 32px; font-weight: 900; letter-spacing: 1px;">DİYETTAKİBİM KLİNİĞİ</h1>
                 <p style="margin: 0; color: #64748b; font-size: 14px; font-weight: bold; letter-spacing: 2px;">KİŞİYE ÖZEL BESLENME PROGRAMI</p>
@@ -206,21 +210,27 @@ window.diyetPdfIndir = async function(diyetId) {
         </div>
     `;
 
-    const opt = {
-        margin: 10, filename: `Diyet_Programi_${d.ad}.pdf`, image: { type: 'jpeg', quality: 1 },
-        html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlDiyet;
+    tempDiv.style.position = 'fixed';
+    tempDiv.style.top = '0';
+    tempDiv.style.left = '100vw'; 
+    tempDiv.style.width = '800px';
+    document.body.appendChild(tempDiv);
+
+    const opt = { margin: 10, filename: `Diyet_Programi_${d.ad}.pdf`, image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
     
-    // DEĞİŞİKLİK: Ekrana HTML basmak iptal, direkt oluşturuluyor!
-    html2pdf().set(opt).from(htmlDiyet).save().then(() => {
+    html2pdf().set(opt).from(tempDiv).save().then(() => {
         window.showToast('Detaylı Diyet PDF başarıyla indirildi!', 'success');
+        document.body.removeChild(tempDiv);
     }).catch(err => {
         console.error("PDF Hatası:", err);
         window.showToast('PDF oluşturulurken hata meydana geldi.', 'error');
+        document.body.removeChild(tempDiv);
     });
 }
 
-// ================= DİYET ÇEKME MOTORU =================
+// ================= DİYET VE ŞABLON MOTORLARI =================
 window.diyetleriGetir = async function(hId) {
     const list = document.getElementById("tablo-diyetler");
     const { data } = await supabase.from('diyetler').select('*').eq('hastaid', hId).order('kayitzamani', { ascending: false });
@@ -250,7 +260,6 @@ window.diyetleriGetir = async function(hId) {
     }
 }
 
-// ================= DİYET VE ŞABLON KAYDETME MOTORLARI =================
 const frmDiyet = document.getElementById('form-yeni-diyet');
 if(frmDiyet) {
     frmDiyet.onsubmit = async (e) => {
@@ -276,26 +285,38 @@ if(frmSablon) {
             ogle: v('s-ogle'), ara2: v('s-ara2'), aksam: v('s-aksam'), 
             ara3: v('s-ara3'), icerik: v('s-notlar') 
         }]);
-        if(!error) { frmSablon.reset(); window.closeModal('modal-sablon'); window.showToast('Şablon kaydedildi!'); window.sablonlariGetir(); }
+        if(!error) { 
+            frmSablon.reset(); window.closeModal('modal-sablon'); 
+            window.showToast('Şablon kaydedildi!'); window.sablonlariGetir(); 
+        } else {
+            window.showToast('Şablon eklenemedi!', 'error'); console.error(error);
+        }
     };
 }
 
+// ŞABLON F5 (SİLİNME) HATASI KESİN ÇÖZÜMÜ
 window.sablonlariGetir = async function() { 
     const list = document.getElementById('sablon-listesi'); 
     const sel = document.getElementById('diy-sablon-secici'); 
-    const { data } = await supabase.from('sablonlar').select('*').order('kayitzamani', { ascending: false }); 
-    window.sablonListesi = data || []; 
+    
+    // DİKKAT: Veritabanı çökmesin diye .order() komutunu kaldırdık!
+    const { data, error } = await supabase.from('sablonlar').select('*'); 
+    if(error) console.error("Şablon Çekme Hatası:", error);
+    
+    let sablonlar = data || []; 
+    sablonlar.reverse(); // Javascript ile ters çeviriyoruz (En yeni en üste)
+    window.sablonListesi = sablonlar; 
     
     if(list) { 
         list.innerHTML = ""; 
-        data.forEach(s => { 
+        sablonlar.forEach(s => { 
             list.innerHTML += `<div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200"><div class="flex justify-between items-center mb-2"><h4 class="font-bold text-slate-800">${s.baslik}</h4><button onclick="window.sablonSil('${s.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button></div><p class="text-[10px] text-slate-500 font-bold"><i class="fas fa-check text-teal-500 mr-1"></i>Öğünlere ayrılmış profesyonel şablon</p></div>`; 
         }); 
     } 
     
     if(sel) { 
         let opts = '<option value="">Şablon Kullanma, Kendim Yazacağım</option>'; 
-        data.forEach(s => { opts += `<option value="${s.id}">${s.baslik}</option>`; }); 
+        sablonlar.forEach(s => { opts += `<option value="${s.id}">${s.baslik}</option>`; }); 
         sel.innerHTML = opts; 
         
         sel.addEventListener('change', (e) => {
@@ -314,8 +335,8 @@ window.sablonlariGetir = async function() {
     } 
 }
 
-// ================= DİĞER VERİ ÇEKİCİLER VE SİLMELER =================
-window.olcumleriGetir = async function(hId) { const tablo = document.getElementById("tablo-olcum-gecmis"); const { data } = await supabase.from('olcumler').select('*').eq('hastaid', hId).order('tarih', { ascending: false }); if(tablo) tablo.innerHTML = ""; if(data && data.length > 0) { const o = data[0]; document.getElementById("dash-kilo").innerText = o.kilo.toFixed(1); document.getElementById("dash-bmi").innerText = o.vki ? o.vki.toFixed(1) : "0.0"; document.getElementById("dash-kas").innerText = o.kas ? o.kas.toFixed(1) : "0.0"; document.getElementById("dash-yag").innerText = o.yag ? o.yag.toFixed(1) : "0.0"; data.forEach((ol) => { tablo.innerHTML += `<tr><td class="p-4">${new Date(ol.tarih).toLocaleDateString('tr-TR')}</td><td class="p-4 text-teal-600 font-black">${ol.kilo}kg / BMI:${ol.vki||'-'}</td><td class="p-4 text-slate-500">Y:%${ol.yag||0} / K:%${ol.kas||0}</td><td class="p-4">${ol.bel||'-'}cm / ${ol.kalca||'-'}cm</td><td class="p-4">${ol.gogus||'-'}cm / ${ol.boyun||'-'}cm</td><td class="p-4 text-right"><button onclick="window.olcumSil('${ol.id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`; }); } }
+// ================= DİĞER FONKSİYONLAR =================
+window.olcumleriGetir = async function(hId) { const tablo = document.getElementById("tablo-olcum-gecmis"); const { data } = await supabase.from('olcumler').select('*').eq('hastaid', hId).order('tarih', { ascending: false }); if(tablo) tablo.innerHTML = ""; if(data && data.length > 0) { const o = data[0]; document.getElementById("dash-kilo").innerText = o.kilo.toFixed(1); document.getElementById("dash-bmi").innerText = o.vki ? o.vki.toFixed(1) : "0.0"; document.getElementById("dash-kas").innerText = o.kas ? o.kas.toFixed(1) : "0.0"; document.getElementById("dash-yag").innerText = o.yag ? o.yag.toFixed(1) : "0.0"; data.forEach((ol) => { tablo.innerHTML += `<tr><td class="p-4">${new Date(ol.tarih).toLocaleDateString('tr-TR')}</td><td class="p-4 text-teal-600 font-black">${ol.kilo}kg / BMI:${ol.vki||'-'}</td><td class="p-4 text-slate-500">Y:%${ol.yag||0} / K:%${ol.kas||0}</td><td class="p-4">${ol.bel||'-'}cm / ${ol.kalca||'-'}cm</td><td class="p-4">${ol.gogus||'-'}cm / ${ol.boyun||'-'}cm</td><td class="p-4 text-right"><button onclick="window.olcumSil('${ol.id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`; }); } else { document.getElementById("dash-kilo").innerText = "0.0"; document.getElementById("dash-bmi").innerText = "0.0"; document.getElementById("dash-kas").innerText = "0.0"; document.getElementById("dash-yag").innerText = "0.0"; } }
 window.tahlilleriGetir = async function(hId) { const tablo = document.getElementById("tablo-tahliller"); const { data } = await supabase.from('tahliller').select('*').eq('hastaid', hId).order('tarih', { ascending: false }); if(tablo) tablo.innerHTML = ""; if(data) { data.forEach(t => { tablo.innerHTML += `<tr><td class="p-4">${new Date(t.tarih).toLocaleDateString('tr-TR')}</td><td class="p-4 text-red-600 font-bold">${t.b12||'-'} / ${t.d_vitamini||'-'}</td><td class="p-4 font-bold">${t.demir||'-'}</td><td class="p-4">${t.kolesterol||'-'}</td><td class="p-4">${t.aclik_sekeri||'-'}</td><td class="p-4">${t.tsh||'-'}</td><td class="p-4 text-right"><button onclick="window.tahlilSil('${t.id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`; }); } }
 window.cariHareketleriGetir = async function(hastaId) { const tablo = document.getElementById("tablo-cari-hareketler"); const { data } = await supabase.from('cari_hareketler').select('*').eq('hastaid', hastaId).order('islem_tarihi', { ascending: false }); if(tablo) tablo.innerHTML = ""; let hizmet = 0; let odeme = 0; if(data) { data.forEach(h => { if(h.tur === 'Hizmet Bedeli') hizmet += h.tutar; else if(h.tur === 'Ödeme') odeme += h.tutar; const tRnk = h.tur === 'Hizmet Bedeli' ? "text-orange-600" : "text-emerald-600"; tablo.innerHTML += `<tr class="border-b border-gray-50"><td class="p-4">${new Date(h.islem_tarihi).toLocaleDateString('tr-TR')}</td><td class="p-4 font-black ${tRnk}">${h.tutar} ₺</td><td class="p-4"><span class="text-xs font-bold uppercase ${tRnk}">${h.tur}</span></td><td class="p-4 text-slate-500">${h.odeme_yontemi||"-"}</td><td class="p-4 text-right"><button onclick="window.cariSil('${h.id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`; }); } const bBakiye = document.getElementById("cari-bakiye"); if(bBakiye) bBakiye.innerText = (hizmet - odeme) + " ₺"; const bHizmet = document.getElementById("cari-toplam-hizmet"); if(bHizmet) bHizmet.innerText = hizmet + " ₺"; const bOdeme = document.getElementById("cari-toplam-odeme"); if(bOdeme) bOdeme.innerText = odeme + " ₺"; }
 window.finanslariGetir = async function() { const tablo = document.getElementById("kasa-tablosu"); const stat = document.getElementById("stat-kasa"); const { data } = await supabase.from('cari_hareketler').select('*, danisanlar(ad, soyad)').eq('tur', 'Ödeme').order('islem_tarihi', { ascending: false }); tablo.innerHTML = ""; let top = 0; if(data) { data.forEach(i => { top += i.tutar; const hAd = i.danisanlar ? (i.danisanlar.ad + " " + i.danisanlar.soyad) : "Bilinmiyor"; tablo.innerHTML += `<tr class="border-b border-gray-100"><td class="p-4">${new Date(i.islem_tarihi).toLocaleDateString('tr-TR')}</td><td class="p-4 font-bold">${hAd}</td><td class="p-4 font-black text-teal-700">${i.tutar} ₺</td><td class="p-4 text-right"><button onclick="window.cariSil('${i.id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`; }); } stat.innerText = top + " ₺"; }
@@ -333,7 +354,7 @@ window.randevuKalicSil = async function(id) { document.getElementById('custom-ra
 
 document.addEventListener('click', (e) => { const btn = e.target.closest('#nav-randevular'); if(btn) { setTimeout(() => { if(window.globalCalendar) window.globalCalendar.render(); }, 150); } });
 
-// ŞABLON BUG'I ÇÖZÜMÜ (window. eklendi)
+// ================= SİSTEMİ BAŞLAT =================
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DiyetTakibim Modüler Sistem Devrede!");
     if (typeof window.uretProtokol === "function") window.uretProtokol();
@@ -352,8 +373,6 @@ document.addEventListener('DOMContentLoaded', () => {
     danisanlariGetir(); 
     kayitFormunuBaslat();
     window.randevulariGetir(); 
-    
-    // HATALI YERLER DÜZELTİLDİ
     window.sablonlariGetir(); 
     window.finanslariGetir();
 });
