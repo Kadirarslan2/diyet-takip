@@ -1,8 +1,9 @@
 import { supabase } from './db.js';
-import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=wpyeni';
-import { randevulariGetir, randevuFormunuBaslat } from './modules/randevu.js?v=wpyeni';
+// CACHE KIRICI - Tarayıcıyı yeni kodları okumaya zorlar
+import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=kirilmaz3';
+import { randevulariGetir, randevuFormunuBaslat } from './modules/randevu.js?v=kirilmaz3';
 
-// ================= ÇELİK TOAST MOTORU =================
+// ================= ÇELİK TOAST (BİLDİRİM) MOTORU =================
 window.showToast = function(mesaj, tip = 'success') {
     let container = document.getElementById('toast-container');
     if(!container) {
@@ -51,7 +52,7 @@ window.whatsappMesajAt = function() {
     window.open(`https://wa.me/${tel}?text=${mesaj}`, '_blank');
 }
 
-// YENİ, PROFESYONEL PDF MOTORU (Boş Sayfa Sorunu Çözüldü!)
+// BEYAZ SAYFA HATASI ÇÖZÜLDÜ (Doğrudan Enjeksiyon Yöntemi)
 window.pdfIndir = async function() {
     if(!window.aktifHastaId) return;
     const d = window.danisanListesi.find(x => x.id === window.aktifHastaId);
@@ -59,7 +60,7 @@ window.pdfIndir = async function() {
 
     window.showToast('Profesyonel Rapor Hazırlanıyor...', 'success');
 
-    // Hastanın en güncel kilosunu veritabanından çekelim
+    // Hastanın en güncel kilosunu çekiyoruz
     let guncelKilo = "Bilinmiyor";
     let guncelVki = "-";
     const { data: olcumler } = await supabase.from('olcumler').select('*').eq('hastaid', d.id).order('tarih', { ascending: false });
@@ -69,11 +70,11 @@ window.pdfIndir = async function() {
     }
 
     const yas = d.dogum_tarihi ? (new Date().getFullYear() - new Date(d.dogum_tarihi).getFullYear()) : "-";
-    const kayit = d.kayittarihi ? new Date(d.kayittarihi).toLocaleDateString('tr-TR') : "-";
     const islemTarihi = new Date().toLocaleDateString('tr-TR') + " " + new Date().toLocaleTimeString('tr-TR');
 
+    // MUAZZAM A4 KLİNİK RAPORU (HTML string olarak PDF motoruna beslenecek)
     const htmlRapor = `
-        <div style="padding: 40px 50px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background: white; width: 800px; box-sizing: border-box;">
+        <div style="padding: 40px 50px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background: white; width: 100%; box-sizing: border-box;">
             
             <div style="border-bottom: 3px solid #0f766e; padding-bottom: 15px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
                 <div>
@@ -145,27 +146,17 @@ window.pdfIndir = async function() {
         </div>
     `;
 
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlRapor;
-    // GÖRÜNMEZ YAPIYORUZ AMA EKRANDAN DIŞARI ATMIYORUZ Kİ FOTOĞRAFI ÇEKİLEBİLSİN
-    tempDiv.style.position = 'absolute';
-    tempDiv.style.top = '0';
-    tempDiv.style.left = '0';
-    tempDiv.style.zIndex = '-1000';
-    tempDiv.style.opacity = '0';
-    document.body.appendChild(tempDiv);
-
     const opt = {
         margin:       10,
         filename:     `${d.ad}_${d.soyad}_Klinik_Raporu.pdf`,
         image:        { type: 'jpeg', quality: 1 },
-        html2canvas:  { scale: 2, useCORS: true, windowWidth: 800 },
+        html2canvas:  { scale: 2, useCORS: true },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    html2pdf().set(opt).from(tempDiv).save().then(() => {
-        window.showToast('Profesyonel Hasta Raporu indirildi!', 'success');
-        document.body.removeChild(tempDiv);
+    // Ekranda olmayan metni doğrudan motora enjekte ediyoruz
+    html2pdf().set(opt).from(htmlRapor).save().then(() => {
+        window.showToast('Profesyonel Hasta Raporu başarıyla indirildi!', 'success');
     });
 }
 
@@ -223,13 +214,27 @@ window.cariSil = async function(id) { await supabase.from('cari_hareketler').del
 window.randevuSil = async function(id) { await supabase.from('randevular').delete().eq('id', id); window.showToast('Randevu silindi', 'success'); window.randevulariGetir(); }
 window.sablonSil = async function(id) { await supabase.from('sablonlar').delete().eq('id', id); window.showToast('Şablon silindi', 'success'); window.sablonlariGetir(); }
 
+// ================= TAKVİM UYANDIRICI (ÇÖKME HATASI ÇÖZÜMÜ) =================
+document.addEventListener('click', (e) => {
+    // Eğer Randevular menüsüne tıklandıysa...
+    const btn = e.target.closest('#nav-randevular');
+    if(btn) {
+        // Sayfanın açılması için çok kısa bir süre bekle ve takvimi uyar
+        setTimeout(() => {
+            if(window.globalCalendar) {
+                window.globalCalendar.render(); // Takvime "boyutunu toparla" diyoruz
+            }
+        }, 150); 
+    }
+});
+
 // ================= SİSTEMİ BAŞLAT =================
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DiyetTakibim Modüler Sistem Devrede!");
     
     if (typeof window.uretProtokol === "function") window.uretProtokol();
     
-    // Unutulan takvim motorunu GERİ TAKTIK!
+    // TAKVİM MOTORU KURULUMU
     const calendarEl = document.getElementById('calendar');
     if(calendarEl) {
         window.globalCalendar = new FullCalendar.Calendar(calendarEl, {
@@ -240,7 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
             slotMinTime: "08:00:00", slotMaxTime: "20:00:00",
             eventClick: function(info) { window.randevuSil(info.event.extendedProps.dbId); }
         });
-        window.globalCalendar.render();
+        window.globalCalendar.render(); // İlk render
     }
     
     danisanlariGetir();
