@@ -1,3 +1,4 @@
+HEAD
 const CACHE_NAME = 'diyet-takibim-v1';
 
 self.addEventListener('install', (event) => {
