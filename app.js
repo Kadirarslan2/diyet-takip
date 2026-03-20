@@ -1,6 +1,6 @@
 import { supabase } from './db.js';
-import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=vektor1';
-import { randevulariGetir, randevuFormunuBaslat } from './modules/randevu.js?v=vektor1';
+import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=sablonKilit1';
+import { randevulariGetir, randevuFormunuBaslat } from './modules/randevu.js?v=sablonKilit1';
 
 // ================= ÇELİK TOAST BİLDİRİMLERİ =================
 window.showToast = function(mesaj, tip = 'success') {
@@ -51,24 +51,17 @@ window.whatsappMesajAt = function() {
     window.open(`https://wa.me/${tel}?text=${mesaj}`, '_blank');
 }
 
-// ================= YENİ VEKTÖREL A4 ÇİZİM MOTORU (KADİR'İN FİKRİ!) =================
-// Bu motor fotoğraf çekmez, kodları gerçek A4 kağıdına yazıcı gibi çizer!
+// ================= VEKTÖREL PDF ÇİZİM MOTORU (ÇALIŞAN SÜRÜM) =================
 const vektorelA4Ciz = (htmlIcerik, sayfaBasligi) => {
     const printWindow = window.open('', '_blank');
     
-    // Arka plan renklerinin PDF'te çıkması için özel CSS komutları eklendi
     printWindow.document.write(`
         <html>
         <head>
             <title>${sayfaBasligi}</title>
             <style>
                 @page { size: A4; margin: 15mm; }
-                body { 
-                    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
-                    color: #1e293b; 
-                    -webkit-print-color-adjust: exact !important; 
-                    print-color-adjust: exact !important; 
-                }
+                body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
                 table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px; text-align: left; }
                 th, td { border: 1px solid #cbd5e1; padding: 8px; }
                 th { background-color: #f8fafc; color: #475569; font-weight: bold; }
@@ -82,10 +75,7 @@ const vektorelA4Ciz = (htmlIcerik, sayfaBasligi) => {
         <body>
             ${htmlIcerik}
             <script>
-                // Sayfa yüklenir yüklenmez "PDF Kaydet" penceresini otomatik aç!
-                setTimeout(() => {
-                    window.print();
-                }, 500);
+                setTimeout(() => { window.print(); }, 500);
             </script>
         </body>
         </html>
@@ -244,6 +234,65 @@ window.diyetPdfIndir = async function(diyetId) {
     vektorelA4Ciz(htmlDiyet, `Diyet_${adSoyad}`);
 }
 
+// ================= ŞABLON F5 HATASI KESİN ÇÖZÜMÜ =================
+window.sablonlariGetir = async function() { 
+    try {
+        // querySelectorAll kullanarak tüm listeleri yakalıyoruz (Garantili)
+        const lists = document.querySelectorAll('#sablon-listesi'); 
+        const sels = document.querySelectorAll('#diy-sablon-secici'); 
+        
+        const { data, error } = await supabase.from('sablonlar').select('*'); 
+        if(error) throw error;
+        
+        let sablonlar = data || []; 
+        sablonlar.reverse(); 
+        window.sablonListesi = sablonlar; 
+        
+        // Tüm Şablon Listelerini Doldur
+        lists.forEach(list => {
+            list.innerHTML = ""; 
+            if (sablonlar.length === 0) {
+                list.innerHTML = `<div class="col-span-full text-center p-5 text-slate-400 font-bold">Kayıtlı şablon bulunamadı.</div>`;
+            } else {
+                sablonlar.forEach(s => { 
+                    list.innerHTML += `
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-bold text-slate-800">${s.baslik}</h4>
+                            <button onclick="window.sablonSil('${s.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <p class="text-[10px] text-slate-500 font-bold"><i class="fas fa-check text-teal-500 mr-1"></i>Profesyonel şablon</p>
+                    </div>`; 
+                }); 
+            }
+        });
+        
+        // Tüm Select Menülerini Doldur ve GÜVENLİ onchange ekle
+        sels.forEach(sel => {
+            let opts = '<option value="">Şablon Kullanma, Kendim Yazacağım</option>'; 
+            sablonlar.forEach(s => { opts += `<option value="${s.id}">${s.baslik}</option>`; }); 
+            sel.innerHTML = opts; 
+            
+            // DİKKAT: replaceChild() saçmalığı kaldırıldı, direkt onchange atandı! Asla kırılmaz.
+            sel.onchange = (e) => {
+                const s = window.sablonListesi.find(x => x.id === e.target.value);
+                const setV = (boxId, val) => { const el = document.getElementById(boxId); if(el) el.value = val || ""; };
+                if(s) { 
+                    setV('diy-baslik', s.baslik); setV('diy-sabah', s.sabah); setV('diy-ara1', s.ara1); 
+                    setV('diy-ogle', s.ogle); setV('diy-ara2', s.ara2); setV('diy-aksam', s.aksam); 
+                    setV('diy-ara3', s.ara3); setV('diy-notlar', s.icerik); 
+                } else { 
+                    setV('diy-baslik',''); setV('diy-sabah',''); setV('diy-ara1',''); 
+                    setV('diy-ogle',''); setV('diy-ara2',''); setV('diy-aksam',''); 
+                    setV('diy-ara3',''); setV('diy-notlar',''); 
+                }
+            };
+        });
+    } catch(err) { 
+        console.error("Şablon Hatası:", err); 
+    }
+}
+
 // ================= DİYET MOTORLARI =================
 window.diyetleriGetir = async function(hId) {
     const list = document.getElementById("tablo-diyetler"); 
@@ -276,64 +325,6 @@ window.diyetleriGetir = async function(hId) {
                 </div>`; 
             }); 
         } 
-    }
-}
-
-// ================= ŞABLONLAR F5 HATASI KESİN ÇÖZÜMÜ =================
-window.sablonlariGetir = async function() { 
-    try {
-        const list = document.getElementById('sablon-listesi'); 
-        const sel = document.getElementById('diy-sablon-secici'); 
-        
-        const { data, error } = await supabase.from('sablonlar').select('*'); 
-        if(error) throw error;
-        
-        let sablonlar = data || []; 
-        sablonlar.reverse(); 
-        window.sablonListesi = sablonlar; 
-        
-        if(list) { 
-            list.innerHTML = ""; 
-            if (sablonlar.length === 0) {
-                list.innerHTML = `<div class="col-span-full text-center p-5 text-slate-400 font-bold">Kayıtlı şablon bulunamadı.</div>`;
-            } else {
-                sablonlar.forEach(s => { 
-                    list.innerHTML += `
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-                        <div class="flex justify-between items-center mb-2">
-                            <h4 class="font-bold text-slate-800">${s.baslik}</h4>
-                            <button onclick="window.sablonSil('${s.id}')" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button>
-                        </div>
-                        <p class="text-[10px] text-slate-500 font-bold"><i class="fas fa-check text-teal-500 mr-1"></i>Profesyonel şablon</p>
-                    </div>`; 
-                }); 
-            }
-        } 
-        
-        if(sel) { 
-            let opts = '<option value="">Şablon Kullanma, Kendim Yazacağım</option>'; 
-            sablonlar.forEach(s => { opts += `<option value="${s.id}">${s.baslik}</option>`; }); 
-            sel.innerHTML = opts; 
-            
-            const newSel = sel.cloneNode(true);
-            sel.parentNode.replaceChild(newSel, sel);
-            
-            newSel.addEventListener('change', (e) => {
-                const s = window.sablonListesi.find(x => x.id === e.target.value);
-                const setV = (boxId, val) => { const el = document.getElementById(boxId); if(el) el.value = val || ""; };
-                if(s) { 
-                    setV('diy-baslik', s.baslik); setV('diy-sabah', s.sabah); setV('diy-ara1', s.ara1); 
-                    setV('diy-ogle', s.ogle); setV('diy-ara2', s.ara2); setV('diy-aksam', s.aksam); 
-                    setV('diy-ara3', s.ara3); setV('diy-notlar', s.icerik); 
-                } else { 
-                    setV('diy-baslik',''); setV('diy-sabah',''); setV('diy-ara1',''); 
-                    setV('diy-ogle',''); setV('diy-ara2',''); setV('diy-aksam',''); 
-                    setV('diy-ara3',''); setV('diy-notlar',''); 
-                }
-            });
-        } 
-    } catch(err) { 
-        console.error("Şablon Hatası:", err); 
     }
 }
 
@@ -543,7 +534,7 @@ window.cariSil = async function(id) { await supabase.from('cari_hareketler').del
 window.randevuSil = async function(id) { await supabase.from('randevular').delete().eq('id', id); window.showToast('Randevu silindi', 'success'); window.randevulariGetir(); }
 window.sablonSil = async function(id) { await supabase.from('sablonlar').delete().eq('id', id); window.showToast('Şablon silindi', 'success'); window.sablonlariGetir(); }
 
-// ================= RANDEVU MODAL İŞLEMLERİ =================
+// ================= RANDEVU İŞLEMLERİ =================
 window.randevuIslem = function(id, durum) { 
     let div = document.getElementById('custom-randevu-modal'); 
     if(div) div.remove(); 
@@ -579,9 +570,14 @@ window.randevuKalicSil = async function(id) {
     } 
 }
 
+// TETİKLEYİCİLER: Şablon sayfasını zorla tazeleme
 document.addEventListener('click', (e) => { 
-    const btn = e.target.closest('#nav-randevular'); 
-    if(btn) { setTimeout(() => { if(window.globalCalendar) window.globalCalendar.render(); }, 150); } 
+    const btnRandevu = e.target.closest('#nav-randevular'); 
+    if(btnRandevu) { setTimeout(() => { if(window.globalCalendar) window.globalCalendar.render(); }, 150); } 
+    
+    // Sol menüden Şablonlara basınca direkt yenile!
+    const btnSablon = e.target.closest('#nav-sablonlar');
+    if(btnSablon) { window.sablonlariGetir(); }
 });
 
 // ================= BAŞLATICI MOTOR =================
@@ -605,7 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.randevulariGetir(); 
     window.finanslariGetir();
     
-    // ÇÖZÜM: Şablonları veritabanı bağlandıktan sonra yarım saniye gecikmeyle zorla çek
+    // GECİKMELİ ŞABLON ÇEKİMİ (ÇÖKMEYİ ENGELLER)
     setTimeout(() => {
         window.sablonlariGetir();
     }, 500);
