@@ -16,47 +16,11 @@
         .hide-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
         .hide-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
         .hide-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        
-        .tab-btn.active { 
-            color: #0f766e; 
-            border-bottom: 3px solid #0f766e; 
-            font-weight: 800; 
-            background: #f0fdfa; 
-        }
-        
-        .form-input { 
-            width: 100%; 
-            padding: 0.6rem 1rem; 
-            border: 1px solid #e2e8f0; 
-            border-radius: 0.5rem; 
-            outline: none; 
-            transition: all 0.2s; 
-            font-size: 0.875rem; 
-            color: #334155; 
-            background: #fff; 
-        }
-        
-        .form-input:focus { 
-            border-color: #0f766e; 
-            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1); 
-        }
-        
-        .form-label { 
-            display: block; 
-            font-size: 0.75rem; 
-            font-weight: 700; 
-            color: #475569; 
-            margin-bottom: 0.3rem; 
-        }
-        
-        .menu-btn.active { 
-            background-color: #f0fdfa; 
-            color: #0f766e; 
-            font-weight: 700; 
-            border-right: 3px solid #0f766e;
-        }
-        
-        /* Takvim Özelleştirmeleri */
+        .tab-btn.active { color: #0f766e; border-bottom: 3px solid #0f766e; font-weight: 800; background: #f0fdfa; }
+        .form-input { width: 100%; padding: 0.6rem 1rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; outline: none; transition: all 0.2s; font-size: 0.875rem; color: #334155; background: #fff; }
+        .form-input:focus { border-color: #0f766e; box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1); }
+        .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: #475569; margin-bottom: 0.3rem; }
+        .menu-btn.active { background-color: #f0fdfa; color: #0f766e; font-weight: 700; border-right: 3px solid #0f766e;}
         .fc { background: #fff; border-radius: 12px; overflow: hidden; font-family: inherit; }
         .fc-theme-standard td, .fc-theme-standard th, .fc-theme-standard .fc-scrollgrid { border-color: #f1f5f9; }
         .fc-header-toolbar { padding: 20px; background: #f8fafc; margin-bottom: 0 !important; border-bottom: 1px solid #e2e8f0; }
@@ -72,7 +36,6 @@
             <i class="fas fa-leaf text-teal-600 text-xl mr-2"></i>
             <h1 class="text-xl font-black tracking-tight text-slate-800">DiyetTakibim</h1>
         </div>
-        
         <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1 hide-scroll">
             <div class="text-[10px] font-black text-slate-400 tracking-widest px-3 mb-2 mt-2 uppercase">Yönetim Paneli</div>
             <button onclick="window.switchPage('page-dashboard')" id="nav-dashboard" class="menu-btn active w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-slate-50 font-medium text-sm transition"><i class="fas fa-home w-5"></i> Özet Panel</button>
@@ -87,7 +50,6 @@
     </aside>
 
     <div class="flex-1 flex flex-col h-full relative">
-        
         <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8 shrink-0">
             <h2 id="header-title" class="text-lg font-bold text-slate-800">Özet Panel</h2>
             <div class="flex items-center gap-3">
@@ -100,127 +62,51 @@
 
             <div id="page-dashboard" class="page-section block max-w-6xl mx-auto space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
-                        <div>
-                            <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Toplam Danışan</p>
-                            <h3 class="text-3xl font-black text-slate-800" id="stat-hastalar">0</h3>
-                        </div>
-                        <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-xl"><i class="fas fa-users"></i></div>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
-                        <div>
-                            <p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Randevular</p>
-                            <h3 class="text-3xl font-black text-slate-800" id="stat-randevular">0</h3>
-                        </div>
-                        <div class="w-12 h-12 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center text-xl"><i class="far fa-calendar-check"></i></div>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-xl border border-teal-200 shadow-sm flex items-center justify-between">
-                        <div>
-                            <p class="text-xs text-teal-700 font-bold uppercase tracking-widest mb-1">Toplam Bakiye (Kasa)</p>
-                            <h3 class="text-3xl font-black text-teal-700" id="stat-kasa">0 ₺</h3>
-                        </div>
-                        <div class="w-12 h-12 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center text-xl"><i class="fas fa-lira-sign"></i></div>
-                    </div>
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between"><div><p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Toplam Danışan</p><h3 class="text-3xl font-black text-slate-800" id="stat-hastalar">0</h3></div><div class="w-12 h-12 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-xl"><i class="fas fa-users"></i></div></div>
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between"><div><p class="text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Randevular</p><h3 class="text-3xl font-black text-slate-800" id="stat-randevular">0</h3></div><div class="w-12 h-12 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center text-xl"><i class="far fa-calendar-check"></i></div></div>
+                    <div class="bg-white p-6 rounded-xl border border-teal-200 shadow-sm flex items-center justify-between"><div><p class="text-xs text-teal-700 font-bold uppercase tracking-widest mb-1">Toplam Bakiye (Kasa)</p><h3 class="text-3xl font-black text-teal-700" id="stat-kasa">0 ₺</h3></div><div class="w-12 h-12 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center text-xl"><i class="fas fa-lira-sign"></i></div></div>
                 </div>
             </div>
 
             <div id="page-yeni-kayit" class="page-section hidden max-w-5xl mx-auto bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <form id="form-danisan-kayit">
-                    
                     <div class="flex border-b border-gray-200 px-6 bg-slate-50/50">
-                        <button type="button" onclick="window.switchFormTab('bilgiler')" id="btn-ftab-bilgiler" class="tab-btn active px-6 py-4 text-sm font-bold text-slate-600 border-b-2 border-teal-700">Danışan Bilgileri</button>
-                        <button type="button" onclick="window.switchFormTab('ek')" id="btn-ftab-ek" class="tab-btn px-6 py-4 text-sm font-bold text-slate-600 border-b-2">Ek Bilgiler (Fiziksel)</button>
-                        <button type="button" onclick="window.switchFormTab('notlar')" id="btn-ftab-notlar" class="tab-btn px-6 py-4 text-sm font-bold text-slate-600 border-b-2">Danışan Notları</button>
+                        <button type="button" onclick="window.switchFormTab('bilgiler')" id="btn-ftab-bilgiler" class="tab-btn active px-6 py-4 text-sm font-bold text-slate-600 border-b-2 border-teal-700">Kişisel Bilgiler</button>
+                        <button type="button" onclick="window.switchFormTab('ek')" id="btn-ftab-ek" class="tab-btn px-6 py-4 text-sm font-bold text-slate-600 border-b-2">Tıbbi & Fiziksel Durum</button>
+                        <button type="button" onclick="window.switchFormTab('notlar')" id="btn-ftab-notlar" class="tab-btn px-6 py-4 text-sm font-bold text-slate-600 border-b-2">Özel Notlar</button>
                     </div>
                     
                     <div id="ftab-bilgiler" class="p-8 space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
-                            <div><label class="form-label">Adı*</label><input type="text" id="d-ad" required class="form-input" placeholder="Adı"></div>
-                            <div><label class="form-label">Soyadı*</label><input type="text" id="d-soyad" required class="form-input" placeholder="Soyadı"></div>
+                            <div><label class="form-label">Adı*</label><input type="text" id="d-ad" required class="form-input"></div>
+                            <div><label class="form-label">Soyadı*</label><input type="text" id="d-soyad" required class="form-input"></div>
                             <div><label class="form-label">Cep Telefonu</label><input type="tel" id="d-tel" class="form-input" placeholder="05XX XXX XX XX"></div>
                             <div><label class="form-label">Refakatçi Cep Telefonu</label><input type="tel" id="d-refakatci-tel" class="form-input"></div>
-                            
-                            <div>
-                                <label class="form-label">SMS Gönderim İzni</label>
-                                <select id="d-sms-izni" class="form-input">
-                                    <option>İzin Bekleniyor</option>
-                                    <option>İzin Verildi</option>
-                                    <option>İzin Verilmedi</option>
-                                </select>
-                            </div>
-                            
-                            <div><label class="form-label">E-posta Adresi</label><input type="email" id="d-email" class="form-input"></div>
+                            <div><label class="form-label">SMS Gönderim İzni</label><select id="d-sms-izni" class="form-input"><option>İzin Bekleniyor</option><option>İzin Verildi</option><option>İzin Verilmedi</option></select></div>
                             <div><label class="form-label">Doğum Tarihi</label><input type="date" id="d-dogum-tarihi" class="form-input"></div>
-                            <div><label class="form-label">Doğum Yeri</label><input type="text" id="d-dogum-yeri" class="form-input"></div>
-                            
-                            <div>
-                                <label class="form-label">Protokol No</label>
-                                <div class="flex">
-                                    <input type="text" id="d-protokol" readonly class="form-input rounded-r-none bg-slate-50 font-bold">
-                                    <button type="button" onclick="window.uretProtokol()" class="px-4 bg-white border border-gray-300 border-l-0 rounded-r-md text-xs font-semibold text-slate-600">Üret</button>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label class="form-label">Danışan Grupları</label>
-                                <select id="d-gruplar" class="form-input">
-                                    <option>Normal Danışan</option>
-                                    <option>Kurumsal</option>
-                                    <option>VİP</option>
-                                </select>
-                            </div>
-                            
-                            <div>
-                                <label class="form-label">Uyruk</label>
-                                <select id="d-uyruk" class="form-input">
-                                    <option>TÜRKİYE CUMHURİYETİ</option>
-                                    <option>Diğer</option>
-                                </select>
-                            </div>
-                            
-                            <div><label class="form-label">Kimlik / Pasaport Numarası</label><input type="text" id="d-kimlik-no" class="form-input"></div>
-                            
-                            <div>
-                                <label class="form-label">İlgili Uzman</label>
-                                <select id="d-uzman" class="form-input font-bold text-teal-700">
-                                    <option>Dyt. Beyza</option>
-                                </select>
-                            </div>
-                            
-                            <div><label class="form-label">Kontrol Tarihi</label><input type="date" id="d-kontrol-tarihi" class="form-input border-teal-200 bg-teal-50"></div>
+                            <div><label class="form-label">Cinsiyet</label><select id="d-cinsiyet" class="form-input"><option>Belirtilmemiş</option><option>Kadın</option><option>Erkek</option></select></div>
+                            <div><label class="form-label">Protokol No</label><div class="flex"><input type="text" id="d-protokol" readonly class="form-input rounded-r-none bg-slate-50 font-bold"><button type="button" onclick="window.uretProtokol()" class="px-4 bg-white border border-gray-300 border-l-0 rounded-r-md text-xs font-semibold text-slate-600">Üret</button></div></div>
                         </div>
                     </div>
                     
                     <div id="ftab-ek" class="hidden p-8 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div><label class="form-label text-teal-600">Başlangıç Kilosu (kg)</label><input type="number" step="0.1" id="d-guncel-kilo" class="form-input border-teal-200 bg-teal-50 font-bold text-teal-700"></div>
+                            <div><label class="form-label">Boy (cm) (VKİ İçin)</label><input type="number" id="d-boy" class="form-input"></div>
+                            <div><label class="form-label text-orange-600">Hedef Kilo (kg)</label><input type="number" step="0.1" id="d-hedef" class="form-input"></div>
+                        </div>
+                        <hr class="my-4 border-gray-200">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="form-label text-teal-600">Şu Anki Kilo (kg) (İlk Ölçüm İçin)</label>
-                                <input type="number" step="0.1" id="d-guncel-kilo" class="form-input border-teal-200 bg-teal-50 font-bold text-teal-700">
-                            </div>
-                            <div>
-                                <label class="form-label">Boy (cm) (VKİ Hesabı İçin)</label>
-                                <input type="number" id="d-boy" class="form-input">
-                            </div>
-                            <div>
-                                <label class="form-label text-orange-600">Hedef Kilo (kg)</label>
-                                <input type="number" step="0.1" id="d-hedef" class="form-input">
-                            </div>
-                            <div>
-                                <label class="form-label">Cinsiyet</label>
-                                <select id="d-cinsiyet" class="form-input">
-                                    <option>Belirtilmemiş</option>
-                                    <option>Kadın</option>
-                                    <option>Erkek</option>
-                                </select>
-                            </div>
+                            <div><label class="form-label text-red-500">Alerjiler (Örn: Laktoz, Glüten)</label><input type="text" id="d-alerjiler" class="form-input" placeholder="Yoksa boş bırakın"></div>
+                            <div><label class="form-label text-red-500">Kronik Hastalıklar (Örn: Diyabet, Tansiyon)</label><input type="text" id="d-kronik" class="form-input" placeholder="Yoksa boş bırakın"></div>
+                            <div><label class="form-label">Fiziksel Aktivite Durumu</label><select id="d-aktivite" class="form-input"><option>Hareketsiz (Masa başı)</option><option>Hafif Tempolu (Ara sıra yürüyüş)</option><option>Aktif Sporcu (Düzenli spor)</option></select></div>
+                            <div><label class="form-label">Günlük Su Tüketimi (Litre)</label><input type="number" step="0.1" id="d-su" class="form-input" placeholder="Örn: 2.5"></div>
                         </div>
                     </div>
 
                     <div id="ftab-notlar" class="hidden p-8">
                         <label class="form-label">Danışan Hakkında Özel Notlar</label>
-                        <textarea id="d-notlar" rows="5" class="form-input" placeholder="Beslenme alışkanlıkları vb..."></textarea>
+                        <textarea id="d-notlar" rows="5" class="form-input" placeholder="Beslenme alışkanlıkları, hedefleri vb..."></textarea>
                     </div>
                     
                     <div class="p-6 border-t border-gray-200 bg-slate-50 flex justify-end">
@@ -230,325 +116,167 @@
             </div>
             
             <div id="page-danisan-listesi" class="page-section hidden max-w-6xl mx-auto space-y-4">
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex justify-between items-center">
-                    <h2 class="text-xl font-bold text-slate-800">Danışan Portföyü</h2>
-                    <button onclick="window.switchPage('page-yeni-kayit')" class="bg-teal-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-teal-700">
-                        <i class="fas fa-plus mr-2"></i> Yeni Ekle
-                    </button>
-                </div>
-                
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 border-b border-gray-200 text-[11px] text-slate-500 uppercase font-bold">
-                                <th class="py-4 px-6 w-16">#</th>
-                                <th class="py-4 px-6">AD SOYAD / PROTOKOL</th>
-                                <th class="py-4 px-6">TELEFON</th>
-                                <th class="py-4 px-6 text-right">İŞLEM</th>
-                            </tr>
-                        </thead>
-                        <tbody id="danisan-tablosu" class="text-sm font-medium text-slate-700 divide-y divide-gray-100">
-                            </tbody>
-                    </table>
-                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex justify-between items-center"><h2 class="text-xl font-bold text-slate-800">Danışan Portföyü</h2><button onclick="window.switchPage('page-yeni-kayit')" class="bg-teal-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-teal-700"><i class="fas fa-plus mr-2"></i> Yeni Ekle</button></div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"><table class="w-full text-left border-collapse"><thead><tr class="bg-slate-50 border-b border-gray-200 text-[11px] text-slate-500 uppercase font-bold"><th class="py-4 px-6 w-16">#</th><th class="py-4 px-6">AD SOYAD / PROTOKOL</th><th class="py-4 px-6">TELEFON</th><th class="py-4 px-6 text-right">İŞLEM</th></tr></thead><tbody id="danisan-tablosu" class="text-sm font-medium text-slate-700 divide-y divide-gray-100"></tbody></table></div>
             </div>
 
             <div id="page-sablonlar" class="page-section hidden max-w-5xl mx-auto space-y-4">
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex justify-between items-center">
-                    <h2 class="text-xl font-bold">Hazır Diyet Şablonları</h2>
-                    <button onclick="window.openModal('modal-sablon')" class="bg-slate-800 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-slate-900">
-                        <i class="fas fa-plus mr-2"></i> Yeni Şablon Ekle
-                    </button>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="sablon-listesi">
-                    </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex justify-between items-center"><h2 class="text-xl font-bold">Hazır Diyet Şablonları</h2><button onclick="window.openModal('modal-sablon')" class="bg-slate-800 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-slate-900"><i class="fas fa-plus mr-2"></i> Yeni Şablon Ekle</button></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="sablon-listesi"></div>
             </div>
 
             <div id="page-hasta-profili" class="page-section hidden max-w-7xl mx-auto space-y-6 pb-20">
-                
                 <div class="flex items-center justify-between bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
                     <div class="flex items-center gap-4">
                         <button onclick="window.switchPage('page-danisan-listesi')" class="text-slate-400 hover:text-teal-600 transition"><i class="fas fa-arrow-left text-xl"></i></button>
                         <div class="w-12 h-12 bg-slate-200 text-slate-500 rounded-full flex items-center justify-center font-black text-xl" id="profil-harf">K</div>
-                        <div>
-                            <h2 class="text-xl font-black text-slate-800" id="prof-header-isim">Yükleniyor...</h2>
-                        </div>
+                        <div><h2 class="text-xl font-black text-slate-800" id="prof-header-isim">Yükleniyor...</h2></div>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="window.openModal('modal-randevu')" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-900">
-                            <i class="fas fa-calendar-plus mr-2"></i>Randevu Oluştur
-                        </button>
+                        <button onclick="window.openModal('modal-randevu')" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-slate-900"><i class="fas fa-calendar-plus mr-2"></i>Randevu Oluştur</button>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                    
                     <div class="flex overflow-x-auto border-b border-gray-200 hide-scroll bg-white">
-                        <button onclick="window.switchProfileTab('detay')" id="btn-ptab-detay" class="tab-btn active px-6 py-4 text-xs font-black uppercase tracking-wider whitespace-nowrap text-teal-700 border-b-2 border-teal-700">Danışan Detay</button>
-                        <button onclick="window.switchProfileTab('olcumler')" id="btn-ptab-olcumler" class="tab-btn px-6 py-4 text-xs font-black uppercase tracking-wider whitespace-nowrap text-slate-500">Ölçümler</button>
-                        <button onclick="window.switchProfileTab('cari')" id="btn-ptab-cari" class="tab-btn px-6 py-4 text-xs font-black uppercase tracking-wider whitespace-nowrap text-slate-500">Cari / Muhasebe</button>
-                        <button onclick="window.switchProfileTab('diyetler')" id="btn-ptab-diyetler" class="tab-btn px-6 py-4 text-xs font-black uppercase tracking-wider whitespace-nowrap text-slate-500">Diyet Listeleri</button>
+                        <button onclick="window.appSwitchProfileTab('detay')" id="btn-ptab-detay" class="tab-btn active px-6 py-4 text-xs font-black uppercase tracking-wider whitespace-nowrap text-teal-700 border-b-2 border-teal-700">Danışan Detay</button>
+                        <button onclick="window.appSwitchProfileTab('olcumler')" id="btn-ptab-olcumler" class="tab-btn px-6 py-4 text-xs font-black uppercase tracking-wider whitespace-nowrap text-slate-500">Ölçümler</button>
+                        <button onclick="window.appSwitchProfileTab('tahliller')" id="btn-ptab-tahliller" class="tab-btn px-6 py-4 text-xs font-black uppercase tracking-wider whitespace-nowrap text-slate-500"><i class="fas fa-vial mr-1"></i> Kan Tahlilleri</button>
+                        <button onclick="window.appSwitchProfileTab('cari')" id="btn-ptab-cari" class="tab-btn px-6 py-4 text-xs font-black uppercase tracking-wider whitespace-nowrap text-slate-500">Kasa / Bakiye</button>
+                        <button onclick="window.appSwitchProfileTab('diyetler')" id="btn-ptab-diyetler" class="tab-btn px-6 py-4 text-xs font-black uppercase tracking-wider whitespace-nowrap text-slate-500">Diyet Listeleri</button>
                     </div>
 
                     <div id="ptab-detay" class="p-8 block">
                         <div class="flex justify-between items-start mb-6">
-                            <div>
-                                <div class="text-sm font-bold text-slate-700 mb-1" id="p-tel-ust">-</div>
-                                <div class="text-xs font-bold text-orange-500"><i class="fas fa-exclamation-triangle mr-1"></i> KVKK İzni Bekliyor</div>
-                            </div>
-                            <div class="flex gap-2">
-                                <button onclick="window.hastaSilCurrent()" class="border border-red-200 text-red-500 px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-50 transition">
-                                    <i class="far fa-trash-alt mr-2"></i>Sil
-                                </button>
-                            </div>
+                            <div><div class="text-sm font-bold text-slate-700 mb-1" id="p-tel-ust">-</div><div class="text-xs font-bold text-teal-600"><i class="fas fa-check-circle mr-1"></i> Dosya Aktif</div></div>
+                            <div class="flex gap-2"><button onclick="window.hastaSilCurrent()" class="border border-red-200 text-red-500 px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-50 transition"><i class="far fa-trash-alt mr-2"></i>Sil</button></div>
                         </div>
-                        
                         <div class="flex flex-col md:flex-row gap-8">
-                            <div class="w-48 h-48 bg-slate-100 flex items-center justify-center text-8xl text-slate-400 rounded-lg shrink-0 border-2 border-dashed border-gray-200">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            
-                            <div class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                <div class="bg-slate-50 rounded-lg p-3 flex justify-between items-center"><span class="text-xs font-bold text-slate-400">Adı Soyadı</span><span class="text-sm font-black text-slate-700" id="p-adsoyad">-</span></div>
-                                <div class="bg-slate-50 rounded-lg p-3 flex justify-between items-center"><span class="text-xs font-bold text-slate-400">Cep Telefonu</span><span class="text-sm font-black text-slate-700" id="p-tel">-</span></div>
-                                <div class="bg-slate-50 rounded-lg p-3 flex justify-between items-center"><span class="text-xs font-bold text-slate-400">Doğum Tarihi</span><span class="text-sm font-black text-slate-700" id="p-dogum">-</span></div>
-                                <div class="bg-slate-50 rounded-lg p-3 flex justify-between items-center"><span class="text-xs font-bold text-slate-400">Cinsiyet</span><span class="text-sm font-black text-slate-700" id="p-cinsiyet">-</span></div>
-                                <div class="bg-slate-50 rounded-lg p-3 flex justify-between items-center"><span class="text-xs font-bold text-slate-400">Protokol No</span><span class="text-sm font-black text-slate-700" id="p-protokol">-</span></div>
-                                <div class="bg-slate-50 rounded-lg p-3 flex justify-between items-center"><span class="text-xs font-bold text-slate-400">İlgili Uzman</span><span class="text-sm font-black text-slate-700" id="p-uzman">-</span></div>
+                            <div class="w-48 h-48 bg-slate-100 flex items-center justify-center text-8xl text-slate-400 rounded-lg shrink-0 border-2 border-dashed border-gray-200"><i class="fas fa-user"></i></div>
+                            <div class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <div class="bg-slate-50 rounded-lg p-3"><span class="block text-[10px] font-bold text-slate-400 uppercase">Adı Soyadı</span><span class="text-sm font-black text-slate-700" id="p-adsoyad">-</span></div>
+                                <div class="bg-slate-50 rounded-lg p-3"><span class="block text-[10px] font-bold text-slate-400 uppercase">Protokol No</span><span class="text-sm font-black text-slate-700" id="p-protokol">-</span></div>
+                                <div class="bg-slate-50 rounded-lg p-3"><span class="block text-[10px] font-bold text-slate-400 uppercase">Cinsiyet & Yaş</span><span class="text-sm font-black text-slate-700" id="p-yas-etiket">-</span></div>
+                                <div class="bg-red-50 rounded-lg p-3 border border-red-100"><span class="block text-[10px] font-bold text-red-500 uppercase"><i class="fas fa-exclamation-circle mr-1"></i> Alerjiler</span><span class="text-sm font-black text-red-700" id="p-alerji">-</span></div>
+                                <div class="bg-red-50 rounded-lg p-3 border border-red-100"><span class="block text-[10px] font-bold text-red-500 uppercase"><i class="fas fa-heartbeat mr-1"></i> Kronik Hastalıklar</span><span class="text-sm font-black text-red-700" id="p-kronik">-</span></div>
+                                <div class="bg-blue-50 rounded-lg p-3 border border-blue-100"><span class="block text-[10px] font-bold text-blue-500 uppercase"><i class="fas fa-tint mr-1"></i> Su Tüketimi (Litre)</span><span class="text-sm font-black text-blue-700" id="p-su">-</span></div>
+                                <div class="bg-orange-50 rounded-lg p-3 border border-orange-100"><span class="block text-[10px] font-bold text-orange-500 uppercase"><i class="fas fa-running mr-1"></i> Fiziksel Aktivite</span><span class="text-sm font-black text-orange-700" id="p-spor">-</span></div>
                             </div>
                         </div>
                     </div>
 
                     <div id="ptab-olcumler" class="hidden p-8">
                         <div class="flex justify-between items-center mb-8">
-                            <div class="bg-teal-50 border border-teal-100 text-teal-700 px-4 py-2 rounded-full text-xs font-black" id="p-yas-etiket">Yükleniyor...</div>
-                            <button onclick="window.openModal('modal-olcum')" class="bg-teal-800 text-white px-6 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-teal-900 transition">
-                                <i class="fas fa-plus mr-2"></i>Yeni Ölçüm Ekle
-                            </button>
+                            <h3 class="font-black text-slate-700 uppercase text-xs tracking-widest">Mezura & Tartı Ölçümleri</h3>
+                            <button onclick="window.openModal('modal-olcum')" class="bg-teal-800 text-white px-6 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-teal-900 transition"><i class="fas fa-plus mr-2"></i>Yeni Ölçüm Ekle</button>
                         </div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-                            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase mb-2">Vücut Kitle Endeksi (BMI)</p><h4 class="text-3xl font-black text-slate-700" id="dash-bmi">0.0</h4><div class="h-1.5 bg-slate-100 rounded-full mt-4"></div></div>
-                            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase mb-2">Kilo</p><h4 class="text-3xl font-black text-slate-700" id="dash-kilo">0.0</h4><div class="h-1.5 bg-slate-100 rounded-full mt-4"></div></div>
-                            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase mb-2">Kas Kütlesi</p><h4 class="text-3xl font-black text-slate-700" id="dash-kas">0.0</h4><div class="h-1.5 bg-slate-100 rounded-full mt-4"></div></div>
-                            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase mb-2">Yağ Oranı</p><h4 class="text-3xl font-black text-slate-700" id="dash-yag">0.0</h4><div class="h-1.5 bg-slate-100 rounded-full mt-4"></div></div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase mb-2">Güncel Kilo</p><h4 class="text-3xl font-black text-slate-700" id="dash-kilo">0.0</h4></div>
+                            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase mb-2">Vücut Kitle Endeksi (BMI)</p><h4 class="text-3xl font-black text-slate-700" id="dash-bmi">0.0</h4></div>
+                            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase mb-2">Kas Kütlesi</p><h4 class="text-3xl font-black text-slate-700" id="dash-kas">0.0</h4></div>
+                            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase mb-2">Yağ Oranı</p><h4 class="text-3xl font-black text-slate-700" id="dash-yag">0.0</h4></div>
                         </div>
-                        
-                        <h3 class="font-black text-slate-700 mb-4 uppercase text-xs tracking-widest">Ölçüm Geçmişi</h3>
-                        <div class="border border-gray-200 rounded-xl overflow-hidden">
-                            <table class="w-full text-left">
-                                <thead class="bg-slate-50 border-b border-gray-200">
-                                    <tr class="text-[10px] font-bold text-slate-500">
-                                        <th class="p-4">TARİH</th><th class="p-4">KİLO</th><th class="p-4">YAĞ/KAS</th><th class="p-4">BMI</th><th class="p-4 text-right">İŞLEM</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tablo-olcum-gecmis" class="divide-y divide-gray-100 text-sm font-bold bg-white">
-                                    </tbody>
-                            </table>
+                        <div class="border border-gray-200 rounded-xl overflow-hidden"><table class="w-full text-left"><thead class="bg-slate-50 border-b border-gray-200"><tr class="text-[10px] font-bold text-slate-500"><th class="p-4">TARİH</th><th class="p-4">KİLO / BMI</th><th class="p-4">YAĞ / KAS</th><th class="p-4">BEL / KALÇA</th><th class="p-4">GÖĞÜS / BOYUN</th><th class="p-4 text-right">İŞLEM</th></tr></thead><tbody id="tablo-olcum-gecmis" class="divide-y divide-gray-100 text-sm font-bold bg-white"></tbody></table></div>
+                    </div>
+
+                    <div id="ptab-tahliller" class="hidden p-8">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-black text-slate-700 uppercase text-xs tracking-widest">Laboratuvar & Kan Tahlilleri</h3>
+                            <button onclick="window.openModal('modal-tahlil')" class="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-red-100"><i class="fas fa-vial mr-2"></i>Sonuç Ekle</button>
                         </div>
+                        <div class="border border-gray-200 rounded-xl overflow-hidden"><table class="w-full text-left"><thead class="bg-slate-50 border-b border-gray-200"><tr class="text-[10px] font-bold text-slate-500"><th class="p-4">TARİH</th><th class="p-4 text-red-600">B12 / D-VİT</th><th class="p-4">DEMİR</th><th class="p-4">KOLESTEROL</th><th class="p-4">AÇLIK ŞEKERİ</th><th class="p-4">TSH</th><th class="p-4 text-right">İŞLEM</th></tr></thead><tbody id="tablo-tahliller" class="divide-y divide-gray-100 text-sm font-bold bg-white"></tbody></table></div>
                     </div>
 
                     <div id="ptab-cari" class="hidden p-8">
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="font-black text-slate-700 uppercase text-xs tracking-widest">Cari Hareketler</h3>
-                            <div class="flex gap-2">
-                                <button onclick="window.openModal('modal-cari-hizmet')" class="bg-white border border-gray-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-50">Hizmet Ekle</button>
-                                <button onclick="window.openModal('modal-cari-odeme')" class="bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-teal-800">Ödeme Al</button>
-                            </div>
+                            <div class="flex gap-2"><button onclick="window.openModal('modal-cari-hizmet')" class="bg-white border border-gray-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-50">Hizmet Ekle</button><button onclick="window.openModal('modal-cari-odeme')" class="bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-teal-800">Ödeme Al</button></div>
                         </div>
-                        
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                             <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm"><p class="text-xs font-bold text-slate-400 mb-1">Kalan Bakiye (Alınacak)</p><h4 class="text-3xl font-black text-slate-800" id="cari-bakiye">0 ₺</h4></div>
                             <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm"><p class="text-xs font-bold text-orange-500 mb-1">Toplam Hizmet Tutarı</p><h4 class="text-3xl font-black text-orange-600" id="cari-toplam-hizmet">0 ₺</h4></div>
                             <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm"><p class="text-xs font-bold text-emerald-500 mb-1">Toplam Alınan Para</p><h4 class="text-3xl font-black text-emerald-600" id="cari-toplam-odeme">0 ₺</h4></div>
                         </div>
-                        
-                        <div class="border border-gray-200 rounded-xl overflow-hidden">
-                            <table class="w-full text-left">
-                                <thead class="bg-slate-50 border-b border-gray-200">
-                                    <tr class="text-[10px] font-bold text-slate-500">
-                                        <th class="p-4">İŞLEM TARİHİ</th><th class="p-4 text-teal-600">TUTAR</th><th class="p-4">TÜR</th><th class="p-4">YÖNTEM</th><th class="p-4 text-right">İŞLEM</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tablo-cari-hareketler" class="divide-y divide-gray-100 text-sm font-medium bg-white">
-                                    </tbody>
-                            </table>
-                        </div>
+                        <div class="border border-gray-200 rounded-xl overflow-hidden"><table class="w-full text-left"><thead class="bg-slate-50 border-b border-gray-200"><tr class="text-[10px] font-bold text-slate-500"><th class="p-4">İŞLEM TARİHİ</th><th class="p-4 text-teal-600">TUTAR</th><th class="p-4">TÜR</th><th class="p-4">YÖNTEM</th><th class="p-4 text-right">İŞLEM</th></tr></thead><tbody id="tablo-cari-hareketler" class="divide-y divide-gray-100 text-sm font-medium bg-white"></tbody></table></div>
                     </div>
 
                     <div id="ptab-diyetler" class="hidden p-8">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="font-black text-slate-700 uppercase text-xs tracking-widest">Diyet Listeleri</h3>
-                            <button onclick="window.openModal('modal-diyet')" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-slate-900">
-                                <i class="fas fa-apple-alt mr-2"></i>Diyet Yaz
-                            </button>
-                        </div>
-                        <div id="tablo-diyetler" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            </div>
+                        <div class="flex justify-between items-center mb-6"><h3 class="font-black text-slate-700 uppercase text-xs tracking-widest">Diyet Listeleri</h3><button onclick="window.openModal('modal-diyet')" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-slate-900"><i class="fas fa-apple-alt mr-2"></i>Diyet Yaz</button></div>
+                        <div id="tablo-diyetler" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                     </div>
                 </div>
             </div>
 
             <div id="page-randevular" class="page-section hidden max-w-6xl mx-auto space-y-4">
-                <div class="bg-white p-4 rounded-xl border border-gray-200 flex justify-between items-center mb-4">
-                    <div class="flex items-center gap-4 text-xs font-bold">
-                        <span class="text-blue-600"><i class="fas fa-circle mr-1"></i> İlk Görüşme</span>
-                        <span class="text-orange-600"><i class="fas fa-circle mr-1"></i> Kontrol Seansı</span>
-                    </div>
-                    <button onclick="window.openModal('modal-randevu')" class="bg-teal-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-teal-700 shadow-sm">
-                        <i class="fas fa-calendar-plus mr-2"></i> Yeni Randevu
-                    </button>
-                </div>
-                <div class="bg-white rounded-xl border border-gray-200 p-6 overflow-hidden shadow-sm">
-                    <div id="calendar"></div>
-                </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-200 flex justify-between items-center mb-4"><div class="flex items-center gap-4 text-xs font-bold"><span class="text-blue-600"><i class="fas fa-circle mr-1"></i> İlk Görüşme</span><span class="text-orange-600"><i class="fas fa-circle mr-1"></i> Kontrol Seansı</span></div><button onclick="window.openModal('modal-randevu')" class="bg-teal-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-teal-700 shadow-sm"><i class="fas fa-calendar-plus mr-2"></i> Yeni Randevu</button></div>
+                <div class="bg-white rounded-xl border border-gray-200 p-6 overflow-hidden shadow-sm"><div id="calendar"></div></div>
             </div>
             
             <div id="page-finans" class="page-section hidden max-w-6xl mx-auto space-y-4">
-                <div class="bg-white p-4 rounded-xl border border-gray-200 flex justify-between items-center">
-                    <h2 class="text-xl font-bold">Kasa İşlemleri</h2>
-                    <button onclick="window.openModal('modal-finans')" class="bg-teal-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm">
-                        <i class="fas fa-plus mr-2"></i> Tahsilat Gir
-                    </button>
-                </div>
-                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-                    <table class="w-full text-left border-collapse text-sm">
-                        <thead>
-                            <tr class="bg-slate-50 border-b border-gray-100 font-bold">
-                                <th class="py-4 px-6">Tarih</th>
-                                <th class="py-4 px-6">Danışan</th>
-                                <th class="py-4 px-6 text-teal-600">Tutar</th>
-                                <th class="py-4 px-6 text-right">İşlem</th>
-                            </tr>
-                        </thead>
-                        <tbody id="kasa-tablosu" class="divide-y divide-gray-100">
-                            </tbody>
-                    </table>
-                </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-200 flex justify-between items-center"><h2 class="text-xl font-bold">Kasa İşlemleri</h2><button onclick="window.openModal('modal-finans')" class="bg-teal-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm"><i class="fas fa-plus mr-2"></i> Tahsilat Gir</button></div>
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm"><table class="w-full text-left border-collapse text-sm"><thead><tr class="bg-slate-50 border-b border-gray-100 font-bold"><th class="py-4 px-6">Tarih</th><th class="py-4 px-6">Danışan</th><th class="py-4 px-6 text-teal-600">Tutar</th><th class="py-4 px-6 text-right">İşlem</th></tr></thead><tbody id="kasa-tablosu" class="divide-y divide-gray-100"></tbody></table></div>
             </div>
 
         </main>
     </div>
 
     <div id="modal-olcum" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl relative">
+        <div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl relative">
             <button onclick="window.closeModal('modal-olcum')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button>
-            <h3 class="text-lg font-bold mb-4">Ölçüm Gir</h3>
+            <h3 class="text-lg font-bold mb-4">Yeni Ölçüm Gir</h3>
             <form id="form-yeni-olcum" class="space-y-4">
-                <div><label class="form-label">Tarih</label><input type="date" id="o-tarih" required class="form-input"></div>
+                <div><label class="form-label">Ölçüm Tarihi</label><input type="date" id="o-tarih" required class="form-input"></div>
                 <div class="grid grid-cols-3 gap-3">
-                    <div><label class="form-label text-teal-600">Kilo(kg)*</label><input type="number" id="o-kilo" step="0.1" required class="form-input"></div>
+                    <div><label class="form-label text-teal-600">Kilo(kg)*</label><input type="number" id="o-kilo" step="0.1" required class="form-input border-teal-200 bg-teal-50"></div>
                     <div><label class="form-label">Yağ(%)</label><input type="number" id="o-yag" step="0.1" class="form-input"></div>
                     <div><label class="form-label">Kas(%)</label><input type="number" id="o-kas" step="0.1" class="form-input"></div>
                 </div>
-                <button type="submit" class="w-full bg-teal-700 text-white font-bold py-3 rounded-lg mt-2">Kaydet</button>
+                <hr class="my-2 border-gray-100">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Mezura Ölçümleri (Opsiyonel)</p>
+                <div class="grid grid-cols-4 gap-3">
+                    <div><label class="form-label">Bel(cm)</label><input type="number" id="o-bel" step="0.1" class="form-input"></div>
+                    <div><label class="form-label">Kalça(cm)</label><input type="number" id="o-kalca" step="0.1" class="form-input"></div>
+                    <div><label class="form-label">Göğüs(cm)</label><input type="number" id="o-gogus" step="0.1" class="form-input"></div>
+                    <div><label class="form-label">Boyun(cm)</label><input type="number" id="o-boyun" step="0.1" class="form-input"></div>
+                </div>
+                <button type="submit" class="w-full bg-teal-700 text-white font-bold py-3 rounded-lg mt-2 shadow-md">Kaydet</button>
             </form>
         </div>
     </div>
-    
-    <div id="modal-diyet" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+
+    <div id="modal-tahlil" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
         <div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl relative">
-            <button onclick="window.closeModal('modal-diyet')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button>
-            <h3 class="text-lg font-bold mb-4">Diyet Programı Yaz</h3>
-            <form id="form-yeni-diyet" class="space-y-4">
-                <div>
-                    <label class="form-label text-teal-600">Hazır Şablon Seç (Opsiyonel)</label>
-                    <select id="diy-sablon-secici" class="form-input"><option value="">Şablon Yok</option></select>
+            <button onclick="window.closeModal('modal-tahlil')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button>
+            <h3 class="text-lg font-bold mb-4 text-red-600"><i class="fas fa-vial mr-2"></i>Laboratuvar Sonuçları Gir</h3>
+            <form id="form-yeni-tahlil" class="space-y-4">
+                <div><label class="form-label">Tahlil Tarihi*</label><input type="date" id="t-tarih" required class="form-input"></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="form-label">B12 Vitamini</label><input type="number" id="t-b12" step="0.1" class="form-input"></div>
+                    <div><label class="form-label">D Vitamini</label><input type="number" id="t-dvit" step="0.1" class="form-input"></div>
+                    <div><label class="form-label">Demir (Fe)</label><input type="number" id="t-demir" step="0.1" class="form-input"></div>
+                    <div><label class="form-label">Kolesterol (Total)</label><input type="number" id="t-kolesterol" step="0.1" class="form-input"></div>
+                    <div><label class="form-label">Açlık Şekeri (Glukoz)</label><input type="number" id="t-seker" step="0.1" class="form-input"></div>
+                    <div><label class="form-label">TSH (Tiroid)</label><input type="number" id="t-tsh" step="0.1" class="form-input"></div>
                 </div>
-                <div><label class="form-label">Başlık</label><input type="text" id="diy-baslik" required class="form-input"></div>
-                <div><label class="form-label">İçerik</label><textarea id="diy-icerik" required rows="6" class="form-input"></textarea></div>
-                <button type="submit" class="w-full bg-slate-800 text-white font-bold py-3 rounded-lg mt-2">Kaydet</button>
+                <button type="submit" class="w-full bg-red-600 text-white font-bold py-3 rounded-lg mt-2 shadow-md hover:bg-red-700 transition">Tahlili Sisteme Ekle</button>
             </form>
         </div>
     </div>
     
-    <div id="modal-randevu" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl relative">
-            <button onclick="window.closeModal('modal-randevu')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button>
-            <h3 class="text-lg font-bold mb-4">Randevu Oluştur</h3>
-            <form id="form-yeni-randevu" class="space-y-4">
-                <div>
-                    <label class="form-label">Danışan Seçin</label>
-                    <select id="r-hasta" required class="form-input"></select>
-                </div>
-                <div class="flex gap-3">
-                    <div class="w-1/2"><label class="form-label">Tarih</label><input type="date" id="r-tarih" required class="form-input"></div>
-                    <div class="w-1/2"><label class="form-label">Saat</label><input type="time" id="r-saat" required class="form-input"></div>
-                </div>
-                <div>
-                    <label class="form-label">Randevu Tipi</label>
-                    <select id="r-tip" class="form-input">
-                        <option>İlk Görüşme</option>
-                        <option>Kontrol Seansı</option>
-                    </select>
-                </div>
-                <button type="submit" class="w-full bg-teal-700 text-white font-bold py-3 rounded-lg mt-2">Takvime Ekle</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="modal-finans" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl relative">
-            <button onclick="window.closeModal('modal-finans')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button>
-            <h3 class="text-lg font-bold mb-4">Tahsilat Gir</h3>
-            <form id="form-finans" class="space-y-4">
-                <div><label class="form-label">Danışan Seçin</label><select id="f-hasta" required class="form-input"></select></div>
-                <div><label class="form-label text-teal-600">Tutar (₺)*</label><input type="number" id="f-tutar" required class="form-input text-center font-bold text-lg"></div>
-                <div><label class="form-label">Yöntem</label><select id="f-tip" class="form-input"><option>Nakit</option><option>Kredi Kartı</option></select></div>
-                <div><label class="form-label">Tarih</label><input type="date" id="f-tarih" required class="form-input"></div>
-                <button type="submit" class="w-full bg-teal-700 text-white font-bold py-3 rounded-lg mt-2">Kaydet</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="modal-cari-hizmet" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl relative">
-            <button onclick="window.closeModal('modal-cari-hizmet')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button>
-            <h3 class="text-lg font-bold mb-4">Hizmet Bedeli Ekle</h3>
-            <form id="form-cari-hizmet" class="space-y-4">
-                <div><label class="form-label text-orange-600">Tutar (₺)*</label><input type="number" id="ch-tutar" required class="form-input text-center font-bold text-lg border-orange-200 bg-orange-50"></div>
-                <button type="submit" class="w-full bg-slate-800 text-white font-bold py-3 rounded-lg mt-2">Hizmeti Ekle</button>
-            </form>
-        </div>
-    </div>
-    
-    <div id="modal-cari-odeme" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl relative">
-            <button onclick="window.closeModal('modal-cari-odeme')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button>
-            <h3 class="text-lg font-bold mb-4">Ödeme Al</h3>
-            <form id="form-cari-odeme" class="space-y-4">
-                <div><label class="form-label text-emerald-600">Tutar (₺)*</label><input type="number" id="co-tutar" required class="form-input text-center font-bold text-lg border-emerald-200 bg-emerald-50"></div>
-                <div><label class="form-label">Yöntem</label><select id="co-yontem" class="form-input"><option>Nakit</option><option>Kredi Kartı</option></select></div>
-                <button type="submit" class="w-full bg-teal-700 text-white font-bold py-3 rounded-lg mt-2">Ödemeyi Onayla</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="modal-sablon" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
-        <div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl relative">
-            <button onclick="window.closeModal('modal-sablon')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button>
-            <h3 class="text-lg font-bold mb-4">Yeni Şablon Ekle</h3>
-            <form id="form-yeni-sablon" class="space-y-4">
-                <div><label class="form-label">Şablon Başlığı</label><input type="text" id="s-baslik" required class="form-input"></div>
-                <div><label class="form-label">Diyet İçeriği</label><textarea id="s-icerik" required rows="6" class="form-input"></textarea></div>
-                <button type="submit" id="btn-sablon-kaydet" class="w-full bg-slate-800 text-white font-bold py-3 rounded-lg mt-2">Şablonu Kaydet</button>
-            </form>
-        </div>
-    </div>
+    <div id="modal-diyet" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl relative"><button onclick="window.closeModal('modal-diyet')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button><h3 class="text-lg font-bold mb-4">Diyet Programı Yaz</h3><form id="form-yeni-diyet" class="space-y-4"><div><label class="form-label text-teal-600">Hazır Şablon Seç (Opsiyonel)</label><select id="diy-sablon-secici" class="form-input"><option value="">Şablon Yok</option></select></div><div><label class="form-label">Başlık</label><input type="text" id="diy-baslik" required class="form-input"></div><div><label class="form-label">İçerik</label><textarea id="diy-icerik" required rows="6" class="form-input"></textarea></div><button type="submit" class="w-full bg-slate-800 text-white font-bold py-3 rounded-lg mt-2">Kaydet</button></form></div></div>
+    <div id="modal-randevu" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl relative"><button onclick="window.closeModal('modal-randevu')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button><h3 class="text-lg font-bold mb-4">Randevu Oluştur</h3><form id="form-yeni-randevu" class="space-y-4"><div><label class="form-label">Danışan Seçin</label><select id="r-hasta" required class="form-input"></select></div><div class="flex gap-3"><div class="w-1/2"><label class="form-label">Tarih</label><input type="date" id="r-tarih" required class="form-input"></div><div class="w-1/2"><label class="form-label">Saat</label><input type="time" id="r-saat" required class="form-input"></div></div><div><label class="form-label">Randevu Tipi</label><select id="r-tip" class="form-input"><option>İlk Görüşme</option><option>Kontrol Seansı</option></select></div><button type="submit" class="w-full bg-teal-700 text-white font-bold py-3 rounded-lg mt-2">Takvime Ekle</button></form></div></div>
+    <div id="modal-finans" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl relative"><button onclick="window.closeModal('modal-finans')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button><h3 class="text-lg font-bold mb-4">Tahsilat Gir</h3><form id="form-finans" class="space-y-4"><div><label class="form-label">Danışan Seçin</label><select id="f-hasta" required class="form-input"></select></div><div><label class="form-label text-teal-600">Tutar (₺)*</label><input type="number" id="f-tutar" required class="form-input text-center font-bold text-lg"></div><div><label class="form-label">Yöntem</label><select id="f-tip" class="form-input"><option>Nakit</option><option>Kredi Kartı</option></select></div><div><label class="form-label">Tarih</label><input type="date" id="f-tarih" required class="form-input"></div><button type="submit" class="w-full bg-teal-700 text-white font-bold py-3 rounded-lg mt-2">Kaydet</button></form></div></div>
+    <div id="modal-cari-hizmet" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl relative"><button onclick="window.closeModal('modal-cari-hizmet')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button><h3 class="text-lg font-bold mb-4">Hizmet Bedeli Ekle</h3><form id="form-cari-hizmet" class="space-y-4"><div><label class="form-label text-orange-600">Tutar (₺)*</label><input type="number" id="ch-tutar" required class="form-input text-center font-bold text-lg border-orange-200 bg-orange-50"></div><button type="submit" class="w-full bg-slate-800 text-white font-bold py-3 rounded-lg mt-2">Hizmeti Ekle</button></form></div></div>
+    <div id="modal-cari-odeme" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl relative"><button onclick="window.closeModal('modal-cari-odeme')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button><h3 class="text-lg font-bold mb-4">Ödeme Al</h3><form id="form-cari-odeme" class="space-y-4"><div><label class="form-label text-emerald-600">Tutar (₺)*</label><input type="number" id="co-tutar" required class="form-input text-center font-bold text-lg border-emerald-200 bg-emerald-50"></div><div><label class="form-label">Yöntem</label><select id="co-yontem" class="form-input"><option>Nakit</option><option>Kredi Kartı</option></select></div><button type="submit" class="w-full bg-teal-700 text-white font-bold py-3 rounded-lg mt-2">Ödemeyi Onayla</button></form></div></div>
+    <div id="modal-sablon" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4"><div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl relative"><button onclick="window.closeModal('modal-sablon')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-lg"><i class="fas fa-times"></i></button><h3 class="text-lg font-bold mb-4">Yeni Şablon Ekle</h3><form id="form-yeni-sablon" class="space-y-4"><div><label class="form-label">Şablon Başlığı</label><input type="text" id="s-baslik" required class="form-input"></div><div><label class="form-label">Diyet İçeriği</label><textarea id="s-icerik" required rows="6" class="form-input"></textarea></div><button type="submit" id="btn-sablon-kaydet" class="w-full bg-slate-800 text-white font-bold py-3 rounded-lg mt-2">Şablonu Kaydet</button></form></div></div>
 
     <div id="toast-container"></div>
     
-    <script src="ui.js?v=9000"></script>
-    <script type="module" src="app.js?v=9000"></script>
+    <script src="ui.js?v=9001"></script>
+    <script type="module" src="app.js?v=9001"></script>
     
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('Uygulama motoru aktif!', reg))
-                    .catch(err => console.log('Motor hatası:', err));
-            });
-        }
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(err => console.log(err)); }); }
     </script>
 </body>
 </html>
