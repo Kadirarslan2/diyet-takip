@@ -1,7 +1,6 @@
 import { supabase } from './db.js';
-// CACHE KIRICI GÜNCELLENDİ (YENİ SÜRÜM)
-import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=finalVictory';
-import { randevuFormunuBaslat } from './modules/randevu.js?v=finalVictory';
+import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=takvimZirh';
+import { randevuFormunuBaslat } from './modules/randevu.js?v=takvimZirh';
 
 // ================= ÇELİK TOAST BİLDİRİMLERİ =================
 window.showToast = function(mesaj, tip = 'success') {
@@ -80,9 +79,9 @@ window.pdfIndir = async function() {
     const yas = d.dogum_tarihi ? (new Date().getFullYear() - new Date(d.dogum_tarihi).getFullYear()) : "-";
     const islemTarihi = new Date().toLocaleDateString('tr-TR'); const uzman = d.uzman_ad || "Dyt. Beyza";
 
-    const htmlRapor = `<div style="padding: 30px 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background: white; width: 800px; box-sizing: border-box;"><div style="border-bottom: 3px solid #0f766e; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;"><div><h1 style="color: #0f766e; margin: 0; font-size: 24px; font-weight: 900;">DİYETTAKİBİM KLİNİĞİ</h1><p style="margin: 5px 0 0 0; color: #64748b; font-size: 12px; font-weight: bold; text-transform: uppercase;">Kapsamlı Hasta Analiz Raporu</p></div><div style="text-align: right; color: #64748b; font-size: 11px;"><strong>Tarih:</strong> ${islemTarihi}<br><strong>Uzman:</strong> ${uzman}<br><strong>Protokol:</strong> ${d.protokol_no || '-'}</div></div><h3 style="background-color: #f8fafc; color: #334155; padding: 8px 12px; font-size: 13px; margin-bottom: 10px; border-left: 4px solid #0f766e; font-weight: bold;">Kişisel ve Tıbbi Bilgiler</h3><table style="width: 100%; margin-bottom: 20px; font-size: 11px; border-collapse: collapse;"><tr><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9; width: 50%;"><strong>Ad Soyad:</strong> ${d.ad} ${d.soyad}</td><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9; width: 50%;"><strong>Cinsiyet / Yaş:</strong> ${d.cinsiyet || '-'} / ${yas}</td></tr><tr><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9;"><strong>Kronik Hastalıklar:</strong> <span style="color:#b91c1c">${d.kronik_hastaliklar || '-'}</span></td><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9;"><strong>Alerjiler:</strong> <span style="color:#b91c1c">${d.alerjiler || '-'}</span></td></tr><tr><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9;"><strong>Sürekli İlaçlar:</strong> ${d.surekli_ilaclar || '-'}</td><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9;"><strong>Geçirilen Operasyonlar:</strong> ${d.gecirilen_operasyonlar || '-'}</td></tr></table><h3 style="background-color: #f0fdfa; color: #0f766e; padding: 8px 12px; font-size: 13px; margin-bottom: 10px; border-left: 4px solid #14b8a6; font-weight: bold;">Geçmiş Mezura ve Tartı Ölçümleri</h3><table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; text-align: left;"><thead style="background-color: #f8fafc; color: #475569;"><tr><th style="border: 1px solid #e2e8f0; padding: 6px;">Tarih</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Kilo</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Yağ / Kas (%)</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Bel / Kalça (cm)</th><th style="border: 1px solid #e2e8f0; padding: 6px;">BMI</th></tr></thead><tbody>${olcumHtml}</tbody></table><h3 style="background-color: #fef2f2; color: #b91c1c; padding: 8px 12px; font-size: 13px; margin-bottom: 10px; border-left: 4px solid #b91c1c; font-weight: bold;">Laboratuvar ve Kan Tahlili Sonuçları</h3><table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; text-align: left;"><thead style="background-color: #f8fafc; color: #475569;"><tr><th style="border: 1px solid #e2e8f0; padding: 6px;">Tarih</th><th style="border: 1px solid #e2e8f0; padding: 6px;">B12 / D-Vit</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Demir</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Kolesterol</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Açlık Şekeri</th><th style="border: 1px solid #e2e8f0; padding: 6px;">TSH</th></tr></thead><tbody>${tahlilHtml}</tbody></table><div style="margin-top: 30px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 10px;">Bu rapor DiyetTakibim Sistemi tarafından oluşturulmuştur.</div></div>`;
+    const htmlRapor = `<div style="padding: 30px 40px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; background: white; width: 800px; box-sizing: border-box;"><div style="border-bottom: 3px solid #0f766e; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;"><div><h1 style="color: #0f766e; margin: 0; font-size: 24px; font-weight: 900;">DİYETTAKİBİM KLİNİĞİ</h1><p style="margin: 5px 0 0 0; color: #64748b; font-size: 12px; font-weight: bold; text-transform: uppercase;">Kapsamlı Hasta Analiz Raporu</p></div><div style="text-align: right; color: #64748b; font-size: 11px;"><strong>Tarih:</strong> ${islemTarihi}<br><strong>Uzman:</strong> ${uzman}<br><strong>Protokol:</strong> ${d.protokol_no || '-'}</div></div><h3 style="background-color: #f8fafc; color: #334155; padding: 8px 12px; font-size: 13px; margin-bottom: 10px; border-left: 4px solid #0f766e; font-weight: bold;">Kişisel ve Tıbbi Bilgiler</h3><table style="width: 100%; margin-bottom: 20px; font-size: 11px; border-collapse: collapse;"><tr><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9; width: 50%;"><strong>Ad Soyad:</strong> ${d.ad} ${d.soyad}</td><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9; width: 50%;"><strong>Cinsiyet / Yaş:</strong> ${d.cinsiyet || '-'} / ${yas}</td></tr><tr><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9;"><strong>Kronik Hastalıklar:</strong> <span style="color:#b91c1c">${d.kronik_hastaliklar || '-'}</span></td><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9;"><strong>Alerjiler:</strong> <span style="color:#b91c1c">${d.alerjiler || '-'}</span></td></tr><tr><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9;"><strong>Sürekli İlaçlar:</strong> ${d.surekli_ilaclar || '-'}</td><td style="padding: 5px 0; border-bottom: 1px solid #f1f5f9;"><strong>Geçirilen Operasyonlar:</strong> ${d.gecirilen_operasyonlar || '-'}</td></tr></table><h3 style="background-color: #f0fdfa; color: #0f766e; padding: 8px 12px; font-size: 13px; margin-bottom: 10px; border-left: 4px solid #14b8a6; font-weight: bold;">Geçmiş Mezura ve Tartı Ölçümleri</h3><table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; text-align: left;"><thead style="background-color: #f8fafc; color: #475569;"><tr><th style="border: 1px solid #e2e8f0; padding: 6px;">Tarih</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Kilo</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Yağ / Kas (%)</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Bel / Kalça (cm)</th><th style="border: 1px solid #e2e8f0; padding: 6px;">BMI</th></tr></thead><tbody>${olcumHtml}</tbody></table><h3 style="background-color: #fef2f2; color: #b91c1c; padding: 8px 12px; font-size: 13px; margin-bottom: 10px; border-left: 4px solid #b91c1c; font-weight: bold;">Laboratuvar ve Kan Tahlili Sonuçları</h3><table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; text-align: left;"><thead style="background-color: #f8fafc; color: #475569;"><tr><th style="border: 1px solid #e2e8f0; padding: 6px;">Tarih</th><th style="border: 1px solid #e2e8f0; padding: 6px;">B12 / D-Vit</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Demir</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Kolesterol</th><th style="border: 1px solid #e2e8f0; padding: 6px;">Açlık Şekeri</th><th style="border: 1px solid #e2e8f0; padding: 6px;">TSH</th></tr></thead><tbody>${tahlilHtml}</tbody></table><div style="margin-top: 30px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 10px;">Bu rapor DiyetTakibim Sistemi üzerinden oluşturulmuştur.</div></div>`;
 
-    pdfOlusturVeIndir(htmlRapor, `${d.ad}_Klinik_Raporu.pdf`);
+    pdfOlusturVeIndir(htmlRapor, `${d.ad}_${d.soyad}_Klinik_Raporu.pdf`);
 }
 
 window.diyetPdfIndir = async function(diyetId) {
@@ -120,39 +119,64 @@ window.randevuSelectDoldur = async function() {
     }
 }
 
-// ================= RANDEVULARI ÇEKME VE TAKVİME YEREL SAATLE (HOURS) BASMA ÇÖZÜMÜ =================
+// ================= KESİN ÇÖZÜMÜ OLAN ZIRHLI TAKVİM MOTORU (GÜNLÜK/HAFTALIK ÇÖZÜLDÜ) =================
 window.randevulariGetir = async function() { 
-    const { data } = await supabase.from('randevular').select('*').order('tarih', { ascending: true }); 
-    const stat = document.getElementById("stat-randevular");
-    if(stat) stat.innerText = data ? data.length : 0; 
-    
-    if(window.globalCalendar) { 
-        window.globalCalendar.removeAllEvents(); 
-        if(data) {
-            data.forEach(r => { 
-                let rRenk = "#3b82f6"; 
-                if(r.tip === "Kontrol Seansı") rRenk = "#f97316"; 
-                if(r.durum === "Geldi") rRenk = "#10b981"; 
-                if(r.durum === "İptal Etti") rRenk = "#ef4444"; 
-                
-                // KESİN ÇÖZÜM: ISOString çevirmesi yapıp saat dilimi kaybetmemek için,
-                // "2026-03-21T14:30:00" formatında tam yerel saat string'i oluşturuyoruz.
-                let safeSaat = r.saat && r.saat.length >= 5 ? r.saat + ":00" : "09:00:00";
-                let safeStart = `${r.tarih}T${safeSaat}`;
-                
-                window.globalCalendar.addEvent({ 
-                    title: `${r.saat} | ${r.hastaad} (${r.durum || 'Bekliyor'})`, 
-                    start: safeStart,  // Bitiş (end) vermiyoruz, kendi otomatik 1 saatlik blok açar
-                    allDay: false,     // Saatlik (Haftalık/Günlük) görünüme zorlar
-                    color: rRenk, 
-                    extendedProps: { dbId: r.id, durum: r.durum || 'Bekliyor' } 
+    try {
+        const { data } = await supabase.from('randevular').select('*').order('tarih', { ascending: true }); 
+        
+        const stat = document.getElementById("stat-randevular");
+        if(stat) stat.innerText = data ? data.length : 0; 
+        
+        if(window.globalCalendar) { 
+            window.globalCalendar.removeAllEvents(); 
+            if(data) {
+                data.forEach(r => { 
+                    try {
+                        let rRenk = "#3b82f6"; 
+                        if(r.tip === "Kontrol Seansı") rRenk = "#f97316"; 
+                        if(r.durum === "Geldi") rRenk = "#10b981"; 
+                        if(r.durum === "İptal Etti") rRenk = "#ef4444"; 
+                        
+                        let evStart = "";
+                        let evEnd = "";
+
+                        // KESİN ÇÖZÜM: Saat ve Tarih varsa, BİTİŞ saati zorla ekleniyor!
+                        if (r.tarih && r.saat) {
+                            evStart = `${r.tarih}T${r.saat}:00`;
+                            
+                            // Bitiş saatini tam 1 saat sonrasına ayarla ki haftalık/günlükte kutu olarak görünsün
+                            let saatParca = r.saat.split(':');
+                            let bitisSaati = String(parseInt(saatParca[0]) + 1).padStart(2, '0');
+                            evEnd = `${r.tarih}T${bitisSaati}:${saatParca[1]}:00`;
+                        } else if (r.timestamp) {
+                            // Sadece timestamp varsa onu kullan
+                            const dt = new Date(r.timestamp);
+                            evStart = dt.toISOString();
+                            evEnd = new Date(dt.getTime() + 60*60*1000).toISOString(); // 1 saat ekle
+                        } else {
+                            return; // Eğer veri bozuksa atla, sistemi kilitleme!
+                        }
+                        
+                        window.globalCalendar.addEvent({ 
+                            title: `${r.hastaad} (${r.durum || 'Bekliyor'})`, 
+                            start: evStart,
+                            end: evEnd,
+                            allDay: false, 
+                            color: rRenk, 
+                            extendedProps: { dbId: r.id, durum: r.durum || 'Bekliyor' } 
+                        }); 
+                    } catch(eventErr) {
+                        console.warn("Bozuk bir randevu kaydı atlandı: ", r);
+                    }
                 }); 
-            }); 
-        }
-    } 
+            }
+        } 
+    } catch(err) {
+        console.error("Randevuları çekerken hata oluştu:", err);
+    }
 }
 
-// ================= RANDEVU KAYDETME =================
+// ================= RANDEVU KAYDETME MOTORU =================
 let oldFrmRandevu = document.getElementById('form-yeni-randevu');
 if(oldFrmRandevu) {
     let frmRandevu = oldFrmRandevu.cloneNode(true);
@@ -198,12 +222,7 @@ if(oldFrmRandevu) {
 // ================= DİYET MOTORLARI =================
 window.diyetleriGetir = async function(hId) {
     const list = document.getElementById("tablo-diyetler"); const { data } = await supabase.from('diyetler').select('*').eq('hastaid', hId).order('kayitzamani', { ascending: false });
-    if(list) { list.innerHTML = ""; if(data) { data.forEach(d => { 
-        let ozet = ""; if(d.sabah) ozet += `<span class="text-amber-600 font-bold">Sabah:</span> ${d.sabah.substring(0, 30)}...<br>`; if(d.ogle) ozet += `<span class="text-blue-600 font-bold">Öğle:</span> ${d.ogle.substring(0, 30)}...<br>`; if(d.aksam) ozet += `<span class="text-indigo-600 font-bold">Akşam:</span> ${d.aksam.substring(0, 30)}...`;
-        list.innerHTML += `<div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-between"><div><div class="flex justify-between items-start mb-3 border-b border-gray-100 pb-2"><h4 class="font-black text-slate-800 text-sm">${d.baslik}</h4><div class="flex gap-2"><button onclick="window.diyetPdfIndir('${d.id}')" class="text-teal-600 hover:text-teal-800 bg-teal-50 px-2 py-1 rounded text-xs font-bold shadow-sm border border-teal-100" title="PDF İndir"><i class="fas fa-file-pdf mr-1"></i>PDF</button><button onclick="window.diyetSil('${d.id}')" class="text-red-400 hover:text-red-600 bg-red-50 px-2 py-1 rounded text-xs border border-red-100" title="Sil"><i class="fas fa-trash"></i></button></div></div><div class="text-[11px] text-slate-600 leading-relaxed mb-3">${ozet || '<i>(PDF içindedir)</i>'}</div></div><div class="text-[9px] font-bold text-slate-400 mt-2 border-t border-gray-50 pt-2"><i class="far fa-clock mr-1"></i>${new Date(d.kayitzamani).toLocaleDateString('tr-TR')}</div></div>`; 
-    }); } }
-}
-
+    if(list) { list.innerHTML = ""; if(data) { data.forEach(d => { let ozet = ""; if(d.sabah) ozet += `<span class="text-amber-600 font-bold">Sabah:</span> ${d.sabah.substring(0, 30)}...<br>`; if(d.ogle) ozet += `<span class="text-blue-600 font-bold">Öğle:</span> ${d.ogle.substring(0, 30)}...<br>`; if(d.aksam) ozet += `<span class="text-indigo-600 font-bold">Akşam:</span> ${d.aksam.substring(0, 30)}...`; list.innerHTML += `<div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-between"><div><div class="flex justify-between items-start mb-3 border-b border-gray-100 pb-2"><h4 class="font-black text-slate-800 text-sm">${d.baslik}</h4><div class="flex gap-2"><button onclick="window.diyetPdfIndir('${d.id}')" class="text-teal-600 hover:text-teal-800 bg-teal-50 px-2 py-1 rounded text-xs font-bold shadow-sm border border-teal-100" title="PDF İndir"><i class="fas fa-file-pdf mr-1"></i>PDF</button><button onclick="window.diyetSil('${d.id}')" class="text-red-400 hover:text-red-600 bg-red-50 px-2 py-1 rounded text-xs border border-red-100" title="Sil"><i class="fas fa-trash"></i></button></div></div><div class="text-[11px] text-slate-600 leading-relaxed mb-3">${ozet || '<i>(PDF içindedir)</i>'}</div></div><div class="text-[9px] font-bold text-slate-400 mt-2 border-t border-gray-50 pt-2"><i class="far fa-clock mr-1"></i>${new Date(d.kayitzamani).toLocaleDateString('tr-TR')}</div></div>`; }); } } }
 const frmDiyet = document.getElementById('form-yeni-diyet');
 if(frmDiyet) { frmDiyet.onsubmit = async (e) => { e.preventDefault(); const v = (id) => document.getElementById(id).value; const { error } = await supabase.from('diyetler').insert([{ hastaid: window.aktifHastaId, baslik: v('diy-baslik'), sabah: v('diy-sabah'), ara1: v('diy-ara1'), ogle: v('diy-ogle'), ara2: v('diy-ara2'), aksam: v('diy-aksam'), ara3: v('diy-ara3'), icerik: v('diy-notlar') }]); if(!error) { frmDiyet.reset(); window.closeModal('modal-diyet'); window.showToast('Diyet eklendi!'); window.diyetleriGetir(window.aktifHastaId); } }; }
 
@@ -229,7 +248,6 @@ window.sablonlariGetir = async function() {
         });
     } catch(err) { console.error("Şablon Hatası:", err); }
 }
-
 const frmSablon = document.getElementById('form-yeni-sablon');
 if(frmSablon) { frmSablon.onsubmit = async (e) => { e.preventDefault(); const v = (id) => document.getElementById(id).value; const { error } = await supabase.from('sablonlar').insert([{ baslik: v('s-baslik'), sabah: v('s-sabah'), ara1: v('s-ara1'), ogle: v('s-ogle'), ara2: v('s-ara2'), aksam: v('s-aksam'), ara3: v('s-ara3'), icerik: v('s-notlar') }]); if(!error) { frmSablon.reset(); window.closeModal('modal-sablon'); window.showToast('Şablon kaydedildi!'); window.sablonlariGetir(); } }; }
 
@@ -263,7 +281,7 @@ window.cariSil = async function(id) { await supabase.from('cari_hareketler').del
 window.randevuSil = async function(id) { await supabase.from('randevular').delete().eq('id', id); window.showToast('Randevu silindi', 'success'); window.randevulariGetir(); }
 window.sablonSil = async function(id) { await supabase.from('sablonlar').delete().eq('id', id); window.showToast('Şablon silindi', 'success'); window.sablonlariGetir(); }
 
-// ================= RANDEVU İŞLEMLERİ =================
+// RANDEVU MENÜSÜ İŞLEMLERİ
 window.randevuIslem = function(id, durum) { let div = document.getElementById('custom-randevu-modal'); if(div) div.remove(); div = document.createElement('div'); div.id = "custom-randevu-modal"; div.className = "fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"; div.innerHTML = ` <div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl relative transition-all"> <button onclick="document.getElementById('custom-randevu-modal').remove()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-xl"><i class="fas fa-times"></i></button> <h3 class="text-lg font-black mb-2 text-slate-800">Randevu İşlemi</h3> <p class="text-xs font-bold text-slate-500 mb-6 uppercase tracking-wider">Şu anki durum: <span class="text-teal-600">${durum}</span></p> <div class="space-y-3"> <button onclick="window.randevuDurumGuncelle('${id}', 'Geldi')" class="w-full flex items-center justify-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold py-3 rounded-lg hover:bg-emerald-100 transition"><i class="fas fa-check-circle"></i> Danışan Geldi</button> <button onclick="window.randevuDurumGuncelle('${id}', 'İptal Etti')" class="w-full flex items-center justify-center gap-2 bg-red-50 text-red-600 border border-red-200 font-bold py-3 rounded-lg hover:bg-red-100 transition"><i class="fas fa-times-circle"></i> İptal Etti / Gelmedi</button> <div class="border-t border-gray-100 my-2 pt-2"></div> <button onclick="window.randevuKalicSil('${id}')" class="w-full flex items-center justify-center gap-2 bg-slate-800 text-white font-bold py-3 rounded-lg shadow-md hover:bg-slate-900 transition"><i class="fas fa-trash"></i> Takvimden Tamamen Sil</button> </div> </div> `; document.body.appendChild(div); }
 window.randevuDurumGuncelle = async function(id, yeniDurum) { document.getElementById('custom-randevu-modal').remove(); const { error } = await supabase.from('randevular').update({ durum: yeniDurum }).eq('id', id); if(!error) { window.showToast(`Randevu '${yeniDurum}' olarak işaretlendi!`, 'success'); window.randevulariGetir(); } }
 window.randevuKalicSil = async function(id) { document.getElementById('custom-randevu-modal').remove(); if(confirm("Kalıcı olarak silmek istediğinize emin misiniz?")) { await supabase.from('randevular').delete().eq('id', id); window.showToast('Randevu silindi', 'success'); window.randevulariGetir(); } }
@@ -280,7 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("DiyetTakibim Modüler Sistem Devrede!");
     if (typeof window.uretProtokol === "function") window.uretProtokol();
     
-    // ÇÖZÜM: Takvim sınırları sabah 07:00'dan gece 23:00'a kadar genişletildi ki randevular gizlenmesin!
+    // KESİN ÇÖZÜM: Takvim saat sınırları genişletildi, randevular günlükte/haftalıkta rahatça görünsün
     const calendarEl = document.getElementById('calendar');
     if(calendarEl) {
         window.globalCalendar = new FullCalendar.Calendar(calendarEl, {
@@ -294,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     danisanlariGetir(); 
     kayitFormunuBaslat();
-    window.randevulariGetir(); 
+    if(window.randevulariGetir) window.randevulariGetir(); 
     window.finanslariGetir();
     window.randevuSelectDoldur(); 
     
