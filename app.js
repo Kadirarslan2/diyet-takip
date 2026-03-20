@@ -1,15 +1,45 @@
 import { supabase } from './db.js';
-import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js';
+// CACHE (ÖNBELLEK) KIRICI IMPORT! Tarayıcı eski dosyayı kullanamayacak:
+import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=kirilmaz1';
 
-// GLOBAL PROTOKOL ÜRETİCİ
+// ================= ÇELİK TOAST (KAYAN BİLDİRİM) MOTORU =================
+// Başka hiçbir dosyaya ihtiyaç duymadan yeşil şık bildirimler çıkarır
+window.showToast = function(mesaj, tip = 'success') {
+    let container = document.getElementById('toast-container');
+    if(!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        document.body.appendChild(container);
+    }
+    
+    const toast = document.createElement('div');
+    const bgColor = tip === 'success' ? 'bg-teal-600' : 'bg-red-600';
+    const icon = tip === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+    
+    toast.className = `flex items-center gap-3 ${bgColor} text-white px-6 py-4 rounded-xl shadow-2xl font-bold text-sm transform transition-all duration-300 translate-y-full opacity-0 fixed bottom-6 right-6 z-[9999]`;
+    toast.innerHTML = `<i class="fas ${icon} text-xl"></i> <span>${mesaj}</span>`;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => { 
+        toast.classList.remove('translate-y-full', 'opacity-0'); 
+        toast.classList.add('translate-y-0', 'opacity-100'); 
+    }, 10);
+    
+    setTimeout(() => { 
+        toast.classList.remove('translate-y-0', 'opacity-100'); 
+        toast.classList.add('translate-y-full', 'opacity-0'); 
+        setTimeout(() => toast.remove(), 300); 
+    }, 3000);
+};
+
 window.uretProtokol = function() {
     const rnd = Math.floor(10000 + Math.random() * 90000);
     const el = document.getElementById('d-protokol');
     if(el) el.value = "PRT-" + rnd;
 };
 
-// ================= PROFİL ALT SEKMELERİ =================
-
+// ================= PROFİL ALT SEKMELERİ ÇEKİCİ MOTORLAR =================
 window.olcumleriGetir = async function(hId) {
     const tablo = document.getElementById("tablo-olcum-gecmis");
     const { data } = await supabase.from('olcumler').select('*').eq('hastaid', hId).order('tarih', { ascending: false });
@@ -73,27 +103,23 @@ window.sablonlariGetir = async function() { const list = document.getElementById
 window.randevulariGetir = async function() { const { data } = await supabase.from('randevular').select('*').order('timestamp', { ascending: true }); document.getElementById("stat-randevular").innerText = data ? data.length : 0; if(window.globalCalendar) { window.globalCalendar.removeAllEvents(); data.forEach(r => { window.globalCalendar.addEvent({ title: `${r.saat} | ${r.hastaad}`, start: r.timestamp + ":00", color: (r.tip === "Kontrol Seansı" ? "#f97316" : "#3b82f6"), extendedProps: { dbId: r.id } }); }); } }
 window.finanslariGetir = async function() { const tablo = document.getElementById("kasa-tablosu"); const stat = document.getElementById("stat-kasa"); const { data } = await supabase.from('cari_hareketler').select('*, danisanlar(ad, soyad)').eq('tur', 'Ödeme').order('islem_tarihi', { ascending: false }); tablo.innerHTML = ""; let top = 0; if(data) { data.forEach(i => { top += i.tutar; const hAd = i.danisanlar ? (i.danisanlar.ad + " " + i.danisanlar.soyad) : "Bilinmiyor"; tablo.innerHTML += `<tr class="border-b border-gray-100"><td class="p-4">${new Date(i.islem_tarihi).toLocaleDateString('tr-TR')}</td><td class="p-4 font-bold">${hAd}</td><td class="p-4 font-black text-teal-700">${i.tutar} ₺</td><td class="p-4 text-right"><button onclick="window.cariSil('${i.id}')" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`; }); } stat.innerText = top + " ₺"; }
 
-// ================= ALT SİLME İŞLEMLERİ =================
-window.olcumSil = async function(id) { await supabase.from('olcumler').delete().eq('id', id); if(window.showToast) window.showToast('Ölçüm silindi', 'success'); window.olcumleriGetir(window.aktifHastaId); }
-window.tahlilSil = async function(id) { await supabase.from('tahliller').delete().eq('id', id); if(window.showToast) window.showToast('Tahlil silindi', 'success'); window.tahlilleriGetir(window.aktifHastaId); }
-window.diyetSil = async function(id) { await supabase.from('diyetler').delete().eq('id', id); if(window.showToast) window.showToast('Diyet silindi', 'success'); window.diyetleriGetir(window.aktifHastaId); }
-window.cariSil = async function(id) { await supabase.from('cari_hareketler').delete().eq('id', id); if(window.showToast) window.showToast('Kayıt silindi', 'success'); window.cariHareketleriGetir(window.aktifHastaId); window.finanslariGetir(); }
-window.randevuSil = async function(id) { await supabase.from('randevular').delete().eq('id', id); if(window.showToast) window.showToast('Randevu silindi', 'success'); window.randevulariGetir(); }
-window.sablonSil = async function(id) { await supabase.from('sablonlar').delete().eq('id', id); if(window.showToast) window.showToast('Şablon silindi', 'success'); window.sablonlariGetir(); }
-
+// ================= ALT SİLME İŞLEMLERİ (ŞIK BİLDİRİMLİ) =================
+window.olcumSil = async function(id) { await supabase.from('olcumler').delete().eq('id', id); window.showToast('Ölçüm silindi', 'success'); window.olcumleriGetir(window.aktifHastaId); }
+window.tahlilSil = async function(id) { await supabase.from('tahliller').delete().eq('id', id); window.showToast('Tahlil silindi', 'success'); window.tahlilleriGetir(window.aktifHastaId); }
+window.diyetSil = async function(id) { await supabase.from('diyetler').delete().eq('id', id); window.showToast('Diyet silindi', 'success'); window.diyetleriGetir(window.aktifHastaId); }
+window.cariSil = async function(id) { await supabase.from('cari_hareketler').delete().eq('id', id); window.showToast('Kayıt silindi', 'success'); window.cariHareketleriGetir(window.aktifHastaId); window.finanslariGetir(); }
+window.randevuSil = async function(id) { await supabase.from('randevular').delete().eq('id', id); window.showToast('Randevu silindi', 'success'); window.randevulariGetir(); }
+window.sablonSil = async function(id) { await supabase.from('sablonlar').delete().eq('id', id); window.showToast('Şablon silindi', 'success'); window.sablonlariGetir(); }
 
 // ================= SİSTEMİ BAŞLAT =================
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DiyetTakibim Modüler Sistem Devrede!");
     
-    // Açılışta ilk protokolü hazır et
     if (typeof window.uretProtokol === "function") window.uretProtokol();
     
-    // İşçi modülleri çalıştır
     danisanlariGetir();
     kayitFormunuBaslat();
     
-    // Arka plan verilerini hazırla
     sablonlariGetir();
     randevulariGetir();
     finanslariGetir();
