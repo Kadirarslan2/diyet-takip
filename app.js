@@ -422,14 +422,23 @@ if(frmRandevu) {
         const hSel = document.getElementById('r-hasta');
         if(!hSel.value) { window.showToast('Lütfen danışan seçin!', 'error'); return; }
         
+        const tarih = document.getElementById('r-tarih').value;
+        const saat = document.getElementById('r-saat').value;
+        const tip = document.getElementById('r-tip').value;
+
+        // VERİTABANI HATASINI ÇÖZEN KISIM (Zaman formatını düzeltiyoruz)
+        let timeStr;
+        try { timeStr = new Date(`${tarih}T${saat}:00`).toISOString(); }
+        catch(err) { timeStr = new Date().toISOString(); }
+
         const { error } = await supabase.from('randevular').insert([{
             hastaid: hSel.value, 
             hastaad: hSel.options[hSel.selectedIndex].text, 
-            tarih: document.getElementById('r-tarih').value, 
-            saat: document.getElementById('r-saat').value, 
-            tip: document.getElementById('r-tip').value, 
+            tarih: tarih, 
+            saat: saat, 
+            tip: tip, 
             durum: 'Bekliyor', 
-            timestamp: new Date().toISOString()
+            timestamp: timeStr
         }]);
 
         if(!error) { 
@@ -438,7 +447,8 @@ if(frmRandevu) {
             window.showToast('Randevu başarıyla eklendi!'); 
             window.randevulariGetir(); 
         } else {
-            window.showToast('Randevu Eklenemedi!', 'error');
+            window.showToast('Randevu Eklenemedi: ' + error.message, 'error');
+            console.error(error);
         }
     };
 }
