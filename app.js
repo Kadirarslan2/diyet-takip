@@ -1,6 +1,6 @@
 import { supabase } from './db.js';
-import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=kadirSonNet';
-import { randevuFormunuBaslat } from './modules/randevu.js?v=kadirSonNet';
+import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=kadirEnSonMatematik';
+import { randevuFormunuBaslat } from './modules/randevu.js?v=kadirEnSonMatematik';
 
 // ================= BİLDİRİM MOTORU =================
 window.showToast = function(mesaj, tip = 'success') {
@@ -38,39 +38,43 @@ window.whatsappMesajAt = function() {
     window.open(`https://wa.me/${tel}?text=${mesaj}`, '_blank');
 };
 
-// ================= KADİR'İN İSTEDİĞİ SANAL PDF MOTORU (EKRANA GİRMEZ, KESİLMEZ) =================
+// ================= KESİLME HATASI ÇÖZÜLEN PDF MOTORU =================
 const pdfOlusturVeIndir = (htmlIcerik, dosyaAdi) => {
-    // 1. Ekrana SADECE yükleme ekranını koyuyoruz.
+    // 1. Kullanıcının Gördüğü Yükleme Ekranı
     const loaderOverlay = document.createElement('div');
     loaderOverlay.style.cssText = "position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(248, 250, 252, 0.95); z-index:999999; display:flex; justify-content:center; align-items:center;";
     loaderOverlay.innerHTML = '<h2 style="color: #0f766e; font-family: sans-serif;"><i class="fas fa-spinner fa-spin mr-2"></i> PDF Hazırlanıyor... Lütfen Bekleyin.</h2>';
     document.body.appendChild(loaderOverlay);
 
-    // 2. ASIL ÇÖZÜM: Tasarımı DOM'a (arayüze) eklemiyoruz! Sadece Javascript içinde oluşturuyoruz.
-    // Böylece ekran boyutu sağdan soldan kesemez.
-    const sanalKutu = document.createElement('div');
-    sanalKutu.style.width = '800px';
-    sanalKutu.style.padding = '20px';
-    sanalKutu.style.backgroundColor = '#ffffff';
-    sanalKutu.innerHTML = htmlIcerik;
+    // 2. ASIL ÇÖZÜM: Genişliği 800px'den 720px'e çektik ki A4'e tam sığsın ve sağdan kesilmesin!
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlIcerik;
+    tempDiv.style.cssText = "position:absolute; top:0; left:0; width:720px; background:#ffffff; z-index:-1;";
+    document.body.appendChild(tempDiv);
 
+    // Marginleri eşitledik, Scroll kaymasını sıfırladık
     const opt = {
-        margin: 10,
+        margin: [10, 10, 10, 10],
         filename: dosyaAdi,
         image: { type: 'jpeg', quality: 1 },
-        html2canvas: { scale: 2, useCORS: true }, 
+        html2canvas: { scale: 2, useCORS: true, windowWidth: 800, scrollX: 0, scrollY: 0 }, 
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    // html2pdf'e diyoruz ki: Ekrana bakma, sana verdiğim bu sanal kutuyu A4 yap.
-    html2pdf().set(opt).from(sanalKutu).save().then(() => {
-        window.showToast('PDF Başarıyla İndirildi!', 'success');
-        loaderOverlay.remove();
-    }).catch(err => {
-        console.error("PDF Hatası:", err);
-        window.showToast('PDF Hatası!', 'error');
-        loaderOverlay.remove();
-    });
+    window.scrollTo(0,0);
+
+    setTimeout(() => {
+        html2pdf().set(opt).from(tempDiv).save().then(() => {
+            window.showToast('PDF Başarıyla İndirildi!', 'success');
+            loaderOverlay.remove();
+            tempDiv.remove();
+        }).catch(err => {
+            console.error("PDF Hatası:", err);
+            window.showToast('PDF Hatası!', 'error');
+            loaderOverlay.remove();
+            tempDiv.remove();
+        });
+    }, 800);
 };
 
 // Klinik Raporu PDF
@@ -110,22 +114,12 @@ window.diyetPdfIndir = async function(diyetId) {
 
     let gKilo = "-", gBoy = d ? (d.boy || "-") : "-", gVki = "-";
     const { data: olcumler } = await supabase.from('olcumler').select('*').eq('hastaid', dData.hastaid).order('tarih', { ascending: false });
-    if(olcumler && olcumler.length > 0) {
-        gKilo = olcumler[0].kilo + " kg";
-        gVki = olcumler[0].vki || "-";
-    }
-
+    if(olcumler && olcumler.length > 0) { gKilo = olcumler[0].kilo + " kg"; gVki = olcumler[0].vki || "-"; }
     const islemTarihi = new Date(dData.kayitzamani).toLocaleDateString('tr-TR');
 
     const ogunHtml = (baslik, renk, icerik, icon) => { 
         if(!icerik || icerik.trim() === "") return ""; 
-        return `
-        <div style="background: #f8fafc; padding: 15px; margin-bottom: 15px; border-left: 5px solid ${renk}; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-            <h4 style="margin: 0 0 8px 0; color: ${renk}; font-size: 16px; font-weight: 800; text-transform: uppercase;">
-                ${icon} ${baslik}
-            </h4>
-            <div style="font-size: 14px; line-height: 1.6; color: #334155;">${icerik.replace(/\n/g, '<br>')}</div>
-        </div>`; 
+        return `<div style="background: #f8fafc; padding: 15px; margin-bottom: 15px; border-left: 5px solid ${renk}; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);"><h4 style="margin: 0 0 8px 0; color: ${renk}; font-size: 16px; font-weight: 800; text-transform: uppercase;">${icon} ${baslik}</h4><div style="font-size: 14px; line-height: 1.6; color: #334155;">${icerik.replace(/\n/g, '<br>')}</div></div>`; 
     };
 
     const htmlDiyet = `<div style="padding: 20px 30px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white; width: 100%; box-sizing: border-box;"><div style="text-align: center; border-bottom: 3px solid #0f766e; padding-bottom: 20px; margin-bottom: 25px;"><h1 style="color: #0f766e; margin: 0 0 5px 0; font-size: 32px; font-weight: 900; letter-spacing: 1px;">DİYETTAKİBİM KLİNİĞİ</h1><p style="margin: 0; color: #64748b; font-size: 15px; font-weight: bold; letter-spacing: 2px;">KİŞİYE ÖZEL BESLENME PROGRAMI</p></div><div style="display: flex; justify-content: space-between; background: #f1f5f9; padding: 15px 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #e2e8f0;"><div style="width: 50%;"><table style="width: 100%; font-size: 14px; color: #334155; border:none;"><tr><td style="padding: 3px 0; border:none;"><strong>Danışan:</strong></td><td style="border:none;">${adSoyad}</td></tr><tr><td style="padding: 3px 0; border:none;"><strong>Güncel Kilo/Boy:</strong></td><td style="border:none;">${gKilo} / ${gBoy} cm</td></tr><tr><td style="padding: 3px 0; border:none;"><strong>Vücut Kitle İndeksi:</strong></td><td style="border:none;">${gVki}</td></tr></table></div><div style="width: 50%; border-left: 2px dashed #cbd5e1; padding-left: 20px;"><table style="width: 100%; font-size: 14px; color: #334155; border:none;"><tr><td style="padding: 3px 0; border:none;"><strong>Uzman Diyetisyen:</strong></td><td style="color: #0f766e; font-weight: bold; border:none;">${uzman}</td></tr><tr><td style="padding: 3px 0; border:none;"><strong>Program Adı:</strong></td><td style="border:none;">${dData.baslik}</td></tr><tr><td style="padding: 3px 0; border:none;"><strong>Düzenlenme Tarihi:</strong></td><td style="border:none;">${islemTarihi}</td></tr></table></div></div>${ogunHtml('Sabah (Kahvaltı)', '#d97706', dData.sabah, '☀️')} ${ogunHtml('1. Ara Öğün', '#059669', dData.ara1, '🍎')} ${ogunHtml('Öğle Yemeği', '#2563eb', dData.ogle, '🍲')} ${ogunHtml('2. Ara Öğün', '#059669', dData.ara2, '🥗')} ${ogunHtml('Akşam Yemeği', '#4f46e5', dData.aksam, '🌙')} ${ogunHtml('3. Ara Öğün (Gece)', '#059669', dData.ara3, '🥛')} ${dData.icerik ? `<div style="margin-top: 30px; padding: 20px; border: 2px solid #ef4444; background: #fef2f2; border-radius: 8px;"><h4 style="margin: 0 0 10px 0; color: #b91c1c; font-size: 16px; font-weight: 900;">⚠️ DİYETİSYENİN ÖZEL NOTLARI</h4><div style="font-size: 14px; color: #7f1d1d; line-height: 1.6; font-weight: bold;">${dData.icerik.replace(/\n/g, '<br>')}</div></div>` : ''}<div style="margin-top: 40px; text-align: center; border-top: 2px solid #e2e8f0; padding-top: 20px;"><p style="margin: 0; font-size: 13px; color: #0f766e; font-weight: bold;">Sağlıklı ve Mutlu Günler Dileriz!</p><p style="margin: 5px 0 0 0; font-size: 11px; color: #94a3b8;">Bu rapor DiyetTakibim Profesyonel Yönetim Sistemi üzerinden oluşturulmuştur.</p></div></div>`;
