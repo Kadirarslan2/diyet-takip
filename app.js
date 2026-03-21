@@ -318,15 +318,17 @@ window.gunlukRandevulariGoster = function(tarihStr) {
     document.body.appendChild(div);
 };
 
-// ================= DANIŞAN SEÇ KUTUSUNU DOLDURMA =================
+// ================= DANIŞAN SEÇ KUTUSUNU DOLDURMA (GİZLİ ID KONTROLÜ) =================
 window.randevuSelectDoldur = async function() {
-    const sel = document.getElementById('r-hasta');
-    if(!sel) return;
+    const s = document.getElementById('r-hasta');
+    if(!s) return;
     const { data } = await supabase.from('danisanlar').select('id, ad, soyad').order('ad', { ascending: true });
     if(data) {
-        sel.innerHTML = '<option value="">Danışan Seçiniz...</option>';
-        data.forEach(d => { 
-            sel.innerHTML += `<option value="${d.id}">${d.ad} ${d.soyad}</option>`; 
+        // value="" kısmını ekleyerek varsayılan seçeneğin boş dönmesini garanti ediyoruz
+        s.innerHTML = '<option value="" disabled selected>Danışan Seçiniz...</option>';
+        data.forEach(d => {
+            // Arka planda "value" olarak gizli d.id (UUID) gönderiyoruz!
+            s.innerHTML += `<option value="${d.id}">${d.ad} ${d.soyad}</option>`;
         });
     }
 };
@@ -420,20 +422,26 @@ if(frmRandevu) {
     frmRandevu.onsubmit = async (e) => {
         e.preventDefault();
         const hSel = document.getElementById('r-hasta');
-        if(!hSel.value) { window.showToast('Lütfen danışan seçin!', 'error'); return; }
+        const secilenId = hSel.value; // Bu artık "Kadir Arslan" değil, arkadaki gizli kod (UUID) olacak!
+        const secilenAd = hSel.options[hSel.selectedIndex].text;
+
+        if(!secilenId || secilenId === "") { 
+            window.showToast('Lütfen listeden bir danışan seçin!', 'error'); 
+            return; 
+        }
         
         const tarih = document.getElementById('r-tarih').value;
         const saat = document.getElementById('r-saat').value;
         const tip = document.getElementById('r-tip').value;
 
-        // VERİTABANI HATASINI ÇÖZEN KISIM (Zaman formatını düzeltiyoruz)
+        // Zaman formatını güvenli hale getiriyoruz
         let timeStr;
         try { timeStr = new Date(`${tarih}T${saat}:00`).toISOString(); }
         catch(err) { timeStr = new Date().toISOString(); }
 
         const { error } = await supabase.from('randevular').insert([{
-            hastaid: hSel.value, 
-            hastaad: hSel.options[hSel.selectedIndex].text, 
+            hastaid: secilenId, 
+            hastaad: secilenAd, 
             tarih: tarih, 
             saat: saat, 
             tip: tip, 
@@ -444,7 +452,7 @@ if(frmRandevu) {
         if(!error) { 
             frmRandevu.reset(); 
             window.closeModal('modal-randevu'); 
-            window.showToast('Randevu başarıyla eklendi!'); 
+            window.showToast('Randevu başarıyla eklendi!', 'success'); 
             window.randevulariGetir(); 
         } else {
             window.showToast('Randevu Eklenemedi: ' + error.message, 'error');
