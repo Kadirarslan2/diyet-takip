@@ -97,7 +97,7 @@ const pdfOlusturVeIndir = (htmlIcerik, dosyaAdi) => {
         setTimeout(() => printStyle.remove(), 1000);
     };
 };
-
+// ================= KLİNİK RAPORU PDF =================
 window.pdfIndir = async function() {
     if(!window.aktifHastaId) return;
     const d = window.danisanListesi.find(x => x.id === window.aktifHastaId);
@@ -124,49 +124,52 @@ window.pdfIndir = async function() {
     }
 
     const yas = d.dogum_tarihi ? (new Date().getFullYear() - new Date(d.dogum_tarihi).getFullYear()) : "-";
+    const islemTarihi = new Date().toLocaleDateString('tr-TR'); 
     const uzman = d.uzman_ad || "Dyt. Beyza";
 
     const htmlRapor = `
-        <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b;">
+        <div style="padding: 40px 50px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; width: 100%; box-sizing: border-box;">
             <div style="border-bottom: 3px solid #0f766e; padding-bottom: 15px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
                 <div>
                     <h1 style="color: #0f766e; margin: 0; font-size: 28px; font-weight: 900;">DİYETTAKİBİM KLİNİĞİ</h1>
                     <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px; font-weight: bold; text-transform: uppercase;">Kapsamlı Hasta Analiz Raporu</p>
                 </div>
                 <div style="text-align: right; color: #64748b; font-size: 12px;">
+                    <strong>Tarih:</strong> ${islemTarihi}<br>
                     <strong>Uzman:</strong> ${uzman}<br>
                     <strong>Protokol:</strong> ${d.protokol_no || '-'}
                 </div>
             </div>
             
-            <h3 style="background-color: #f8fafc; padding: 10px 15px; border-left: 4px solid #0f766e;">Kişisel Bilgiler</h3>
+            <h3 style="background-color: #f8fafc; color: #334155; padding: 10px 15px; font-size: 14px; margin-bottom: 15px; border-left: 4px solid #0f766e; font-weight: bold;">Kişisel ve Tıbbi Bilgiler</h3>
             <table style="width: 100%; margin-bottom: 30px; font-size: 13px; border-collapse: collapse;">
-                <tr>
-                    <td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9;"><strong>Ad Soyad:</strong> ${d.ad} ${d.soyad}</td>
-                    <td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9;"><strong>Cinsiyet / Yaş:</strong> ${d.cinsiyet || '-'} / ${yas}</td>
-                </tr>
+                <tr><td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; width: 50%;"><strong>Ad Soyad:</strong> ${d.ad} ${d.soyad}</td><td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; width: 50%;"><strong>Cinsiyet / Yaş:</strong> ${d.cinsiyet || '-'} / ${yas}</td></tr>
+                <tr><td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9;"><strong>Kronik Hastalıklar:</strong> <span style="color:#b91c1c">${d.kronik_hastaliklar || '-'}</span></td><td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9;"><strong>Alerjiler:</strong> <span style="color:#b91c1c">${d.alerjiler || '-'}</span></td></tr>
+                <tr><td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9;"><strong>Sürekli İlaçlar:</strong> ${d.surekli_ilaclar || '-'}</td><td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9;"><strong>Geçirilen Operasyonlar:</strong> ${d.gecirilen_operasyonlar || '-'}</td></tr>
             </table>
-            
-            <h3 style="background-color: #f0fdfa; padding: 10px 15px; border-left: 4px solid #14b8a6;">Geçmiş Ölçümler</h3>
+
+            <h3 style="background-color: #f0fdfa; color: #0f766e; padding: 10px 15px; font-size: 14px; margin-bottom: 15px; border-left: 4px solid #14b8a6; font-weight: bold;">Geçmiş Mezura ve Tartı Ölçümleri</h3>
             <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 12px; text-align: left;">
-                <thead style="background-color: #f8fafc;">
-                    <tr><th style="border: 1px solid #e2e8f0; padding: 8px;">Tarih</th><th style="border: 1px solid #e2e8f0; padding: 8px;">Kilo</th><th style="border: 1px solid #e2e8f0; padding: 8px;">Yağ/Kas</th><th style="border: 1px solid #e2e8f0; padding: 8px;">Bel/Kalça</th><th style="border: 1px solid #e2e8f0; padding: 8px;">BMI</th></tr>
-                </thead>
+                <thead style="background-color: #f8fafc; color: #475569;"><tr><th style="border: 1px solid #e2e8f0; padding: 8px;">Tarih</th><th style="border: 1px solid #e2e8f0; padding: 8px;">Kilo</th><th style="border: 1px solid #e2e8f0; padding: 8px;">Yağ / Kas (%)</th><th style="border: 1px solid #e2e8f0; padding: 8px;">Bel / Kalça (cm)</th><th style="border: 1px solid #e2e8f0; padding: 8px;">BMI</th></tr></thead>
                 <tbody>${olcumHtml}</tbody>
             </table>
-            
-            <h3 style="background-color: #fef2f2; padding: 10px 15px; border-left: 4px solid #b91c1c;">Tahlil Sonuçları</h3>
+
+            <h3 style="background-color: #fef2f2; color: #b91c1c; padding: 10px 15px; font-size: 14px; margin-bottom: 15px; border-left: 4px solid #b91c1c; font-weight: bold;">Laboratuvar ve Kan Tahlili Sonuçları</h3>
             <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 12px; text-align: left;">
-                <thead style="background-color: #f8fafc;">
-                    <tr><th style="border: 1px solid #e2e8f0; padding: 8px;">Tarih</th><th style="border: 1px solid #e2e8f0; padding: 8px;">B12/D-Vit</th><th style="border: 1px solid #e2e8f0; padding: 8px;">Demir</th><th style="border: 1px solid #e2e8f0; padding: 8px;">Kolesterol</th><th style="border: 1px solid #e2e8f0; padding: 8px;">Şeker</th><th style="border: 1px solid #e2e8f0; padding: 8px;">TSH</th></tr>
-                </thead>
+                <thead style="background-color: #f8fafc; color: #475569;"><tr><th style="border: 1px solid #e2e8f0; padding: 8px;">Tarih</th><th style="border: 1px solid #e2e8f0; padding: 8px;">B12 / D-Vit</th><th style="border: 1px solid #e2e8f0; padding: 8px;">Demir</th><th style="border: 1px solid #e2e8f0; padding: 8px;">Kolesterol</th><th style="border: 1px solid #e2e8f0; padding: 8px;">Açlık Şekeri</th><th style="border: 1px solid #e2e8f0; padding: 8px;">TSH</th></tr></thead>
                 <tbody>${tahlilHtml}</tbody>
             </table>
-        </div>`;
+
+            <div style="margin-top: 40px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+                Bu rapor profesyonel takip amaçlıdır. DiyetTakibim Yönetim Sistemi tarafından oluşturulmuştur.
+            </div>
+        </div>
+    `;
 
     pdfOlusturVeIndir(htmlRapor, `${d.ad}_Klinik_Raporu`);
 };
 
+// ================= DİYET LİSTESİ PDF =================
 window.diyetPdfIndir = async function(diyetId) {
     const { data: dData } = await supabase.from('diyetler').select('*').eq('id', diyetId).single();
     if(!dData) return;
@@ -175,29 +178,70 @@ window.diyetPdfIndir = async function(diyetId) {
     const adSoyad = d ? `${d.ad} ${d.soyad}` : "Danışan";
     const uzman = d ? (d.uzman_ad || "Dyt. Beyza") : "Dyt. Beyza";
 
+    let gKilo = "-", gBoy = d ? (d.boy || "-") : "-", gVki = "-";
+    const { data: olcumler } = await supabase.from('olcumler').select('*').eq('hastaid', dData.hastaid).order('tarih', { ascending: false });
+    if(olcumler && olcumler.length > 0) {
+        gKilo = olcumler[0].kilo + " kg";
+        gVki = olcumler[0].vki || "-";
+    }
+
+    const islemTarihi = new Date(dData.kayitzamani).toLocaleDateString('tr-TR');
+
+    const ogunHtml = (baslik, renk, icerik, icon) => { 
+        if(!icerik || icerik.trim() === "") return ""; 
+        return `
+        <div style="background: #f8fafc; padding: 15px; margin-bottom: 15px; border-left: 5px solid ${renk}; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <h4 style="margin: 0 0 8px 0; color: ${renk}; font-size: 16px; font-weight: 800; text-transform: uppercase;">
+                ${icon} ${baslik}
+            </h4>
+            <div style="font-size: 14px; line-height: 1.6; color: #334155;">${icerik.replace(/\n/g, '<br>')}</div>
+        </div>`; 
+    };
+
     const htmlDiyet = `
-        <div style="font-family: 'Helvetica Neue', Arial, sans-serif; width: 100%;">
+        <div style="padding: 40px 50px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: white; width: 100%; box-sizing: border-box;">
             <div style="text-align: center; border-bottom: 3px solid #0f766e; padding-bottom: 20px; margin-bottom: 25px;">
-                <h1 style="color: #0f766e; font-size: 32px; font-weight: 900;">DİYETTAKİBİM KLİNİĞİ</h1>
-                <p>KİŞİYE ÖZEL BESLENME PROGRAMI</p>
+                <h1 style="color: #0f766e; margin: 0 0 5px 0; font-size: 32px; font-weight: 900; letter-spacing: 1px;">DİYETTAKİBİM KLİNİĞİ</h1>
+                <p style="margin: 0; color: #64748b; font-size: 15px; font-weight: bold; letter-spacing: 2px;">KİŞİYE ÖZEL BESLENME PROGRAMI</p>
             </div>
-            <div style="background: #f1f5f9; padding: 15px; margin-bottom: 30px;">
-                <strong>Danışan:</strong> ${adSoyad} <br>
-                <strong>Program Adı:</strong> ${dData.baslik}
+            
+            <div style="display: flex; justify-content: space-between; background: #f1f5f9; padding: 15px 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #e2e8f0;">
+                <div style="width: 50%;">
+                    <table style="width: 100%; font-size: 14px; color: #334155; border:none;">
+                        <tr><td style="padding: 3px 0; border:none;"><strong>Danışan:</strong></td><td style="border:none;">${adSoyad}</td></tr>
+                        <tr><td style="padding: 3px 0; border:none;"><strong>Güncel Kilo/Boy:</strong></td><td style="border:none;">${gKilo} / ${gBoy} cm</td></tr>
+                        <tr><td style="padding: 3px 0; border:none;"><strong>Vücut Kitle İndeksi:</strong></td><td style="border:none;">${gVki}</td></tr>
+                    </table>
+                </div>
+                <div style="width: 50%; border-left: 2px dashed #cbd5e1; padding-left: 20px;">
+                    <table style="width: 100%; font-size: 14px; color: #334155; border:none;">
+                        <tr><td style="padding: 3px 0; border:none;"><strong>Uzman Diyetisyen:</strong></td><td style="color: #0f766e; font-weight: bold; border:none;">${uzman}</td></tr>
+                        <tr><td style="padding: 3px 0; border:none;"><strong>Program Adı:</strong></td><td style="border:none;">${dData.baslik}</td></tr>
+                        <tr><td style="padding: 3px 0; border:none;"><strong>Düzenlenme Tarihi:</strong></td><td style="border:none;">${islemTarihi}</td></tr>
+                    </table>
+                </div>
             </div>
-            <div style="background: #f8fafc; padding: 15px; margin-bottom: 15px; border-left: 5px solid #d97706;">
-                <h4>☀️ Sabah</h4><p>${dData.sabah}</p>
+            
+            ${ogunHtml('Sabah (Kahvaltı)', '#d97706', dData.sabah, '☀️')} 
+            ${ogunHtml('1. Ara Öğün', '#059669', dData.ara1, '🍎')} 
+            ${ogunHtml('Öğle Yemeği', '#2563eb', dData.ogle, '🍲')} 
+            ${ogunHtml('2. Ara Öğün', '#059669', dData.ara2, '🥗')} 
+            ${ogunHtml('Akşam Yemeği', '#4f46e5', dData.aksam, '🌙')} 
+            ${ogunHtml('3. Ara Öğün (Gece)', '#059669', dData.ara3, '🥛')} 
+            
+            ${dData.icerik ? `
+            <div style="margin-top: 30px; padding: 20px; border: 2px solid #ef4444; background: #fef2f2; border-radius: 8px;">
+                <h4 style="margin: 0 0 10px 0; color: #b91c1c; font-size: 16px; font-weight: 900;">⚠️ DİYETİSYENİN ÖZEL NOTLARI</h4>
+                <div style="font-size: 14px; color: #7f1d1d; line-height: 1.6; font-weight: bold;">${dData.icerik.replace(/\n/g, '<br>')}</div>
+            </div>` : ''}
+            
+            <div style="margin-top: 40px; text-align: center; border-top: 2px solid #e2e8f0; padding-top: 20px;">
+                <p style="margin: 0; font-size: 13px; color: #0f766e; font-weight: bold;">Sağlıklı ve Mutlu Günler Dileriz!</p>
+                <p style="margin: 5px 0 0 0; font-size: 11px; color: #94a3b8;">Bu rapor DiyetTakibim Profesyonel Yönetim Sistemi üzerinden oluşturulmuştur.</p>
             </div>
-            <div style="background: #f8fafc; padding: 15px; margin-bottom: 15px; border-left: 5px solid #2563eb;">
-                <h4>🍲 Öğle</h4><p>${dData.ogle}</p>
-            </div>
-            <div style="background: #f8fafc; padding: 15px; margin-bottom: 15px; border-left: 5px solid #4f46e5;">
-                <h4>🌙 Akşam</h4><p>${dData.aksam}</p>
-            </div>
-            ${dData.icerik ? `<div style="background: #fef2f2; padding: 15px; margin-top: 20px; border-left: 5px solid #b91c1c;"><h4>⚠️ Notlar</h4><p>${dData.icerik}</p></div>` : ''}
         </div>`;
 
-    pdfOlusturVeIndir(htmlDiyet, `Diyet_Programi_${adSoyad}`);
+    pdfOlusturVeIndir(htmlDiyet, `Diyet_Programi_${d.ad}`);
 };
 
 // ================= TAKVİM MOTORU (AYLIK VE GÜNE TIKLAMA) =================
