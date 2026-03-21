@@ -4,11 +4,15 @@ export function initAuth() {
     const loginScreen = document.getElementById('login-screen');
     const formLogin = document.getElementById('form-login');
 
-    // SİSTEM HER YENİLENDİĞİNDE VEYA AÇILDIĞINDA DİREKT KİLİTLİ BAŞLAR
-    // Hiçbir hafıza kontrolü yok, kaçış yok!
-    if(loginScreen) {
-        loginScreen.style.display = 'flex';
-        loginScreen.style.opacity = '1';
+    // MÜKEMMEL ÇÖZÜM: sessionStorage! 
+    // F5 yapınca şifre sormaz, ama sekmeyi/tarayıcıyı kapatınca anında unutur ve kilitler.
+    if (sessionStorage.getItem('diyetTakibimAuth') === 'dytbeyza_onayli') {
+        if(loginScreen) loginScreen.style.display = 'none';
+    } else {
+        if(loginScreen) {
+            loginScreen.style.display = 'flex';
+            loginScreen.style.opacity = '1';
+        }
     }
 
     if(formLogin) {
@@ -18,7 +22,9 @@ export function initAuth() {
             const p = document.getElementById('login-pass').value;
 
             if (u === 'dytbeyza' && p === 'dytbeyzayılmaz00') {
-                // Şifre doğruysa sadece anlık olarak ekranı gizle, hiçbir yere kaydetme
+                // Şifre doğruysa sekme kapanana kadar geçici hafızaya al
+                sessionStorage.setItem('diyetTakibimAuth', 'dytbeyza_onayli');
+                
                 if(window.showToast) window.showToast('Giriş Başarılı! Hoş Geldiniz Dyt. Beyza', 'success');
                 
                 loginScreen.style.opacity = '0';
@@ -30,7 +36,8 @@ export function initAuth() {
     }
 }
 
-// Çıkış Yap butonuna basılınca sayfayı yenilemek yeterli, zaten anında şifre soracak
+// Çıkış Yap butonuna basılınca hafızayı sil ve login ekranına düş
 window.cikisYap = function() {
+    sessionStorage.removeItem('diyetTakibimAuth');
     window.location.reload(); 
 };
