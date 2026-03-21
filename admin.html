@@ -7,7 +7,7 @@
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f766e">
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
@@ -57,6 +57,10 @@
             <div class="text-[10px] font-black text-slate-400 tracking-widest px-3 mb-2 mt-4 uppercase">Danışan İşlemleri</div>
             <button onclick="window.switchPage('page-danisan-listesi')" id="nav-danisan-listesi" class="menu-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-slate-50 font-medium text-sm transition"><i class="fas fa-users w-5"></i> Danışan Listesi</button>
             <button onclick="window.switchPage('page-yeni-kayit')" id="nav-yeni-kayit" class="menu-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-500 hover:bg-slate-50 font-medium text-sm transition"><i class="fas fa-user-plus w-5"></i> Danışan Ekle</button>
+            
+            <div class="mt-8 px-3">
+                <button onclick="window.cikisYap()" class="w-full flex items-center gap-3 text-red-500 font-bold p-3 rounded-xl hover:bg-red-50 transition-colors text-sm"><i class="fas fa-power-off w-5"></i> Güvenli Çıkış</button>
+            </div>
         </nav>
     </aside>
 
@@ -80,6 +84,35 @@
                     <div class="bg-white p-5 md:p-6 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between"><div><p class="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Toplam Danışan</p><h3 class="text-2xl md:text-3xl font-black text-slate-800" id="stat-hastalar">0</h3></div><div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-lg md:text-xl"><i class="fas fa-users"></i></div></div>
                     <div class="bg-white p-5 md:p-6 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between"><div><p class="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-widest mb-1">Randevular</p><h3 class="text-2xl md:text-3xl font-black text-slate-800" id="stat-randevular">0</h3></div><div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center text-lg md:text-xl"><i class="far fa-calendar-check"></i></div></div>
                     <div class="bg-white p-5 md:p-6 rounded-xl border border-teal-200 shadow-sm flex items-center justify-between"><div><p class="text-[10px] md:text-xs text-teal-700 font-bold uppercase tracking-widest mb-1">Toplam Kasa</p><h3 class="text-2xl md:text-3xl font-black text-teal-700" id="stat-kasa">0 ₺</h3></div><div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-teal-50 text-teal-600 flex items-center justify-center text-lg md:text-xl"><i class="fas fa-lira-sign"></i></div></div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
+                    <h3 class="text-lg font-black text-slate-800 mb-4"><i class="fas fa-chart-bar text-teal-600 mr-2"></i>Genel Randevu Analizi</h3>
+                    <div class="relative h-64 w-full">
+                        <canvas id="anaGrafik"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                        <div class="flex justify-between items-center mb-5">
+                            <h3 class="text-lg font-black text-slate-800"><i class="far fa-calendar-check text-teal-600 mr-2"></i>Yaklaşan Randevular</h3>
+                            <span class="text-[10px] font-black text-teal-600 bg-teal-50 px-3 py-1 rounded-full uppercase tracking-widest">Bekleyenler</span>
+                        </div>
+                        <div id="dash-yaklasan-randevular" class="space-y-3">
+                            <div class="text-center text-sm text-slate-400 py-4"><i class="fas fa-spinner fa-spin mr-2"></i> Yükleniyor...</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                        <div class="flex justify-between items-center mb-5">
+                            <h3 class="text-lg font-black text-slate-800"><i class="fas fa-users text-teal-600 mr-2"></i>Yeni Danışanlar</h3>
+                            <span class="text-[10px] font-black text-teal-600 bg-teal-50 px-3 py-1 rounded-full uppercase tracking-widest">Son Eklenenler</span>
+                        </div>
+                        <div id="dash-son-danisanlar" class="space-y-3">
+                            <div class="text-center text-sm text-slate-400 py-4"><i class="fas fa-spinner fa-spin mr-2"></i> Yükleniyor...</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -274,34 +307,5 @@
             });
         };
     </script>
-    <div id="login-screen" style="display: none;" class="fixed inset-0 bg-slate-900 z-[9999999] flex-col items-center justify-center transition-opacity duration-500">
-        <div class="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-sm mx-4 text-center">
-            <div class="w-20 h-20 bg-teal-50 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-teal-100">
-                <i class="fas fa-user-md text-4xl text-teal-600"></i>
-            </div>
-            <h1 class="text-3xl font-black text-slate-800 mb-1 tracking-tight">DiyetTakibim</h1>
-            <p class="text-xs text-slate-500 mb-8 font-bold tracking-widest uppercase">Yönetim Paneli Güvenlik Duvarı</p>
-            
-            <form id="form-login" class="space-y-5">
-                <div class="text-left">
-                    <label class="block text-[11px] font-black text-slate-400 mb-1 uppercase tracking-wider">Kullanıcı Adı</label>
-                    <div class="relative">
-                        <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="text" id="login-user" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all" placeholder="Kullanıcı Adı" required>
-                    </div>
-                </div>
-                <div class="text-left mb-6">
-                    <label class="block text-[11px] font-black text-slate-400 mb-1 uppercase tracking-wider">Şifre</label>
-                    <div class="relative">
-                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="password" id="login-pass" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all" placeholder="••••••••" required>
-                    </div>
-                </div>
-                <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-black py-4 rounded-xl shadow-lg shadow-teal-600/30 transition-all text-sm uppercase tracking-wide mt-2">
-                    <i class="fas fa-sign-in-alt mr-2"></i> Panele Giriş Yap
-                </button>
-            </form>
-        </div>
-    </div>
 </body>
 </html>
