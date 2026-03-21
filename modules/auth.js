@@ -4,15 +4,11 @@ export function initAuth() {
     const loginScreen = document.getElementById('login-screen');
     const formLogin = document.getElementById('form-login');
 
-    // KESİN ÇÖZÜM: localStorage yerine sessionStorage kullanıldı. 
-    // Sekme veya tarayıcı kapanınca şifre unutulur, tekrar sorar!
-    if (sessionStorage.getItem('diyetTakibimAuth') === 'dytbeyza_onayli') {
-        if(loginScreen) loginScreen.style.display = 'none';
-    } else {
-        if(loginScreen) {
-            loginScreen.style.display = 'flex';
-            loginScreen.style.opacity = '1';
-        }
+    // SİSTEM HER YENİLENDİĞİNDE VEYA AÇILDIĞINDA DİREKT KİLİTLİ BAŞLAR
+    // Hiçbir hafıza kontrolü yok, kaçış yok!
+    if(loginScreen) {
+        loginScreen.style.display = 'flex';
+        loginScreen.style.opacity = '1';
     }
 
     if(formLogin) {
@@ -22,18 +18,19 @@ export function initAuth() {
             const p = document.getElementById('login-pass').value;
 
             if (u === 'dytbeyza' && p === 'dytbeyzayılmaz00') {
-                sessionStorage.setItem('diyetTakibimAuth', 'dytbeyza_onayli');
-                window.showToast('Giriş Başarılı! Hoş Geldiniz Dyt. Beyza', 'success');
+                // Şifre doğruysa sadece anlık olarak ekranı gizle, hiçbir yere kaydetme
+                if(window.showToast) window.showToast('Giriş Başarılı! Hoş Geldiniz Dyt. Beyza', 'success');
+                
                 loginScreen.style.opacity = '0';
                 setTimeout(() => { loginScreen.style.display = 'none'; }, 500);
             } else {
-                window.showToast('Hatalı kullanıcı adı veya şifre!', 'error');
+                if(window.showToast) window.showToast('Hatalı kullanıcı adı veya şifre!', 'error');
             }
         };
     }
 }
 
+// Çıkış Yap butonuna basılınca sayfayı yenilemek yeterli, zaten anında şifre soracak
 window.cikisYap = function() {
-    sessionStorage.removeItem('diyetTakibimAuth');
     window.location.reload(); 
 };
