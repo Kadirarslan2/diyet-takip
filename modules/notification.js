@@ -24,8 +24,14 @@ window.cihaziKaydet = async function() {
             alert('Tarayıcınız bildirimleri desteklemiyor!'); return;
         }
 
-        const kayit = await navigator.serviceWorker.register('/bildirim-sw.js');
-        const abonelik = await kayit.pushManager.subscribe({
+        // 1. İşçiyi işe alıyoruz
+        await navigator.serviceWorker.register('/bildirim-sw.js');
+        
+        // 2. İŞTE BİZİ KURTARACAK O SATIR: İşçinin formasını giyip "Hazırım" demesini bekliyoruz!
+        const hazirKayit = await navigator.serviceWorker.ready;
+
+        // 3. İşçi tam hazır olduktan sonra abonelik işlemini başlatıyoruz
+        const abonelik = await hazirKayit.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey: urlB64ToUint8Array(PUBLIC_VAPID_KEY)
         });
@@ -51,7 +57,6 @@ window.cihaziKaydet = async function() {
         alert("Tebrikler! Bu cihaz veritabanına kaydedildi. Artık bildirim alacak.");
     } catch (err) {
         console.error(err);
-        // Hatanın tam sebebini kabak gibi ekrana yazdırıyoruz!
         alert("SİSTEM HATASI: " + err.name + " | " + err.message);
     }
 };
