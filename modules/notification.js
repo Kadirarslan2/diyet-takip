@@ -4,8 +4,9 @@ export function initNotification() {
     const formNotif = document.getElementById('form-bildirim-gonder');
     
     // ONESIGNAL GİZLİ BİLGİLERİN
-    const ONESIGNAL_APP_ID = "ddce2b71-4b68-4437-bc90-7a8f52daca38"; // Senin kimlik numaranı buraya gömdüm
-    const ONESIGNAL_REST_API_KEY = "os_v2_app_3xhcw4klnbcdppeqpkhvfwwkhcdpgunnkpfeew4vub33oe6cmhutvis5a4ixdxchp4qgrsqn6unrnge3jau3qrkbfe6mon2svfsnotq"; // DİKKAT: OneSignal'dan REST API Key'i kopyalayıp buraya yapıştır!
+    const ONESIGNAL_APP_ID = "ddce2b71-4b68-4437-bc90-7a8f52daca38"; 
+        const ONESIGNAL_REST_API_KEY = "os_v2_app_3xhcw4klnbcdppeqpkhvfwwkhcdpgunnkpfeew4vub33oe6cmhutvis5a4ixdxchp4qgrsqn6unrnge3jau3qrkbfe6mon2svfsnotq"; // DİKKAT: OneSignal'dan REST API Key'i kopyalayıp buraya yapıştır!
+
 
     if (formNotif) {
         formNotif.onsubmit = async (e) => {
@@ -19,8 +20,8 @@ export function initNotification() {
             btn.disabled = true;
 
             try {
-                // OneSignal'ın kapısına gidip "Bu mesajı herkese gönder" diyoruz
-                const response = await fetch("https://onesignal.com/api/v1/notifications", {
+                // SİHİRLİ DOKUNUŞ: Tarayıcı engelini aşmak için araya corsproxy.io köprüsünü koyduk!
+                const response = await fetch("https://corsproxy.io/?https://onesignal.com/api/v1/notifications", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json; charset=utf-8",
@@ -28,7 +29,7 @@ export function initNotification() {
                     },
                     body: JSON.stringify({
                         app_id: ONESIGNAL_APP_ID,
-                        included_segments: ["Subscribed Users"], // Bildirimlere izin veren herkese gider
+                        included_segments: ["Subscribed Users"],
                         headings: { "en": baslik, "tr": baslik },
                         contents: { "en": mesaj, "tr": mesaj }
                     })
@@ -45,7 +46,8 @@ export function initNotification() {
                 btn.disabled = false;
 
             } catch (err) {
-                window.showToast('Bağlantı hatası oluştu!', 'error');
+                console.error("Bildirim Hatası:", err);
+                window.showToast('Bağlantı hatası! Lütfen konsolu kontrol edin.', 'error');
                 btn.innerHTML = eskiIcerik;
                 btn.disabled = false;
             }
