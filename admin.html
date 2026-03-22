@@ -9,14 +9,6 @@
     <meta name="theme-color" content="#0f766e">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-    <script>
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      OneSignalDeferred.push(function(OneSignal) {
-        OneSignal.init({
-          appId: "ddce2b71-4b68-4437-bc90-7a8f52daca38",
-        });
-      });
     </script>
     </script>
     </script>
@@ -235,7 +227,7 @@
                         <h2 class="text-xl font-black text-red-600 mb-1"><i class="fas fa-user-secret mr-2"></i>God Mode: Bildirim Merkezi</h2>
                         <p class="text-xs font-bold text-slate-500">Sadece yöneticiler bu alanı görebilir. Dyt. Beyza'nın telefonuna anlık bildirim fırlatın.</p>
                     </div>
-                    <button onclick="window.OneSignalDeferred.push(function(OS) { OS.Slidedown.promptPush({ force: true }); })" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm hover:bg-slate-900 transition whitespace-nowrap"><i class="fas fa-check-circle mr-1"></i> Cihazı Bildirime Aç</button>
+                   <button type="button" onclick="window.cihaziKaydet()" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm hover:bg-slate-900 transition whitespace-nowrap"><i class="fas fa-check-circle mr-1"></i> Cihazı Bildirime Aç</button>
                 </div>
                 <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                     <form id="form-bildirim-gonder" class="space-y-4">
