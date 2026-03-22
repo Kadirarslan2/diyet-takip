@@ -5,8 +5,7 @@ export function initNotification() {
     
     // ONESIGNAL GİZLİ BİLGİLERİN
     const ONESIGNAL_APP_ID = "ddce2b71-4b68-4437-bc90-7a8f52daca38"; 
-    const ONESIGNAL_REST_API_KEY = "os_v2_app_3xhcw4klnbcdppeqpkhvfwwkhcdpgunnkpfeew4vub33oe6cmhutvis5a4ixdxchp4qgrsqn6unrnge3jau3qrkbfe6mon2svfsnotq"; // DİKKAT: OneSignal'dan REST API Key'i kopyalayıp buraya yapıştır!
-
+    const ONESIGNAL_REST_API_KEY = "os_v2_app_3xhcw4klnbcdppeqpkhvfwwkhcdpgunnkpfeew4vub33oe6cmhutvis5a4ixdxchp4qgrsqn6unrnge3jau3qrkbfe6mon2svfsnotq";
 
     if (formNotif) {
         formNotif.onsubmit = async (e) => {
