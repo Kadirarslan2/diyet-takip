@@ -4,7 +4,7 @@ export default async function handler(req, res) {
 
     const ONESIGNAL_APP_ID = "ddce2b71-4b68-4437-bc90-7a8f52daca38";
     
-    // YENİ ALDIĞIN, IP KISMI BOMBOŞ OLAN O UZUN ŞİFREYİ BURAYA YAPIŞTIR!
+    // İŞTE SENİN YAKALADIĞIN YEPYENİ, IP ENGELSİZ ŞİFRE!
     const ONESIGNAL_REST_API_KEY = "os_v2_app_3xhcw4klnbcdppeqpkhvfwwkhdzaxfpjq4kespeer22wa3vkpibwfpvzzwbeqccjun3oxwto7qbawjydx46mmp5y5xrwernww3fwdbi"; 
 
     try {
