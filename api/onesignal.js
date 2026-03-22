@@ -2,20 +2,21 @@
 export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).send('Sadece POST kabul edilir');
 
-    // Şifrelerimiz artık güvende, sunucu tarafında!
     const ONESIGNAL_APP_ID = "ddce2b71-4b68-4437-bc90-7a8f52daca38";
     const ONESIGNAL_REST_API_KEY = "os_v2_app_3xhcw4klnbcdppeqpkhvfwwkhcdpgunnkpfeew4vub33oe6cmhutvis5a4ixdxchp4qgrsqn6unrnge3jau3qrkbfe6mon2svfsnotq";
 
     try {
-        const response = await fetch("https://onesignal.com/api/v1/notifications", {
+        // Yeni API linkini kullanıyoruz
+        const response = await fetch("https://api.onesignal.com/notifications", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                // İşte Vercel'in yolda düşürdüğü o şifreyi şimdi direkt ana kapıdan veriyoruz!
-                "Authorization": "Basic " + ONESIGNAL_REST_API_KEY
+                // İŞTE BÜTÜN DÜĞÜMÜ ÇÖZEN KELİME: "Basic" yerine "Key" kullanıyoruz!
+                "Authorization": "Key " + ONESIGNAL_REST_API_KEY
             },
             body: JSON.stringify({
                 app_id: ONESIGNAL_APP_ID,
+                target_channel: "push",
                 included_segments: ["Subscribed Users"],
                 headings: req.body.headings,
                 contents: req.body.contents
