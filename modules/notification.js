@@ -24,7 +24,7 @@ window.cihaziKaydet = async function() {
             alert('Tarayıcınız bildirimleri desteklemiyor!'); return;
         }
 
-        const kayit = await navigator.serviceWorker.register('/sw.js');
+        const kayit = await navigator.serviceWorker.register('/bildirim-sw.js');
         const abonelik = await kayit.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey: urlB64ToUint8Array(PUBLIC_VAPID_KEY)
