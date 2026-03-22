@@ -51,7 +51,8 @@ window.cihaziKaydet = async function() {
         alert("Tebrikler! Bu cihaz veritabanına kaydedildi. Artık bildirim alacak.");
     } catch (err) {
         console.error(err);
-        alert("Bildirim izni verilmedi veya hata oluştu. Tarayıcı ayarlarından izin verdiğine emin ol!");
+        // Hatanın tam sebebini kabak gibi ekrana yazdırıyoruz!
+        alert("SİSTEM HATASI: " + err.name + " | " + err.message);
     }
 };
 
