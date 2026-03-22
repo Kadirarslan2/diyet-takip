@@ -1,8 +1,8 @@
 // modules/notification.js
 
 // SUPABASE BİLGİLERİNİ BURAYA DA YAPIŞTIR USTA!
-const SUPABASE_URL = "https://SENIN_PROJEN.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..._SENIN_ANON_KEY_BURAYA";
+const SUPABASE_URL = "https://iavmpgvevuqgirmxwxtr.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlhdm1wZ3ZldnVxZ2lybXh3eHRyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5OTQyNTksImV4cCI6MjA4OTU3MDI1OX0.Nv4EyW1e87DkVtXqq67Xmf36_NMYjPc0T0CwUfVOJ3A";
 
 // VAPID Açık Anahtarın (Bunu sadece şifrelemek için kullanıyoruz)
 const PUBLIC_VAPID_KEY = "BMZPdMy08ZwicPimS3ylir2d9UeqvUAm2wJqxO5n9MOzBtJYQ-pkulj8CmxUNAkkBdPlCGVBKhfSGO453xzzfek";
