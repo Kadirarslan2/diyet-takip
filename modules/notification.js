@@ -19,7 +19,6 @@ export function initNotification() {
             btn.disabled = true;
 
             try {
-                // SİHİR BURADA: Artık Vercel'in kendi köprüsünü (/api/onesignal) kullanıyoruz. CORS hatası bitti!
                 const response = await fetch("/api/onesignal", {
                     method: "POST",
                     headers: {
@@ -28,17 +27,23 @@ export function initNotification() {
                     },
                     body: JSON.stringify({
                         app_id: ONESIGNAL_APP_ID,
-                        included_segments: ["Subscribed Users"],
+                        included_segments: ["Subscribed Users"], 
                         headings: { "en": baslik, "tr": baslik },
                         contents: { "en": mesaj, "tr": mesaj }
                     })
                 });
 
-                if (response.ok) {
+                // ONE SIGNAL'DAN GELEN CEVABI DİNLİYORUZ!
+                const gercekCevap = await response.json();
+
+                if (response.ok && !gercekCevap.errors) {
                     window.showToast('Bildirim başarıyla fırlatıldı!', 'success');
                     formNotif.reset();
                 } else {
-                    window.showToast('Bildirim gönderilemedi. REST API Key hatalı olabilir.', 'error');
+                    // İŞTE BURASI: Hatayı kabak gibi ekrana yazdıracak!
+                    let hataMesaji = gercekCevap.errors ? JSON.stringify(gercekCevap.errors) : 'Bilinmeyen Hata';
+                    alert("OneSignal'ın Gönderdiği Hata: \n" + hataMesaji);
+                    window.showToast('Gönderilemedi, ekrandaki hatayı oku!', 'error');
                 }
 
                 btn.innerHTML = eskiIcerik;
@@ -46,7 +51,7 @@ export function initNotification() {
 
             } catch (err) {
                 console.error("Bildirim Hatası:", err);
-                window.showToast('Bağlantı hatası! Vercel proxy ayarlanamadı.', 'error');
+                alert("Bağlantı Hatası: Vercel Proxy çalışmadı. Lütfen vercel.json dosyasını kontrol et.");
                 btn.innerHTML = eskiIcerik;
                 btn.disabled = false;
             }
