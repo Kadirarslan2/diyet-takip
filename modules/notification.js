@@ -5,7 +5,7 @@ export function initNotification() {
     
     // ONESIGNAL GİZLİ BİLGİLERİN
     const ONESIGNAL_APP_ID = "ddce2b71-4b68-4437-bc90-7a8f52daca38"; 
-        const ONESIGNAL_REST_API_KEY = "os_v2_app_3xhcw4klnbcdppeqpkhvfwwkhcdpgunnkpfeew4vub33oe6cmhutvis5a4ixdxchp4qgrsqn6unrnge3jau3qrkbfe6mon2svfsnotq"; // DİKKAT: OneSignal'dan REST API Key'i kopyalayıp buraya yapıştır!
+    const ONESIGNAL_REST_API_KEY = "os_v2_app_3xhcw4klnbcdppeqpkhvfwwkhcdpgunnkpfeew4vub33oe6cmhutvis5a4ixdxchp4qgrsqn6unrnge3jau3qrkbfe6mon2svfsnotq"; // DİKKAT: OneSignal'dan REST API Key'i kopyalayıp buraya yapıştır!
 
 
     if (formNotif) {
@@ -20,8 +20,8 @@ export function initNotification() {
             btn.disabled = true;
 
             try {
-                // SİHİRLİ DOKUNUŞ: Tarayıcı engelini aşmak için araya corsproxy.io köprüsünü koyduk!
-                const response = await fetch("https://corsproxy.io/?https://onesignal.com/api/v1/notifications", {
+                // SİHİR BURADA: Artık Vercel'in kendi köprüsünü (/api/onesignal) kullanıyoruz. CORS hatası bitti!
+                const response = await fetch("/api/onesignal", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json; charset=utf-8",
@@ -39,7 +39,7 @@ export function initNotification() {
                     window.showToast('Bildirim başarıyla fırlatıldı!', 'success');
                     formNotif.reset();
                 } else {
-                    window.showToast('Bildirim gönderilemedi. REST API Key eksik/hatalı olabilir.', 'error');
+                    window.showToast('Bildirim gönderilemedi. REST API Key hatalı olabilir.', 'error');
                 }
 
                 btn.innerHTML = eskiIcerik;
@@ -47,7 +47,7 @@ export function initNotification() {
 
             } catch (err) {
                 console.error("Bildirim Hatası:", err);
-                window.showToast('Bağlantı hatası! Lütfen konsolu kontrol edin.', 'error');
+                window.showToast('Bağlantı hatası! Vercel proxy ayarlanamadı.', 'error');
                 btn.innerHTML = eskiIcerik;
                 btn.disabled = false;
             }

@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/onesignal",
+      "destination": "https://onesignal.com/api/v1/notifications"
+    }
+  ]
+}

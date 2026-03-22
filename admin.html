@@ -9,16 +9,15 @@
     <meta name="theme-color" content="#0f766e">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
       window.OneSignalDeferred = window.OneSignalDeferred || [];
       OneSignalDeferred.push(function(OneSignal) {
         OneSignal.init({
           appId: "ddce2b71-4b68-4437-bc90-7a8f52daca38",
         });
-        // İŞTE EKSİK OLAN SİHİRLİ SATIR: İzin kutusunu zorla açtırır!
-        OneSignal.Slidedown.promptPush({ force: true });
       });
+    </script>
     </script>
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -231,9 +230,12 @@
             
             <div id="page-finans" class="page-section hidden max-w-6xl mx-auto space-y-4 w-full"><div class="bg-white p-4 rounded-xl border border-gray-200 flex justify-between items-center"><h2 class="text-lg md:text-xl font-bold">Kasa İşlemleri</h2><button onclick="window.openModal('modal-finans')" class="bg-teal-600 text-white px-4 md:px-5 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-semibold shadow-sm"><i class="fas fa-plus mr-1 md:mr-2"></i> Tahsilat Gir</button></div><div class="bg-white rounded-xl border border-gray-200 overflow-x-auto shadow-sm w-full hide-scroll"><table class="w-full text-left border-collapse text-xs md:text-sm min-w-[400px]"><thead><tr class="bg-slate-50 border-b border-gray-100 font-bold"><th class="py-3 md:py-4 px-4 md:px-6">Tarih</th><th class="py-3 md:py-4 px-4 md:px-6">Danışan</th><th class="py-3 md:py-4 px-4 md:px-6 text-teal-600">Tutar</th><th class="py-3 md:py-4 px-4 md:px-6 text-right">İşlem</th></tr></thead><tbody id="kasa-tablosu" class="divide-y divide-gray-100"></tbody></table></div></div>
 <div id="page-bildirimler" class="page-section hidden max-w-4xl mx-auto space-y-4 w-full">
-                <div class="bg-white p-4 md:p-5 rounded-xl border border-red-200 shadow-sm">
-                    <h2 class="text-xl font-black text-red-600 mb-1"><i class="fas fa-user-secret mr-2"></i>God Mode: Bildirim Merkezi</h2>
-                    <p class="text-xs font-bold text-slate-500">Sadece yöneticiler bu alanı görebilir. Dyt. Beyza'nın telefonuna anlık bildirim fırlatın.</p>
+                <div class="bg-white p-4 md:p-5 rounded-xl border border-red-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 class="text-xl font-black text-red-600 mb-1"><i class="fas fa-user-secret mr-2"></i>God Mode: Bildirim Merkezi</h2>
+                        <p class="text-xs font-bold text-slate-500">Sadece yöneticiler bu alanı görebilir. Dyt. Beyza'nın telefonuna anlık bildirim fırlatın.</p>
+                    </div>
+                    <button onclick="window.OneSignalDeferred.push(function(OS) { OS.Slidedown.promptPush({ force: true }); })" class="bg-slate-800 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm hover:bg-slate-900 transition whitespace-nowrap"><i class="fas fa-check-circle mr-1"></i> Cihazı Bildirime Aç</button>
                 </div>
                 <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                     <form id="form-bildirim-gonder" class="space-y-4">
