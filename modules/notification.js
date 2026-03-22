@@ -3,6 +3,10 @@
 export function initNotification() {
     const formNotif = document.getElementById('form-bildirim-gonder');
     
+    // ONESIGNAL GİZLİ BİLGİLERİN
+    const ONESIGNAL_APP_ID = "ddce2b71-4b68-4437-bc90-7a8f52daca38"; // Senin kimlik numaranı buraya gömdüm
+    const ONESIGNAL_REST_API_KEY = "os_v2_app_3xhcw4klnbcdppeqpkhvfwwkhcdpgunnkpfeew4vub33oe6cmhutvis5a4ixdxchp4qgrsqn6unrnge3jau3qrkbfe6mon2svfsnotq"; // DİKKAT: OneSignal'dan REST API Key'i kopyalayıp buraya yapıştır!
+
     if (formNotif) {
         formNotif.onsubmit = async (e) => {
             e.preventDefault();
@@ -11,20 +15,37 @@ export function initNotification() {
             
             const btn = formNotif.querySelector('button');
             const eskiIcerik = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> FIRLATILIYOR...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> BİLDİRİM FIRLATILIYOR...';
             btn.disabled = true;
 
             try {
-                // BURASI GEÇİCİ - OneSignal bağlayınca buraya API kodunu koyacağız!
-                setTimeout(() => {
+                // OneSignal'ın kapısına gidip "Bu mesajı herkese gönder" diyoruz
+                const response = await fetch("https://onesignal.com/api/v1/notifications", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json; charset=utf-8",
+                        "Authorization": `Basic ${ONESIGNAL_REST_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        app_id: ONESIGNAL_APP_ID,
+                        included_segments: ["Subscribed Users"], // Bildirimlere izin veren herkese gider
+                        headings: { "en": baslik, "tr": baslik },
+                        contents: { "en": mesaj, "tr": mesaj }
+                    })
+                });
+
+                if (response.ok) {
                     window.showToast('Bildirim başarıyla fırlatıldı!', 'success');
                     formNotif.reset();
-                    btn.innerHTML = eskiIcerik;
-                    btn.disabled = false;
-                }, 1000);
+                } else {
+                    window.showToast('Bildirim gönderilemedi. REST API Key eksik/hatalı olabilir.', 'error');
+                }
+
+                btn.innerHTML = eskiIcerik;
+                btn.disabled = false;
 
             } catch (err) {
-                window.showToast('Bildirim gönderilemedi!', 'error');
+                window.showToast('Bağlantı hatası oluştu!', 'error');
                 btn.innerHTML = eskiIcerik;
                 btn.disabled = false;
             }
