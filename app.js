@@ -3,6 +3,7 @@ import { danisanlariGetir, kayitFormunuBaslat } from './modules/danisan.js?v=tam
 import { randevuFormunuBaslat } from './modules/randevu.js?v=tamSurum1';
 import { initAuth } from './modules/auth.js?v=tamSurum1'; // GÜVENLİK DOSYASINI BURADAN ÇEKİYORUZ!
 import { initDashboard } from './modules/dashboard.js?v=kadirDashboard1';
+import { initNotification } from './modules/notification.js?v=patron1';
 // ================= BİLDİRİM MOTORU =================
 window.showToast = function(mesaj, tip = 'success') {
     let container = document.getElementById('toast-container');
@@ -739,6 +740,7 @@ window.randevuKalicSil = async function(id) {
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Önce Güvenlik Kontrolü
     initAuth();
+    initNotification();
     initDashboard();
     // 2. Ardından Sistemin Kalanı
     if (typeof window.uretProtokol === "function") window.uretProtokol();
